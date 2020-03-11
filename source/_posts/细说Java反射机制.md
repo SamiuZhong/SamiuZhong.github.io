@@ -1,11 +1,13 @@
 ---
 title: 细说Java反射机制
-data: 2020-02-27
+keywords: 细Java反射机制
+date: 2020-02-27 19:31:30
+categories: Java
 tags:
 	- Java
 ---
 
-# 一、反射到底是个啥？
+## 反射到底是个啥？
 
 > 能够分析类能力的程序被称为反射（reflective），通过反射可以在运行时（而不是在编译时）动态地分析软件组件并描述组件的功能。
 
@@ -90,7 +92,7 @@ class Factory {
 
 巧了，还真有，这个牛逼的技术就是我们今天所说的反射。
 
-# 二、整一个反射出来看看
+## 整一个反射出来看看
 
 我们对工厂类进行改写
 
@@ -133,11 +135,11 @@ public class Client {
 
 这样我们就通过反射获得了一个类的对象，并且在这个过程中我们并不关心这个加载的类到底是个啥东西。
 
-# 三、反射还能做啥？
+## 反射还能做啥？
 
 除了获取类的对象之外，反射还可以分析类的能力。
 
-## 3.1 获取构造函数的信息
+### 获取构造函数的信息
 
 - __getConstructors()方法__
 
@@ -191,7 +193,7 @@ public com.samiu.archi.reflect.Product()
 
 OK，这不就把构造函数打印粗来了。
 
-## 3.2 获得类的变量
+### 获得类的变量
 
 - __getFields方法__
 - __getDeclaredFields方法__
@@ -248,9 +250,9 @@ public float com.samiu.archi.reflect.Product.width
 public float com.samiu.archi.reflect.Product.height
 ```
 
-可以看到，getFields方法获取了类的公共变量，而getDeclaredFields方法获取了类的所有变量，包括私有变量
+可以看到，getFields方法获取了类的公共变量，而getDeclaredFields方法获取了类的所有变量，包括私有变量。
 
-## 3.3 获得类的方法
+### 获得类的方法
 
 - __getMethods方法__
 - __getDeclaredMethods方法__
@@ -330,9 +332,7 @@ public int com.samiu.archi.reflect.Product.getPrice()
 
 除了这些以外，反射还有很多实用的功能，这里就不展开细讲了，感兴趣的朋友可以自己去查阅。
 
-
-
-## 参考资料：
+## 参考资料
 
 __1. 《Java核心技术 第八版》__
 
