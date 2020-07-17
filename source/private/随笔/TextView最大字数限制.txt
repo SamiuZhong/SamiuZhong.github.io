@@ -1,0 +1,3 @@
+        android:ellipsize="end"		//尾部省略号
+        android:maxEms="15"		//最大字数
+        android:lines="3"		//行数

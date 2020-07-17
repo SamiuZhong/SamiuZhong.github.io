@@ -1,0 +1,16 @@
+Kotlin的配置和Java略有不同，详见Github： https://github.com/alibaba/ARouter
+
+// You can refer to the wording in the "module-kotlin" module
+apply plugin: 'kotlin-kapt'
+
+kapt {
+    arguments {
+        arg("AROUTER_MODULE_NAME", project.getName())
+    }
+}
+
+dependencies {
+    compile 'com.alibaba:arouter-api:x.x.x'
+    kapt 'com.alibaba:arouter-compiler:x.x.x'
+    ...
+}

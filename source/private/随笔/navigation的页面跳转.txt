@@ -1,0 +1,19 @@
+1.在navigation的xml文件里面编写跳转的action
+	<fragment
+		 android:id="@+id/navigation_work"
+		 android:name="com.klilala.main.ui.fragment.WorkFragment"
+		 tools:layout="@layout/fragment_work" >
+		 <action
+			 android:id="@+id/to_study"
+			 app:destination="@id/navigation_study"
+			 app:enterAnim="@anim/slide_in_right" />
+	 </fragment>
+	 
+	 <fragment
+		 android:id="@+id/navigation_study"
+		 android:name="com.klilala.main.ui.fragment.StudyFragment"
+		 tools:layout="@layout/fragment_study" />
+
+2.调用
+	val navController = findNavController(R.id.nav_host_fragment)
+	navController.navigate(R.id.to_study)

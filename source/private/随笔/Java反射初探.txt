@@ -1,0 +1,36 @@
+反射有啥用？
+1.反射可以分析类的能力
+2.反射可以获得一个类的对象，即使你不知道这个类是个啥玩意儿
+
+怎么用反射获得一个类的对象？	
+1.首先我可以写一个方法，方法的参数让他传入一个类,这个泛型T就表示我们不晓得传过来的类是个啥玩意儿
+	public T createHuman(Class<T> c){}
+	
+  如果我想对传过来的类稍微加一点约束，比如让他必须是某个类的继承，那我就可以这样写
+	public <T extend Human> T createHuman(Class<T> c){}
+	
+  在实际操作中我们经常把这个方法定义成一个抽象方法，让子类去实现它，当但不整成抽象的也可以
+	public abstract class AbstractHumanFactory {
+		public abstract <T extends Human> T createHuman(Class<T> c);
+	}
+	
+  好了，现在我们来实现这个方法	
+	public class HumanFactory extends AbstractHumanFactory {
+		@Override
+		public <T extends Human> T createHuman(Class<T> c) {
+			Human human = null;
+			try {
+				human = (Human) Class.forName(c.getName()).newInstance();
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			return (T) human;
+		}
+	}	
+	
+  最后，我们在一个实际的类里面调用这玩意儿就Ok了
+	AbstractHumanFactory factory = new HumanFactory();
+	Human whiteHuman = factory.createHuman(WhiteHuman.class);
+  
+  看到没有，这里通过Class.forName().newInstance就创建了这个类的实例对象
+  但是我们甚至都不晓得这个类到底是个啥玩意儿，就创建了他的实例对象，是不是很beautiful？

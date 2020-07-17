@@ -1,0 +1,4 @@
+https://blog.csdn.net/qq_29897079/article/details/75451632
+
+int itemCount = adapter.getItemCount()-1;
+recyclerView.smoothScrollToPosition(itemCount);

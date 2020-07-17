@@ -1,0 +1,160 @@
+官网https://developer.android.com/jetpack/androidx/releases/room#2.1.0-alpha04
+https://blog.csdn.net/l_o_s/article/details/79346426
+https://www.jianshu.com/p/cfde3535233d
+https://www.jianshu.com/p/3e358eb9ac43
+
+0.极其不推荐在主线程里面进行Room操作，虽然可以，私以为必须在子线程里面进行操作
+
+1.app下的build.gradle文件里面添加依赖
+	dependencies {
+		implementation "androidx.room:room-runtime:2.1.0-alpha04"
+		annotationProcessor "androidx.room:room-compiler:2.1.0-alpha04"
+	}
+	
+2.Room的三大组件：
+(1)Entity:每一个Entity是一个类同时也是一张表，默认情况下类名即表名，变量名即字段名。可以通过注解的形式进行自定义表明和字段名
+(2)Dao:每一个Dao对应一个Entity，定义了一组对Entity的操作，如增删改查；
+       Dao是一个接口，是interface，不是class！
+(3)DataBase:DataBase类似于Manager，通过Database可以获取到任意有绑定到DataBase的Dao对象，再通过Dao对象就可以对每一个Entity进行操作，DataBase类必须满足以下三个条件：
+	1.DataBase类必须是继承自RoomDataBase，并且本身必须是抽象类
+	2.通过再头部以注解的方式添加Entity
+	3.至少包含一个不带参数的抽象方法，该方法返回一个已绑定的Entity所对应的Dao类型
+
+3.创建Entity
+  (1)需要用@Entity来注解该类
+  (2)至少要有一个主键@PrimaryKey
+  (3)通过@PrimaryKey(autoGenerate = true)来设置主键自动增长，默认为false
+  (4)@ColumnInfo(name = "xxx")表示该字段是表中的一个字段，字段名为xxx
+  (5)@Ignore表示部队字段进行存储
+  (6)必须必须要设置get和set方法
+  (7)PrimaryKey必须声明为NonNull
+@Entity
+public class UserInfo {
+
+    @PrimaryKey
+	@NonNull
+    private int id;
+
+    @ColumnInfo(name = "first_name")
+    private String firstName;
+
+    @ColumnInfo(name = "last_name")
+    private String lastName;
+
+    @Ignore
+    private int sex; // I don't want to persist this field. So that added @Ignore annotation.
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+}
+
+4.创建接口Dao，Dao代表数据访问对象，他是告诉我们的数据库如何操作数据的一种方式。
+  (0)Dao是一个接口，是interface，不是clas
+  (1)使用@Dao注解该接口
+  (2)每一个方法都有一个注解，用来表示这个方法能对表进行的操作
+  (3)@Insert,@Update,@Delete,@Query代表我们常用的插入、更新、删除、查询数据库操作
+  (4)每一个@Entity对应一个@Dao
+@Dao
+public interface UserDao {
+
+    @Query("select * from UserInfo")
+    List<UserInfo> getAll();
+
+    @Query("select * from UserInfo where id in (:userIds)")
+    List<UserInfo> loadAllByIds(int[] userIds);
+
+	@Query("select id,first_name,last_name from UserInfo where id = :id")
+    UserInfo getUserInfoViaId(int id);
+	
+    @Query("select * from UserInfo where first_name like :first and "
+            + "last_name like :last limit 1")
+    UserInfo findByName(String first, String last);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+		//括号表示如果插入有冲突就替换掉旧数据
+    void insert(UserInfo... users);
+
+    @Update
+    void Update(UserInfo... users);
+
+    @Delete
+    void delete(UserInfo user);
+}
+
+5.定义一个DataBase类(一般来说内部还要加一个单例模式)
+  (class上面的注解必须添加，不要忘了)
+@Database(entities = {UserInfo.class},version = 1,exportSchema = false)
+public abstract class MyDatabase extends RoomDatabase {
+
+    private static final String db_name = "student_db";
+
+    private static volatile MyDatabase instance;
+    public static MyDatabase getInstance(Context context){
+        if (instance == null){
+            instance = create(context);
+        }
+        return instance;
+    }
+    private static MyDatabase create(final Context context){
+        return Room.databaseBuilder(
+                context,
+                MyDatabase.class,
+                db_name).build();
+    }
+
+    public abstract UserDao getUserDao();
+}
+
+6.在Activity中使用：
+	private MyDatabase myDatabase;
+    private UserDao userDao;
+	
+	myDatabase = MyDatabase.getInstance(MyApplication.getContext());
+    userDao = myDatabase.getUserDao();
+	
+	userTbl.setXXX(xxx);
+    userTbl.setXXX(xxx);
+    userDao.insert(userTbl);
+
+------------------------2019.2.13更新----------------------------
+关于注解的补充
+1.DataBase类：(必须添加注解)
+	entities：数据库相关的所有Entity实体类，他们会转化成数据库里面的表。
+	version：数据库版本。
+	exportSchema：也是建议传false，true可以把Schema导出到一个文件夹里面。
+2.Entity类：
+	设置表名：@Entity(tableName = "users")
+	设置索引：@Entity(indices = {@Index("firstName"),
+				@Index(value = {"last_name", "address"})})
+			 或者
+			  @Entity(indices = {@Index(value = {"first_name", "last_name"},
+				unique = true)})
+	设置外键：(在Entity类外面，即括号的外(下)面)
+			  @Entity(foreignKeys = @ForeignKey(entity = User.class,
+												parentColumns = "id",
+												childColumns = "user_id"))
+			  上述代码通过foreignKeys之后Book表中的userId来源于User表中的id。
+			  entiry为parent实体类(引用外键的表的实体)
+			  parentColumns为parent外键列(要引用的外键列)
+			  childColumns为child外键列(要关联的列)

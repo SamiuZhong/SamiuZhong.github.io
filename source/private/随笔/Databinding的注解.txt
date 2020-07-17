@@ -1,0 +1,22 @@
+1.BindingAdapter:给方法加上此注解，即可在XML文件中直接调用该方法，如：
+	/**
+     * 加载圆形图片
+	 * 一般这个方法放在GlideUtils工具类里面
+     */
+    @BindingAdapter("bind:roundImage")
+    public static void loadCircleImage(ImageView imageView, String url) {
+        GlideCircleTransform circleTransform = new GlideCircleTransform(imageView.getContext());
+        RequestOptions options = RequestOptions.bitmapTransform(circleTransform).override(imageView.getWidth(), imageView.getHeight());
+        Glide.with(AppManager.getAppManager()).asBitmap().load(url).apply(options).into(imageView);
+    }
+	
+	<ImageView
+		android:id="@+id/my_profile_head_im"
+		android:layout_width="@dimen/dp_86"
+		android:layout_height="@dimen/dp_86"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="@dimen/dp_16"
+		app:roundImage="@{viewModel.userInfo.avatar}"/>
+		
+附：GlideUtils工具类（注意这里的工具类必须放在和调用的XML文件同一个Model里面，不然会报错）	
+	见另一篇笔记  图片加载工具类GlideUtils

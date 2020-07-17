@@ -86,7 +86,7 @@ Kotlin写法与上面的懒汉式类似。
 //Java实现
 public class Singleton{
 
-    private volatile static Singleton instance;
+    private volatile static Singleton instance = null;
 
     private Singleton(){}
 

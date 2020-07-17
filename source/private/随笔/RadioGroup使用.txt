@@ -1,0 +1,25 @@
+1.取消RadioButton前面小圆圈
+  1.静态生成的布局文件中设置button属性的值为 @null
+    <RadioButton
+
+        android:layout_width="match_parent"
+
+        android:layout_height="40dp"
+
+        android:button="@null"
+
+        android:text="aaaaaaaa"/>
+  2.动态生成的RadioButton，设置setButtonDrawable（）
+    LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams
+                .MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout ll = (LinearLayout) findViewById(R.id.activity_main);
+
+        RadioButton button = new RadioButton(this);
+
+        button.setText("这是代码创建的RadioButton");
+    //  button.setButtonDrawable(new ColorDrawable(Color.TRANSPARENT)); //取消圆圈
+                			button.setButtonDrawable(0);      //取消圆圈方式2
+ 
+       ll.addView(button, params);
+
+    

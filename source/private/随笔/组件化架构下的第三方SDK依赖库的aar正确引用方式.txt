@@ -1,0 +1,26 @@
+https://blog.csdn.net/u010152805/article/details/95175956
+
+A是一个库，libs下面含有离线aar包
+B、C、D等多个模块依赖A模块
+ 
+依赖方式
+一、A模块
+   1 implementation(name: 'linphone-sdk-android-release', ext: 'aar')
+   2 android{
+   		repositories {
+        	flatDir {
+            	dirs 'libs'
+        	}
+    	}
+   }
+二、project 根目录的build.gradle文件
+	allprojects {
+    	repositories {
+        	flatDir {
+            	dirs project(':linphone').file('libs')
+        	}
+    	}
+	}
+三、B|C|D模块
+	build.gradle文件引用aar包。
+	implementation(name: 'linphone-sdk-android-debug', ext: 'aar')

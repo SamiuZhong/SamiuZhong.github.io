@@ -1,0 +1,68 @@
+/**
+ * Glide图片加载工具类
+ */
+public class GlideUtils {
+	/**
+     * 普通加载模式
+     *
+     * @param imageView
+     * @param url
+     */
+    public static void loadImage(ImageView imageView, String url) {
+        if (imageView == null) {
+            return;
+        }
+        Glide.with(imageView.getContext())
+                .load(url)
+                .into(imageView);
+    }
+
+    public static void loadImage(ImageView imageView, int url) {
+        if (imageView == null) {
+            return;
+        }
+        Glide.with(imageView.getContext())
+                .load(url)
+                .into(imageView);
+    }
+
+    public static final Bitmap getBitmap(Context context, Object url) {
+        FutureTarget<Bitmap> futureTarget = Glide.with(context)
+                .asBitmap()
+                .load(url)
+                .submit();
+        try {
+            return futureTarget.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 加载圆角图片(中心剪裁)
+     *
+     * @param radioImage
+     * @param imageView
+     */
+    @BindingAdapter("radioImage")
+    public static void loadRoundedImage(ImageView imageView, String radioImage) {
+        loadRoundedImage(imageView, radioImage, 5);
+    }
+
+    public static void loadRoundedImage( ImageView imageView, String url, int dp) {
+        GlideRoundTransform roundedCorners = new GlideRoundTransform(imageView.getContext(), dp);
+        RequestOptions options = RequestOptions.bitmapTransform(roundedCorners).override(imageView.getWidth(), imageView.getHeight());
+        Glide.with(imageView.getContext()).asBitmap().load(url).apply(options).into(imageView);
+    }
+
+    /**
+     * 加载圆形图片
+     */
+    @BindingAdapter("roundImage")
+    public static void loadCircleImage(ImageView imageView, String roundImage) {
+        GlideCircleTransform circleTransform = new GlideCircleTransform(imageView.getContext());
+        RequestOptions options = RequestOptions.bitmapTransform(circleTransform).override(imageView.getWidth(), imageView.getHeight());
+        Glide.with(imageView.getContext()).asBitmap().load(roundImage).apply(options).into(imageView);
+    }
+}

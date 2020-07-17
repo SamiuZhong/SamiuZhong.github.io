@@ -1,0 +1,147 @@
+	
+
+1.第一步: 给Dialog设置一个风格主题（基本都是用这个主题）无边框全透明背景：
+	<!--自定义dialog背景全透明无边框theme -->
+		<style name="MyDialog" parent="android:style/Theme.Dialog">
+			<!--背景颜色及和透明程度-->
+			<item name="android:windowBackground">@android:color/transparent</item>
+			<!--是否去除标题 -->
+			<item name="android:windowNoTitle">true</item>
+			<!--是否去除边框-->
+			<item name="android:windowFrame">@null</item>
+			<!--是否浮现在activity之上-->
+			<item name="android:windowIsFloating">true</item>
+			<!--是否模糊-->
+			<item name="android:backgroundDimEnabled">false</item>
+		</style>
+	
+2.设置Dialog的自定义背景框
+	<?xml version="1.0" encoding="utf-8"?>
+	<shape xmlns:android="http://schemas.android.com/apk/res/android">
+	 
+		<solid android:color="#ffffff" />
+		<stroke
+			android:width="0.8dp"
+			android:color="#ffffff" />
+		<!-- 圆角 -->
+		<corners android:radius="6dp" />
+	 
+	</shape>
+	
+3.设置Dialog的XML布局		
+	<?xml version="1.0" encoding="utf-8"?>
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#11ffffff">
+
+		<LinearLayout
+			android:layout_width="280dp"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:background="@drawable/expired_dialog_bg"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/expired_dialog_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_margin="15dp"
+				android:gravity="center"
+				android:text="@string/expired_notice"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+			<TextView
+				android:id="@+id/expired_dialog_message"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="20dp"
+				android:layout_marginRight="20dp"
+				android:text="提示消息" />
+
+			<View
+				android:layout_width="match_parent"
+				android:layout_height="1px"
+				android:layout_marginTop="15dp"
+				android:background="@color/divider_e5e5e5" />
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="40dp"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/expired_dialog_ok_btn"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:background="@null"
+					android:gravity="center"
+					android:singleLine="true"
+					android:text="@string/btn_ok_none_space"
+					android:textColor="@color/check_center_selected_color"
+					android:textSize="17sp" />
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</RelativeLayout>
+	
+4. 编写自定义Dialog的实现类
+	public class ExpiredDialog extends Dialog {
+
+		private String titleStr;
+		private String messageStr;
+
+		@Bind(R.id.expired_dialog_title)
+		TextView titleTv;
+		@Bind(R.id.expired_dialog_message)
+		TextView messageTv;
+
+		@OnClick(R.id.expired_dialog_ok_btn)
+		public void okDismiss(){
+			dismiss();
+		}
+
+
+		public ExpiredDialog(@NonNull Context context) {
+			super(context,R.style.ExpiredDialog);
+		}
+
+
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.view_expired_dialog);
+			setCanceledOnTouchOutside(false);
+			ButterKnife.bind(ExpiredDialog.this);
+
+			initData();
+		}
+
+		private void initData(){
+			if (titleStr != null){
+				titleTv.setText(titleStr);
+			}
+			if (messageStr != null){
+				messageTv.setText(messageStr);
+			}
+		}
+
+		public void setTitle(String title) {
+			titleStr = title;
+		}
+
+		public void setMessage(String message) {
+			messageStr = message;
+		}
+	}
+	
+5.Activity中调用	
+	private ExpiredDialog expiredDialog;
+	expiredDialog = new ExpiredDialog(mContext);
+	expiredDialog.setMessage("Test message");
+	expiredDialog.show();

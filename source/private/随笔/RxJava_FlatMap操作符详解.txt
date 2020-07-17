@@ -1,0 +1,91 @@
+FlatMap可以将一个发射数据的Observable变换为多个Observable，然后将他们发射的数据合并后放进一个单独的Observable。
+例子：登录接口先请求Token，之后再请求UserInfo
+	model.login(requestBody)
+		.subscribeOn(Schedulers.io())
+		.observeOn(AndroidSchedulers.mainThread())
+		.doOnSubscribe(disposable -> showDialog())
+		.doOnNext(response -> {
+			if (response.getCode() == Constants.NETWORK_OK) {
+				String token = response.getData().getToken();
+				SPUtils.getInstance().put(SPKeyGlobal.TOKEN, token);
+			}
+		})
+		.observeOn(Schedulers.io())
+		.flatMap((Function<BaseResponse<LoginInfo>, ObservableSource<BaseResponse<UserInfo>>>) response ->
+				model.getUserInfo(response.getData().getToken()))
+		.observeOn(AndroidSchedulers.mainThread())
+		.subscribe(response -> {
+			dismissDialog();
+			if (response.getCode() == Constants.NETWORK_OK) {
+				BeanManager.getInstance().setUserInfo(response.getData());
+				startActivity(HomeActivity.class);
+				finish();
+			} else {
+				ToastUtils.showShort(R.string.get_user_info_failed);
+			}
+		},throwable -> {
+			dismissDialog();
+			ToastUtils.showShort(R.string.get_user_info_failed);
+		});
+		
+	换个更好的写法：
+	model.login(requestBody)
+		.subscribeOn(Schedulers.io())
+		.doOnSubscribe(disposable -> showDialog())
+		.observeOn(Schedulers.io())
+		.flatMap((Function<BaseResponse<LoginInfo>, ObservableSource<BaseResponse<UserInfo>>>) response -> {
+			if (response.getCode() == Constants.NETWORK_OK){
+				String token = response.getData().getToken();
+				SPUtils.getInstance().put(SPKeyGlobal.TOKEN, token);
+				return model.getUserInfo(token);
+			} else {
+				return null;
+			}
+		})
+		.observeOn(AndroidSchedulers.mainThread())
+		.subscribe(response -> {
+			dismissDialog();
+			if (response.getCode() == Constants.NETWORK_OK) {
+				BeanManager.getInstance().setUserInfo(response.getData());
+				startActivity(HomeActivity.class);
+				finish();
+			} else {
+				ToastUtils.showShort(R.string.get_user_info_failed);
+			}
+		},throwable -> {
+			dismissDialog();
+			ToastUtils.showShort(R.string.code_error);
+		});	
+		
+-------------------------------2020.2.12----------------------------
+更新RxKotlin实现		
+	model!!.login(requestBody)
+		.subscribeOn(Schedulers.io())
+		.observeOn(Schedulers.io())
+		.doOnSubscribe { showDialog() }
+		.flatMap {
+			if (it.isOk) {
+				val token = it.data.token
+				SPUtils.getInstance().put(SPKeyGlobal.TOKEN, token)
+				RetrofitClient.headers[Constants.AUTHORIZATION] = SPUtils.getInstance().getString(SPKeyGlobal.TOKEN)
+				model!!.userInfo
+			} else {
+				dismissDialog()
+				null
+			}
+		}
+		.observeOn(AndroidSchedulers.mainThread())
+		.subscribeBy(
+				onNext = {
+					dismissDialog()
+					if (it.isOk) {
+						BeanManager.getInstance().userInfo = it.data
+						startActivity(HomeActivity::class.java)
+						finish()
+					}
+				},
+				onError = {
+					dismissDialog()
+					ToastUtils.showShort(R.string.connect_to_network_failed)
+				}
+		)

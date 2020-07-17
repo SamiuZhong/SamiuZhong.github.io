@@ -1,0 +1,37 @@
+public class MainActivity extends Activity implements OnClickListener{
+ 
+    private Button btn1, btn2;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //初始化View
+        initView();
+    }
+
+    // 方法：初始化View
+    private void initView() {
+        btn1 = (Button) findViewById(R.id.btn1);
+        btn2 = (Button) findViewById(R.id.btn2);    
+         
+        //按钮绑定点击事件的监听器
+         btn1.setOnClickListener(this);
+         btn2.setOnClickListener(this);
+    }
+ 
+    //方法：按钮的单击事件
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        case R.id.btn1:
+            Toast.makeText(MainActivity.this, "btn1", Toast.LENGTH_SHORT).show();
+            break;
+        case R.id.btn2:
+            Toast.makeText(MainActivity.this, "btn2", Toast.LENGTH_SHORT).show();
+            break;
+        default:
+            break;
+        }            
+    }
+}

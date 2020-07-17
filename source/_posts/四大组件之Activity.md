@@ -51,5 +51,3 @@ Activity异常终止会调用__onSaveInstanceState__来保存当前Activity的�
 |      FLAG_ACTIVITY_SINGLE_TOP      |             启动模式为"singleTop"              |
 |      FLAG_ACTIVITY_CLEAR_TOP       | 使栈上面的所有Activity出栈，一般与上面一个连用 |
 | FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |         不会出现在历史Activity的列表中         |
-
-## Activity的启动流程

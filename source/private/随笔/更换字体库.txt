@@ -1,0 +1,66 @@
+https://blog.csdn.net/danceinkeyboard/article/details/69218679
+
+摘要
+在Android开发中系统只提供了三种字体样式，那么如何使用自己想要的字体呢，使文字内容展示有更多的风格选择呢？那就只能导入外部字体库，不过这种方式会导致apk体积暴增，有可能会让你得不偿失。听说google发布了新的字体库，咱也来玩玩。
+先上效果图：
+
+
+基本用法步骤
+首先要将字体库放入asset目录下。
+使用方式：
+        TextView tv_1=(TextView) findViewById(R.id.tv_1);
+        TextView tv_2=(TextView) findViewById(R.id.tv_2);
+        TextView tv_3=(TextView) findViewById(R.id.tv_3);
+        TextView tv_4=(TextView) findViewById(R.id.tv_4);
+        TextView tv_5=(TextView) findViewById(R.id.tv_5);
+        TextView tv_6=(TextView) findViewById(R.id.tv_6);
+        TextView tv_7=(TextView) findViewById(R.id.tv_7);
+
+        tv_1.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-Bold.otf"));
+        tv_2.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-ExtraLight.otf"));
+        tv_3.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-Heavy.otf"));
+        tv_4.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-Light.otf"));
+        tv_5.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-Medium.otf"));
+        tv_6.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-Normal.otf"));
+        tv_7.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceHanSansCN-Regular.otf"));
+
+进阶用法步骤
+但是如果需要把整个App的字体都改变了，那这样一个个更改岂不是太麻烦了？这时就需要全局更改了。
+步骤
+首先重写Application，在onCreate()方法中执行下列代码：
+ Typeface mTypeface = Typeface.createFromAsset(getAssets(), "fonts/NotoSansJP-Medium.otf");
+
+        try {
+            Field field = Typeface.class.getDeclaredField("MONOSPACE");
+            field.setAccessible(true);
+            field.set(null, mTypeface);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+在style.xml文件中自定义一个主题，让重写后的application使用这个主题；同时别忘了在清单文件中声明这个application。
+  <style name="theme_fullScreen" parent="AppTheme">
+		<!--更换字体库-->
+        <item name="android:typeface">monospace</item>
+		<!--清除字体四周的留白-->
+		<item name="android:includeFontPadding">false</item>
+ </style>
+
+ <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/theme_fullScreen">
+		
+
+--------------------2019.11.14-------------------
+可将字体文件的目录改为res/font/目录下，没有的话就创建该目录
+然后将
+	mTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/SourceHanSansSC-Medium.otf");
+改为
+    mTypeface = ResourcesCompat.getFont(context,R.font.font_heavy);
+即可	

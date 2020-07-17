@@ -1,0 +1,21 @@
+1.查看清单文件AndroidManifest.xml中的theme
+  android:theme="@style/AppTheme"    //此为系统默认的不要动它
+2.在style.xml文件中修改AppTheme为如下
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+      <!-- Customize your theme here. -->
+      <item name="windowNoTitle">true</item>
+  </style>
+  
+-------------------------------------------
+https://blog.csdn.net/qq_28585471/article/details/75991613
+
+
+------------------2019.3.13更新-----------------------
+全屏：
+	在Activity的onCreate中添加：
+	getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				
+	屏幕常亮：
+	getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

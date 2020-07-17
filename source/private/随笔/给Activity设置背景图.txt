@@ -1,0 +1,2 @@
+1.图片png格式，名字小写字母和数字，复制粘贴到工程的res下的mipmap或者drawable里，
+2.在需要设置的Activity的XML布局文件中添加代码android:background="@mipmap/xxx"

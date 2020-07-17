@@ -1,0 +1,67 @@
+https://github.com/goldze/MVVMHabit
+
+1 框架组成部分：
+	retrofit+okhttp+rxJava负责网络请求；gson负责解析json数据；glide负责加载图片；rxlifecycle负责管理view的生命周期；与网络请求共存亡；rxbinding结合databinding扩展UI事件；rxpermissions负责Android 6.0权限申请；material-dialogs一个漂亮的、流畅的、可定制的material design风格的对话框。
+2 全局操作：
+	全局的Activity堆栈式管理，在程序任何地方可以打开、结束指定的Activity，一键退出应用程序。
+	LoggingInterceptor全局拦截网络请求日志，打印Request和Response，格式化json、xml数据显示，方便与后台调试接口。
+	全局Cookie，支持SharedPreferences和内存两种管理模式。
+	通用的网络请求异常监听，根据不同的状态码或异常设置相应的message。
+	全局的异常捕获，程序发生异常时不会崩溃，可跳入异常界面重启应用。
+	全局事件回调，提供RxBus、Messenger两种回调方式。
+	全局任意位置一行代码实现文件下载进度监听（暂不支持多文件进度监听）。
+	全局点击事件防抖动处理，防止点击过快。
+3 操作解析：
+	3.1 文件结构：
+		一般文件结构为LoginActivty.java、LoginViewModel.java、activity_login.xml；
+		Activity的写法：
+			public class LoginActivity extends BaseActivity<ActivityLoginBinding, LoginViewModel>{},
+			其中ActivityLoginBinding文件为DataBinding自动生成的；
+		ViewModel的写法：
+			public class LoginViewModel extends BaseViewModel{}；
+		XML文件的写法：
+			<layout>
+				<data>
+					<variable
+						type="com.goldze.mvvmhabit.ui.login.LoginViewModel"
+						name="viewModel"
+					/>
+				</data>
+				.....
+
+			</layout>
+	3.2 数据的绑定：
+		3.2.1 绑定文字显示：
+			在ViewModel中定义变量：public ObservableField<String> userName = new ObservableField<>("");
+			在EditText标签中添加绑定：android:text="@={viewModel.userName}"；
+		3.2.2 绑定点击事件：
+			//传统方法绑定
+			在ViewModel中定义事件：
+			public View.OnClickListener loginOnClick = new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+						
+				}
+			};
+			在按钮标签中添加绑定：android:onClick="@{viewModel.loginOnClick}"
+
+			//自定义绑定（添加了防重复点击功能）
+			在ViewModel中定义事件：
+			public BindingCommand loginOnClickCommand = new BindingCommand(new BindingAction() {
+				@Override
+				public void call() {
+						
+				}
+			});
+			在按钮标签中添加绑定：binding:onClickCommand="@{viewModel.loginOnClickCommand}"
+		3.2.3 自定义ImageView图片加载
+			在ViewModel中定义图片URL：public String imgUrl = "http://img0.imgtn.bdimg.com/it/u=2183314203,562241301&fm=26&gp=0.jpg";
+			在ImageView标签中添加绑定：binding:url="@{viewModel.imgUrl}"；
+			如果需要一个默认加载中的图片，则可以添加：binding:placeholderRes="@{R.mipmap.ic_launcher_round}";
+			R文件需要在data标签中导入使用：<import type="com.goldze.mvvmhabit.R" />
+		
+		
+		
+		
+		
+			

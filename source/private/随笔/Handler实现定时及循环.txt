@@ -1,0 +1,31 @@
+1.声明
+	@SuppressLint("HandlerLeak")
+    private Handler handler = new Handler();
+2.调用
+	handler.removeCallbacksAndMessages(null);       //刷新上一次的请求
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showFragment(homeFragment);
+            }
+        },30*1000);
+		
+		
+------------------2019.2.21更新-----------------
+private Handler handler = new Handler();
+
+private void startRecognition(){
+    handler.postDelayed(task,1000);
+}
+private Runnable task = new Runnable() {
+    @Override
+    public void run() {
+        handler.postDelayed(this,1000);
+        SaveUtil.saveMatToBitmap(mRgba);
+        okPOST(host);
+    }
+};
+
+
+------------------2019.2.21更新2-----------------
+已删除

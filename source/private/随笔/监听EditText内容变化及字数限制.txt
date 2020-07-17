@@ -1,0 +1,73 @@
+reference from：https://blog.csdn.net/yuqing_1102/article/details/51968465
+
+需求：Edittext编辑框有字数限制，需要监听Edittext内容并在右下角显示剩余字数 
+思路：用TextWatcher监听变化
+
+1.布局文件 activity_main.xml：
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/et_content"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:hint="请输入不超过10的内容" 
+        android:gravity="top"/>
+
+    <TextView 
+        android:id="@+id/tv_left_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="10dp"/>
+
+</FrameLayout>
+
+2.代码：
+
+public class MainActivity extends Activity {
+    private static final int MAX_NUM = 10;
+    private EditText etContent;
+    private TextView tvLeftNum;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etContent = (EditText)findViewById(R.id.et_content);
+        tvLeftNum = (TextView)findViewById(R.id.tv_left_num);
+        tvLeftNum.setText(String.valueOf(MAX_NUM));
+
+        etContent.addTextChangedListener(watcher);
+    }
+
+    TextWatcher watcher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            //只要编辑框内容有变化就会调用该方法，s为编辑框变化后的内容
+            Log.i("onTextChanged", s.toString());
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            //编辑框内容变化之前会调用该方法，s为编辑框内容变化之前的内容
+            Log.i("beforeTextChanged", s.toString());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            //编辑框内容变化之后会调用该方法，s为编辑框内容变化后的内容
+            Log.i("afterTextChanged", s.toString());
+            if (s.length() > MAX_NUM) {
+                s.delete(MAX_NUM, s.length());
+            }
+            int num = MAX_NUM - s.length();
+            tvLeftNum.setText(String.valueOf(num));
+        }
+    };
+}

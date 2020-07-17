@@ -1,0 +1,263 @@
+https://www.jianshu.com/p/0cd258eecf60
+
+概述：
+	RxJava以观察者模式为骨架，有两种观察者模式
+	1.Observable(被观察者)/Observer(观察者) ---不支持背压
+	2.Flowable(被观察者)/Subscriber(观察者) ---支持背压
+
+0.在app的build.gradle中添加依赖
+	implementation 'io.reactivex.rxjava2:rxjava:2.2.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+1.Observable：
+	第一步：初始化Observable
+	第二部：初始化Observer
+	第三部：建立订阅关系
+	
+	private void funObservable(){
+        Observable.create(new ObservableOnSubscribe<Integer>() {    //第一步：初始化Observable
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                emitter.onNext(1);
+                emitter.onNext(2);
+                emitter.onNext(3);
+                emitter.onNext(4);
+                emitter.onComplete();
+            }
+
+        }).subscribe(new Observer<Integer>() {  //第三步：订阅
+
+            //第二部：初始化Observer
+            private int i;
+            private Disposable disposable;
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable = d;
+            }
+            //默认最先调用复写的onSubscribe
+
+            @Override
+            public void onNext(Integer value) {
+                Log.d(TAG,"对Next事件"+ value +"做出响应");
+                i++;
+                if (i == 2) {
+                    //Disposable可以做到切断的操作，让Observer观察者不再接收上游事件
+                    disposable.dispose();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG,"对Error事件做出响应");
+                Log.d(TAG,"onError: "+e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG,"对Complete事件做出响应");
+            }
+        });
+    }
+	
+2.线程调度：
+  (1).subscribeOn()指发射事件的线程，observerOn指订阅者接收事件的线程
+  (2)多次指定发射时间的线程只有第一次指定有效，即多次调用subscribeOn()只有第一次有效，后面的无效
+  (3)多次指定订阅者接收的线程是可以的，即每一次调用observerOn()都会切换一次线程
+  (4)Schedulers.io() 代表io操作的线程, 通常用于网络,读写文件等io密集型的操作
+	 Schedulers.computation() 代表CPU计算密集型的操作, 例如需要大量计算的操作
+	 Schedulers.newThread() 代表一个常规的新线程
+	 AndroidSchedulers.mainThread() 代表Android的主线程
+
+	private void funThread(){
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                Log.d(TAG,"Observable thread is : "+Thread.currentThread().getName());
+                emitter.onNext(1);
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "After observeOn(mainThread)，Current thread is " + Thread.currentThread().getName());
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "After observeOn(io)，Current thread is " + Thread.currentThread().getName());
+                    }
+                });
+    }
+		
+3.操作符 https://blog.csdn.net/carson_ho/article/details/79191327
+	(1)创建操作符:创建被观察者(Observable)&发送事件
+		1.基本创建：完整的创建被观察者对象
+		
+			create():完整创建一个被观察者对象(Observable)
+				Observable<Integer> observable = Observable.create(new ObservableOnSubscribe<Integer>() {
+					...
+				}
+			
+		2.快速创建&发送事件：快速的创建被观察者对象
+		
+			just():1.快速创建1个被观察者对象(Observable)
+				   2.发送事件的特点：直接发送传入的事件(最多只能发送10个参数)	
+				Observable.just(1, 2, 3,4).subscribe(new Observer<Integer>(){
+					...
+				}
+				
+			fromArray():1.快速创建1个被观察者对象(Observable)
+						2.发送事件的特点：直接发送传入的事件(可发送10个以上事件(数组形式))
+						3.遍历数组元素
+				Integer[] items = { 0, 1, 2, 3, 4 };
+				Observable.fromArray(items).subscribe(new Observer<Integer>(){
+					...
+				}
+			fromIterable():	1.快速创建1个被观察者对象(Observable)
+							2.发送事件的特点：直接发送传入的事件(可发送10个以上事件(集合形式))
+							3.遍历集合元素
+				List<Integer> list = new ArrayList<>();
+				list.add(1);
+				list.add(2);
+				list.add(3);	
+				Observable.fromIterable(list).subscribe(new Observer<Integer>(){
+					...
+				}
+				
+		3.延迟创建：定时操作和周期性操作
+		
+			defer():直到有观察者(Observer)订阅时，才动态创建被观察者对象(Observable)&发送数据
+				Observable<Integer> observable = Observable.defer(new Callable<ObservableSource<? extends Integer>>() {
+					@Override
+					public ObservableSource<? extends Integer> call() throws Exception {
+						return Observable.just(i);
+					}
+				});
+				observable.subscribe(new Observer<Integer>(){
+					...
+				}
+				
+			timer():1.快速创建1个被观察者对象(Observable)
+					2.发送事件的特点：延迟指定时间后，发送一个数值0(Long类型)
+					3.本质：延迟指定时间后，调用一次onNext(0)
+				Observable.timer(2, TimeUnit.SECONDS).subscribe(new Observer<Long>(){
+					...
+				}
+				
+			interval():1.快速创建1个被观察者对象(Observable)
+					   2.发送事件的特点：每隔指定时间就发送事件 
+					   3.发送的事件序列 = 从0开始、无限递增1的的整数序列
+				Observable.interval(3,1,TimeUnit.SECONDS).subscribe(new Observer<Long>(){
+						//延迟3秒后开始发送事件，每隔一秒产生1个数字（从0开始递增1，无限个）
+					...
+				}
+
+			intervalRange():可指定发送数量的interval()	
+				Observable.intervalRange(3,10,2, 1, TimeUnit.SECONDS).subscribe(new Observer<Long>(){
+						//从3开始，一共发送10个事件
+						//延迟2秒后开始发送事件，每隔一秒产生1个数字（从3开始递增1，10个）
+					...
+				}
+				
+			range():1.快速创建1个被观察者对象(Observable)
+					2.发送事件的特点：连续发送1个事件序列，可指定范围	
+					3.事件序列的起点若为负数则会抛出异常
+				Observable.range(3,10).subscribe(new Observer<Integer>(){
+						//从3开始发送，每次发送事件递增1，一共发送10个事件
+					...
+				}
+				
+	(2)变换操作符：对 整个事件序列 或 序列中的事件	进行加工处理(即变换)，时期转变成不同的 事件序列 或 事件	
+	
+		Map():对被观察者发送的每一个事件进行变换
+			Observable.create(new ObservableOnSubscribe<Integer>() {
+
+				// 1. 被观察者发送事件 = 参数为整型 = 1、2、3
+				@Override
+				public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+					emitter.onNext(1);
+					emitter.onNext(2);
+					emitter.onNext(3);
+
+				}
+				// 2. 使用Map变换操作符中的Function函数对被观察者发送的事件进行统一变换：整型变换成字符串类型
+			}).map(new Function<Integer, String>() {
+				@Override
+				public String apply(Integer integer) throws Exception {
+					return "使用 Map变换操作符 将事件" + integer +"的参数从 整型"+integer + " 变换成 字符串类型" + integer ;
+				}
+			}).subscribe(new Consumer<String>() {
+
+				// 3. 观察者接收事件时，是接收到变换后的事件 = 字符串类型
+				@Override
+				public void accept(String s) throws Exception {
+					Log.d(TAG, s);
+				}
+			});
+			
+		FlatMap():1.对被观察者发送的整个事件序列进行变换，无序	
+				  2.原理：将被观察者发送的事件序列进行 拆分 & 单独转换，再合并成一个新的事件序列，最后再进行发送
+			Observable.create(new ObservableOnSubscribe<Integer>() {
+				@Override
+				public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+					emitter.onNext(1);
+					emitter.onNext(2);
+					emitter.onNext(3);
+				}
+
+				// 采用flatMap（）变换操作符
+			}).flatMap(new Function<Integer, ObservableSource<String>>() {
+				@Override
+				public ObservableSource<String> apply(Integer integer) throws Exception {
+					final List<String> list = new ArrayList<>();
+					for (int i = 0; i < 3; i++) {
+						list.add("我是事件 " + integer + "拆分后的子事件" + i);
+						// 通过flatMap中将被观察者生产的事件序列先进行拆分，再将每个事件转换为一个新的发送三个String事件
+						// 最终合并，再发送给被观察者
+					}
+					return Observable.fromIterable(list);
+				}
+			}).subscribe(new Consumer<String>() {
+				@Override
+				public void accept(String s) throws Exception {
+					Log.d(TAG, s);
+				}
+			});
+			
+		ConcatMap:1.对被观察者发送的整个事件序列进行变换，有序
+				  2.写法与FlatMap完全一样	
+				  
+		Buffer():定期从被观察者(Obervable)需要发送的事件中 获取一定数量的事件 & 放到缓存区中，最终发送
+			Observable.just(1, 2, 3, 4, 5)
+					.buffer(3, 1) // 设置缓存区大小 & 步长
+										// 缓存区大小 = 每次从被观察者中获取的事件数量
+										// 步长 = 每次获取新事件的数量
+					.subscribe(new Observer<List<Integer>>() {
+						@Override
+						public void onSubscribe(Disposable d) {
+
+						}
+						@Override
+						public void onNext(List<Integer> stringList) {
+							//
+							Log.d(TAG, " 缓存区里的事件数量 = " +  stringList.size());
+							for (Integer value : stringList) {
+								Log.d(TAG, " 事件 = " + value);
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							Log.d(TAG, "对Error事件作出响应" );
+						}
+
+						@Override
+						public void onComplete() {
+							Log.d(TAG, "对Complete事件作出响应");
+						}
+					});	

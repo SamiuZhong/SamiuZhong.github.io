@@ -1,0 +1,9 @@
+在接收EventBus的地方设置优先级priority，默认为0，数值越高优先级越高
+@Subscribe(threadMode = ThreadMode.POSTING,priority = 100)
+public void onEvent(Stirng event){
+    // 处理事件
+    ...
+    // 处理完事件，不希望该事件继续传递，拦截
+    EventBus.getDefault().cancelEventDelivery(event);
+}
+注：指定MAIN线程会出错，ThreadMode.POSTING则可行

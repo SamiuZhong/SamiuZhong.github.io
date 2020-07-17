@@ -1,0 +1,65 @@
+FragmentPagerAdapter和FragmentStatePagerAdapter的区别：
+1.使用 FragmentPagerAdapter 时，ViewPager 中的所有 Fragment 实例常驻内存，当 Fragment 变得不可见时仅仅是视图结构的销毁，即调用了 onDestroyView 方法。由于 FragmentPagerAdapter 内存消耗较大，所以适合少量静态页面的场景。
+2.使用 FragmentStatePagerAdapter 时，当 Fragment 变得不可见，不仅视图层次销毁，实例也被销毁，即调用了 onDestroyView 和 onDestroy 方法，仅仅保存 Fragment 状态。相比而言， FragmentStatePagerAdapter 内存占用较小，所以适合大量动态页面，比如我们常见的新闻列表类应用。
+
+实现：
+0.要加载Fragment的Activity必须实现每一个要加载的Fragment的Listener方法
+public class MainActivity extends AppCompatActivity
+    implements OneFragment.OnFragmentInteractionListener,
+        TwoFragment.OnFragmentInteractionListener,
+        ThreeFragment.OnFragmentInteractionListener {}
+		
+1.在布局文件中加入ViewPager部件
+	<android.support.v4.view.ViewPager
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+		
+2.新建类MyFragmentPagerAdapter继承至FragmentPagerAdapter
+public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+    private FragmentManager fragmentManager;
+    private List<Fragment> fragmentList;
+
+    public MyFragmentPagerAdapter(FragmentManager fragmentManager,List<Fragment> fragmentList) {
+        super(fragmentManager);
+        this.fragmentManager = fragmentManager;
+        this.fragmentList = fragmentList;
+    }
+
+    @Override
+    public Fragment getItem(int i) {
+        return fragmentList.get(i);
+    }
+
+    @Override
+    public int getCount() {
+        return fragmentList.size();
+    }
+}
+
+3.Activity中调用
+	private ViewPager viewPager;
+	private List<Fragment> fragmentList;
+    private OneFragment fragmentOne;
+    private TwoFragment fragmentTwo;
+    private ThreeFragment fragmentThree;
+    private FragmentManager fragmentManager;
+    private MyFragmentPagerAdapter fragmentPagerAdapter;
+	
+	private void initViewPager(){
+		fragmentList = new ArrayList<Fragment>();
+        fragmentOne = new OneFragment();
+        fragmentTwo = new TwoFragment();
+        fragmentThree = new ThreeFragment();
+        fragmentList.add(fragmentOne);
+        fragmentList.add(fragmentTwo);
+        fragmentList.add(fragmentThree);
+
+        fragmentManager = getSupportFragmentManager();
+        fragmentPagerAdapter = new MyFragmentPagerAdapter(fragmentManager,fragmentList);
+
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(fragmentPagerAdapter);
+        viewPager.setCurrentItem(0);        //设置当前显示第一页
+	}

@@ -1,0 +1,110 @@
+数据格式：
+ {
+    "code": 200,
+    "msg": "获取成功！",
+    "data": {
+        "123345": {
+            "studentNames":"小李",
+            "students": [
+                {
+                    "id": "129abc37c054442e8335aa87c50d05f8",
+                    "name": "小李",
+                    "photo": ""
+                }
+            ],
+            "parent": [
+                {
+                    "id": "71421f81810743389996fba0ba5d5e38",
+                    "name": "aa",
+                    "relation": "父亲",
+                    "photo": ""
+                },
+                {
+                    "id": "71421f81810743389996fba0ba5d5e38",
+                    "name": "555",
+                    "relation": "母亲",
+                    "photo": ""
+                }
+            ]
+        },
+        "0790620567": {
+            "studentNames":"李珊珊",
+            "students": [
+                {
+                    "id": "42a89ff7bba54c9bbb6e365dbf830d57",
+                    "name": "李珊珊",
+                    "photo": "http://xxx.xxx.xxx"
+                }
+            ],
+            "parent": [
+                {
+                    "id": "8c0ee14ba3ba45c1a6911ba0de543865",
+                    "name": "珊珊妈",
+                    "relation": "母亲",
+                    "photo": "http://xxx.xxx.xxx"
+                },
+                {
+                    "id": "b3e3064d4fe44fc6baf3f8015f2b2627",
+                    "name": "老红",
+                    "relation": "外婆",
+                    "photo": "http://xxx.xxx.xxx"
+                },
+                {
+                    "id": "d6964967737d45c2a7c9bf85103d34b6",
+                    "name": "小样儿",
+                    "relation": "父亲",
+                    "photo": "http://xxx.xxx.xxx"
+                },
+                {
+                    "id": "e4573cfe717d45719ab51c4b7d44f50a",
+                    "name": "老王",
+                    "relation": "外公",
+                    "photo": "http://xxx.xxx.xxx"
+                }
+            ]
+        }
+    }
+  }
+  {
+    "code": 403,
+    "msg": '设备号获取失败！'
+  }
+  {
+    "code": 403,
+    "msg": '设备号不存在！'
+  }
+---------------------------------------------------------
+解析：
+
+private void parseJSONWithJSONObject(String jsonData){
+        try {
+            JSONObject jsonObject = new JSONObject(jsonData);
+            String code = jsonObject.getString("code");
+            String msg = jsonObject.getString("msg");
+
+            //遍历对象
+            JSONObject data = jsonObject.getJSONObject("data");
+            Iterator <String> iterator = data.keys();
+            String cardNo,name,info;
+            while (iterator.hasNext()){
+                cardNo = iterator.next();
+                info = data.getString(cardNo);
+
+                JSONObject cardNoObj = data.getJSONObject(cardNo);
+                name = cardNoObj.getString("studentNames");
+
+                addData(cardNo,name,info);
+            }
+
+            //遍历数组
+            /*JSONArray jsonArray = new JSONArray(jsonData);
+            for(int i=0;i<jsonArray.length();i++){
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                String id = jsonObject1.getString("id");
+                String name = jsonObject1.getString("name");
+            }*/
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }

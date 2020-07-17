@@ -1,0 +1,36 @@
+	/**
+     * 请求相机权限
+     */
+    private void requestCameraPermissions() {
+        //请求打开相机权限
+        RxPermissions rxPermissions = new RxPermissions(DemoActivity.this);
+        rxPermissions.request(Manifest.permission.CAMERA)
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) throws Exception {
+                        if (aBoolean) {
+                            ToastUtils.showShort("相机权限已经打开，直接跳入相机");
+                        } else {
+                            ToastUtils.showShort("权限被拒绝");
+                        }
+                    }
+                });
+    }
+	
+	/**
+     * 请求相关权限
+     */
+    @SuppressLint("CheckResult")
+    private fun requestPermission() {
+        RxPermissions(this).request(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        ).subscribe { aBoolean ->
+            run {
+                if (aBoolean)
+                    takeMatisse(this, MAX_PIC_COUNT, REQUEST_CODE)
+                else
+                    ToastUtils.showShort(R.string.no_permission)
+            }
+        }
+    }

@@ -1,0 +1,30 @@
+1.再Client类里面添加
+    public static Map<String, String> headers = new HashMap<>();      //默认请求头，固定发送Token等
+
+	okHttpClient = new OkHttpClient.Builder()
+                ...
+				.addInterceptor(new BaseInterceptor(headers))
+				...
+
+2.写一个BaseInterceptor类	
+	public class BaseInterceptor implements Interceptor {
+		private Map<String, String> headers;
+
+		public BaseInterceptor(Map<String, String> headers) {
+			this.headers = headers;
+		}
+
+		@Override
+		public Response intercept(Chain chain) throws IOException {
+			Request.Builder builder = chain.request()
+					.newBuilder();
+			if (headers != null && headers.size() > 0) {
+				Set<String> keys = headers.keySet();
+				for (String headerKey : keys) {
+					builder.addHeader(headerKey, headers.get(headerKey)).build();
+				}
+			}
+			//请求信息
+			return chain.proceed(builder.build());
+		}
+	}			

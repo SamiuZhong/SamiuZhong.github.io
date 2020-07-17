@@ -1,0 +1,31 @@
+/** 
+ * 禁止Edittext弹出软件盘，光标依然正常显示。 
+ */
+public void disableShowSoftInput(){
+    if(android.os.Build.VERSION.SDK_INT <= 10) {
+        editTest.setInputType(InputType.TYPE_NULL);
+    }else{
+        Class<EditText>cls=EditText.class;
+        Method method;
+    try{
+        method = cls.getMethod("setShowSoftInputOnFocus", boolean.class);
+        method.setAccessible(true);
+        method.invoke(editTest, false);
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+    try{
+        method=cls.getMethod("setSoftInputShownOnFocus",boolean.class);
+        method.setAccessible(true);
+        method.invoke(editTest, false);
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+    }
+}
+
+https://blog.csdn.net/ljw124213/article/details/77164190
+
+----------------------2019.2.20更新---------------------
+写到onCreate里面
+getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);// 设置默认键盘不弹出

@@ -1,0 +1,122 @@
+https://juejin.im/post/5e4cdaa3e51d4526e807e96e
+-----------------------Java实现回调-----------------------
+1.定义接口
+	public interface RecodeCallback{
+		void recode();
+	}
+	
+2.声明接口实例
+	private void RecodeCallback callback;
+	
+3.实例化接口的方法
+	private void setRecodeCallback(RecodeCallback callback){
+		this.callback = callback;
+	}
+
+4.回调
+	callback.recode();
+	
+5.接收回调（另一个地方了）
+	xxx.setRecodeCallback(new Xxx.RecodeCallback(){
+		@Override
+		public void recode() {
+			...
+		}
+	});
+
+-----------------------Kotlin语言实现Java风格的回调-----------------------
+1.定义接口
+	interface RecodeCallback{
+		fun recode()
+	}
+	
+2.声明接口实例
+	private void callback: RecodeCallback? = null
+	//接口也可以延迟加载
+	lateinit var callback: GetCodeCallback
+
+3.实例化接口的方法
+	fun setRecodeCallback(callback: RecodeCallback){
+		this.callback = callback
+	}
+	
+4.回调
+	callback?.recode()	
+	//延迟加载的话不用判空
+	callback.recode()	
+	
+5.接收回调（另一个地方了）	
+	xxx.setRecodeCallback(object: GetCodeCallback{
+		override fun recode(){
+			...
+		}
+	})
+
+-----------------------Kotlin风格的回调-----------------------
+class Coder(){
+
+    private lateinit var onFinish: (String) -> Unit 
+
+    fun setSweepFloorListener(onFinish:(String) -> Unit){
+        this.onFinish = onFinish    
+    }
+
+    private fun sweepFloor(){
+        //执行回调方法
+        onFinish("扫完啦！")
+    }
+}
+
+
+class Boss(){
+    
+    private coder = Coder()
+
+    private fun test(){
+        coder.setSweepFloorListener{ str -> doSomething(str) }    
+    }
+}
+
+---------------------------------以下抛弃--------------------------------
+背景：在某种情况下，需要在Adapter里面调用Activity的函数（即当xx情况时，需要Adapter控制Activity做什么事）
+
+1.在Adapter里面写 回调接口
+	/**
+     * 获取 CountItem数量 的回调
+     */ 
+    public interface ContentCountCallback {
+        void getContentCount(int count);
+    }
+
+2.在Adapter里面 声明 接口实例	
+	private ContentCountCallback callback;
+	
+3.在Adapter里面写一个 为接口实例化 的方法
+	public void setCountCallback(ContentCountCallback callback) {
+        this.callback = callback;
+    }
+	
+4.在Adapter 想要 Activity做事情（即“那种情况”）的时候，调用 回调接口 里面的方法	
+	callback.getContentCount(photos.size());
+	
+5.在Activity里面恰当的地方，调用Adapter里面实例化 接口的方法	
+	adapter.setCountCallback(new BlacklistAddAdapter.ContentCountCallback() {
+		@Override
+		public void getContentCount(int count) {
+			
+		}
+	});
+  也可以在adapter创建的时候就实例化 接口的方法
+	adapter = new NewHomeShopListAdapter(getActivity(), new NewCommonStickyHeadAdaptert.IStoreActionCallback() {}
+	
+----------------------------2019.11.28---------------------------------------
+1.在viewmodel里面定义一个回调接口
+	public interface GetCodeCallback{
+		void getCode();
+	}
+2.activity实现这个接口	
+3.viewmodel里面需要触发回调的地方调用
+	Activity activity = AppManager.getAppManager().getActivity(InputCodeActivity.class);
+	if(activity instanceof InputCodeActivity){
+		((InputCodeActivity) activity).getCode();
+	}

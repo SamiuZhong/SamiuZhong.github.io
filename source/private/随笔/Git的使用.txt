@@ -1,0 +1,118 @@
+git init
+git status  // 查看当前工程工作区文件状态
+git add * 或 git add . 或 git add 文件1 文件2 文件3
+git commit -m "注释语句"
+git remote add origin 项目连接
+git push -u origin master
+git branch -a     //查看远程分支
+git branck        //查看本地分支
+git checkout  分支名 //切换分支
+
+-------重新添加远程配置-------
+git remote rm origin
+git remote add origin 项目连接
+git push -u origin master
+
+git -h
+git --help
+
+--------官方commit----------
+Command line instructions
+
+Git global setup
+git config --global user.name "钟培"
+git config --global user.email "zhongp@huayuint.com"
+
+Create a new repository
+git clone git@gitlab.huayuint.com:zhongp/Camera_demo.git
+cd Camera_demo
+touch README.md
+git add README.md
+git commit -m "add README"
+git push -u origin master
+
+Existing folder
+cd existing_folder
+git init
+git remote add origin git@gitlab.huayuint.com:zhongp/Camera_demo.git
+git add .
+git commit
+git push -u origin master
+
+Existing Git repository
+cd existing_repo
+git remote add origin git@gitlab.huayuint.com:zhongp/Camera_demo.git
+git push -u origin --all
+git push -u origin --tags是
+
+--------------------2018.12.25更新------------------------
+1.在GitLab创建项目，编写README;
+2.在文件夹执行：
+	git clone git@gitlab.huayuint.com:zhongp/xxx		//这一步为拉取服务器数据到本地
+3.可以编写改动程序了
+4.改动程序之后，往Git端同步，执行命令：
+	git status					//查看当前工程工作区文件状态
+	git add *					//添加文件改动
+	git commit -m "注释"		//提交注释
+	git push 					//往上同步
+	
+--------------------2018.12.28更新------------------------
+Git分支解析(貌似失效)：
+	git branch					//查看分支
+	git branch branch_name		//创建分支，名为branch_name
+	git checkout branch_name 	//切换到branch_name分支上(这一步已经更改代码)
+	
+	git checkout master
+	git merge branch_name 		//把目标分支(branch_name)的代码合并到当前分支(master)上
+	
+	git branch -D branch_name	//删除分支branch_name
+	
+Git简易指南：
+	git init					//创建新仓库
+	git clone					//复制文件到本地
+	git add *					//添加改动
+	git commit -m "注释语句"	//提交改动
+	git push origin master		//推送改动到master分支
+	
+	git checkout -b feature_x	//创建一个叫做“feature_x”的分支，并切换过去
+	git checkout master			//切换回主分支
+	git branch -d feature_x		//删除feature_x分支
+	git push origin feature_x	//把分支feature推送到远端仓库,不然该分支就是不为他人所见的
+	
+	git pull					//更新本地仓库至最新改动
+	git merge feature_x			//将feature_x分支上的修改合并到当前分支
+	
+--------------------2019.1.16更新------------------------
+拉取远程分支到本地
+	git branch 				//查看本地分支
+	git branch -r 			//查看远程分支
+	git branch -a			//查看所有远程和本地分支
+	
+	git checkout -b 本地分支名x origin/远程分支名x
+			//使用该方式会在本地新建分支x，并自动切换到该本地分支x
+			//采用此种方法建立的本地分支会和远程分支建立映射关系
+			
+	git fetch origin 远程分支名x:本地分支名x
+			//使用该方式会在本地新建分支x，但是不会自动切换到该本地分支x，需要手动checkout
+			//采用此种方法建立的本地分支不会和远程分支建立映射关系
+			
+	git checkout --track origin/远程分支名x
+			//拉取远程分支到本地，并创建一个同名的分支
+			
+--------------------2019.1.23更新------------------------
+针对问题your local changes to the following files would be overwritten by checkout的解决方案
+1.如果想保留当前更改
+	git stash
+	git pull origin master
+	git stash pop
+2.如果不想保留
+	git reset --hard
+	git pull origin master
+	
+--------------------2019.1.28更新------------------------
+推送本地新分支到远程
+git push origin local_branch:remote_branch
+
+这个操作，local_branch必须为你本地存在的分支，remote_branch为远程分支，如果remote_branch不存在则会自动创建分支。
+
+类似，git push origin :remote_branch，local_branch留空的话则是删除远程remote_branch分支。

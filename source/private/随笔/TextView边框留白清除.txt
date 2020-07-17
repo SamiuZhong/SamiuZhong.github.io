@@ -1,0 +1,19 @@
+ textView.setIncludeFontPadding(false);
+ 
+ 全局替换的话需要在style文件里面声明，同《更换字体库》一个方法
+ 
+ 在style.xml文件中自定义一个主题，让重写后的application使用这个主题；同时别忘了在清单文件中声明这个application。
+  <style name="theme_fullScreen" parent="AppTheme">
+		<!--更换字体库-->
+        <item name="android:typeface">monospace</item>
+		<!--清除字体四周的留白-->
+		<item name="android:includeFontPadding">false</item>
+ </style>
+
+ <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/theme_fullScreen">

@@ -1,0 +1,38 @@
+https://www.jianshu.com/p/72eeaded8913
+http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0726/8268.html
+
+简述：主要是通过修改Room的Dao文件里面的查询语句来实现对RxJava的支持，
+	  并通过RxJava的Maybe，Single和Flowable对象来执行异步查询
+
+0.添加相关依赖
+	implementation "androidx.room:room-runtime:2.1.0-alpha04"
+    annotationProcessor "androidx.room:room-compiler:2.1.0-alpha04"
+    implementation "android.arch.persistence.room:rxjava2:2.1.0-alpha04"
+    annotationProcessor "android.arch.core:core-testing:2.1.0-alpha04"
+	implementation 'io.reactivex.rxjava2:rxjava:2.2.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+	
+1.对于查询语句的修改
+	@Query(“SELECT * FROM Users WHERE id = :userId”)
+	User getUserById(String userId);
+	
+	(1)Maybe:
+		@Query(“SELECT * FROM Users WHERE id = :userId”)
+		Maybe<User> getUserById(String userId);
+		1.当数据库中没有user，查询没有返回行时，Maybe调用complete
+		2.当数据库中有一个user时，Maybe将触发onSuccess并调用complete
+		3.如果在Maybe的complete调用之后user被更新，什么也不会发生
+		
+	(2)Single:	
+		@Query(“SELECT * FROM Users WHERE id = :userId”)
+		Single<User> getUserById(String userId);
+		1.当数据库中没有user，查询没有返回行时，Single触发onError(EmptyResultSetException.class)
+		2.当数据库中有一个user时， Single触发onSuccess
+		3.如果在Single.onComplete调用之后user被更新，什么也不会发生
+		
+	(3)Flowable	
+		@Query(“SELECT * FROM Users WHERE id = :userId”)
+		Flowable<User> getUserById(String userId);
+		1.当数据库中没有user，查询没有返回行时，Flowable不会发射，也不会触发onNext, 或者onError
+		2.当数据库中有一个user时，Flowable会触发onNext
+		3.每当user更新之后，Flowable将自动发射，这样你就可以根据最新的数据来更新UI

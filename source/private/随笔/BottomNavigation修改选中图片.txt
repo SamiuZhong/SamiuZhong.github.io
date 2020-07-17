@@ -1,0 +1,102 @@
+注意：这里有问题，Fragment会重复添加新实例，已弃用
+原理：拦截NavigationView的点击监听，重写item的点击事件即可
+注意：获取点击事件后首先要集中设置未选中状态的icon，然后分别设置选中状态的的icon，最后还要绑定fragment的联动
+
+1.在navigation的xml文件里面添加跳转逻辑
+	<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+		 xmlns:app="http://schemas.android.com/apk/res-auto"
+		 xmlns:tools="http://schemas.android.com/tools"
+		 android:id="@+id/mobile_navigation"
+		 app:startDestination="@+id/navigation_work">
+		 
+		 <fragment
+			 android:id="@+id/navigation_work"
+			 android:name="com.klilala.main.ui.fragment.WorkFragment"
+			 tools:layout="@layout/fragment_work" >
+		 </fragment>
+		 <fragment
+			 android:id="@+id/navigation_study"
+			 android:name="com.klilala.main.ui.fragment.StudyFragment"
+			 tools:layout="@layout/fragment_study" />
+		 <fragment
+			 android:id="@+id/navigation_platform"
+			 android:name="com.klilala.main.ui.fragment.PlatformFragment"
+			 tools:layout="@layout/fragment_platform" />
+		 <fragment
+			 android:id="@+id/navigation_address"
+			 android:name="com.klilala.main.ui.fragment.AddressFragment"
+			 tools:layout="@layout/fragment_address" />
+		 <fragment
+			 android:id="@+id/navigation_mine"
+			 android:name="com.klilala.main.ui.fragment.MineFragment"
+			 tools:layout="@layout/fragment_mine" />
+			 
+		 <action
+			 android:id="@+id/to_work"
+			 app:destination="@id/navigation_work"/>
+		 <action
+			 android:id="@+id/to_study"
+			 app:destination="@id/navigation_study"/>
+		 <action
+			 android:id="@+id/to_platform"
+			 app:destination="@id/navigation_platform"/>
+		 <action
+			 android:id="@+id/to_address"
+			 app:destination="@id/navigation_address"/>
+		 <action
+			 android:id="@+id/to_mine"
+			 app:destination="@id/navigation_mine"/>
+	</navigation>
+	
+2.activity中实现navigation的拦截	
+	/**
+	 * 设置导航栏
+	 */
+	 private fun setNavigation(){
+		 val navController = findNavController(R.id.nav_host_fragment)
+		 //删除默认的选中效果
+		 navigation_view.itemIconTintList = null
+		 //接管BottomNavigationView的点击事件
+		 navigation_view.setOnNavigationItemSelectedListener(object : BottomNavigationView.OnNavigationItemSelectedListener {
+		 override fun onNavigationItemSelected(item: MenuItem): Boolean {
+				 //未选中状态加载默认icon
+				 refreshIcon()
+				 when (item.itemId) {
+					 R.id.navigation_work -> {
+						 item.setIcon(R.drawable.group_10_3x)
+						 navController.navigate(R.id.to_work)
+						 return true
+					 }
+					 R.id.navigation_study -> {
+						 item.setIcon(R.drawable.group_11_3x)
+						 navController.navigate(R.id.to_study)
+						 return true
+					 }
+					 R.id.navigation_platform -> {
+						 item.setIcon(R.drawable.group_12_3x)
+						 navController.navigate(R.id.to_platform)
+						 return true
+					 }
+					 R.id.navigation_address -> {
+						 item.icon = getDrawable(R.drawable.group_13_3x)
+						 navController.navigate(R.id.to_address)
+						 return true
+					 }
+					 R.id.navigation_mine -> {
+						 item.icon = getDrawable(R.drawable.group_14_3x)
+						 navController.navigate(R.id.to_mine)
+						 return true
+					 }
+				 }
+				 return false
+			 }
+		 })
+	 }
+	 
+	 private fun refreshIcon(){
+		 navigation_view.menu[0].setIcon(R.drawable.group_2_3x)
+		 navigation_view.menu[1].setIcon(R.drawable.group_4_3x)
+		 navigation_view.menu[2].setIcon(R.drawable.group_5_3x)
+		 navigation_view.menu[3].setIcon(R.drawable.group_8_3x)
+		 navigation_view.menu[4].setIcon(R.drawable.group_10_3x_1)
+	 }

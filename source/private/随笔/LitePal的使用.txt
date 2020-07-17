@@ -1,0 +1,14 @@
+1.app下的build.gradle文件里面添加依赖
+	dependencies {
+		implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+	}
+2.配置liteoal.xml文件：Project目录下右击app/src/main-->New-->Directory-->名字为assets,再在assets目录下New-->XML-->App Actions XML File-->litepal，然后编辑其内容：
+
+<?xml version ="1.0" encoding ="utf-8"?>
+<litepal>
+    <dbname value="BookStore"></dbname>
+    <version value="1"></version>
+    <list>
+    </list>
+</litepal>
+  其中<dbname>用于指定数据库名,<version>用于指定数据库版本号,<list>用于指定所有的映射模型

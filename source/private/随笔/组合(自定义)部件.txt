@@ -1,0 +1,206 @@
+1.新建一个XML布局，写入想要的组合部件布局;
+  <?xml version="1.0" encoding="utf-8"?>
+  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/layout_member"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+      <ImageView
+          android:id="@+id/imageView2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"
+          android:src="@mipmap/u235" />
+
+      <TextView
+          android:id="@+id/textView8"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/im ageView2"
+          android:layout_centerInParent="true"
+          android:text="Name"
+          android:textSize="20dp" />
+  </RelativeLayout>
+2.自定义属性的声明：在工程下的res/values目录下，新建attrs.xml文件，声明想要的属性
+  <?xml version="1.0" encoding="utf-8"?>
+  <resources>
+      <declare-styleable name="MemberView">
+          <attr name="member_name" format="string"/>
+          <attr name="member_photo" format="reference"/>
+      </declare-styleable>
+  </resources>
+  ---------所有的format类型---------
+  reference     引用
+  color         颜色
+  boolean       布尔值
+  dimension     尺寸值
+  float         浮点值
+  integer       整型值
+  string        字符串
+  enum          枚举值
+3.组合控件代码的实现
+public class MemberView extends RelativeLayout {		
+						//布局使用的是RelativeLayout所以这里实现RelativeLayout
+    private TextView textView;
+    private RelativeLayout layout;
+    private String mName = "Name";
+
+    public MemberView(Context context) {
+        super(context);
+        initView(context);
+    }
+
+    public MemberView(Context context, AttributeSet attrs){
+        super(context);
+        initTypeArray(context,attrs);
+        initView(context);
+    }
+
+    private void initTypeArray(Context context,AttributeSet attrs){
+        TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.MemberView);
+        mName = typedArray.getString(R.styleable.MemberView_member_name);
+        typedArray.recycle();   //及时回收资源
+    }
+
+    private void initView(Context context){
+        LayoutInflater.from(context).inflate(R.layout.member,this,true);
+        textView = findViewById(R.id.textView8);
+        layout = findViewById(R.id.layout_member);
+    }
+
+    public void setName(String str){
+        if(!TextUtils.isEmpty(str)){
+            textView.setText(str);
+        }
+    }
+}
+4.在欲加载组合部件的Activity布局文件中加载出来即可
+	<com.example.signindemo.MemberView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:member_name="组合控件">
+    </com.example.signindemo.MemberView>
+
+	
+--------------------------2019.1.17更新--------------------------
+组合两个RecyclerView
+1.内容Item类
+public class ScheduleItem {
+
+    private String name;
+
+    public ScheduleItem(String name){
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+2.RecyclerAdapter类
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+
+    private List<ScheduleItem> itemList;
+
+    static class ViewHolder extends RecyclerView.ViewHolder{
+        TextView textView;
+        public ViewHolder(View view){
+            super(view);
+            textView = view.findViewById(R.id.gridRecyclerTV);
+        }
+    }
+
+    public RecyclerAdapter(List<ScheduleItem> itemList){
+        this.itemList = itemList;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent,int viewType){
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item,parent,false);
+        ViewHolder holder = new ViewHolder(view);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder,int position){
+        ScheduleItem item = itemList.get(position);
+        holder.textView.setText(item.getName());
+    }
+
+    @Override
+    public int getItemCount(){
+        return itemList.size();
+    }
+}
+
+3.组合控件类
+public class CombineRecyclerView extends RelativeLayout {
+
+    private RecyclerView recyclerViewUp,recyclerViewDown;
+    private RecyclerAdapter recyclerAdapter;
+    private GridLayoutManager gridLayoutManager1;
+    private GridLayoutManager gridLayoutManager2;
+
+    public CombineRecyclerView(Context context) {
+        this(context,null);
+    }
+
+    public CombineRecyclerView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView(context);
+    }
+
+    private void initView(Context context){
+        LayoutInflater.from(context).inflate(R.layout.combine_recycle_layout,this,true);
+        recyclerViewUp = findViewById(R.id.recyclerViewUp);
+        recyclerViewDown = findViewById(R.id.recyclerViewDown);
+        gridLayoutManager1 = new GridLayoutManager(context,6);
+        gridLayoutManager2 = new GridLayoutManager(context,6);
+    }
+
+    public void setDateItemList(List<ScheduleItem> dateItemList){
+        recyclerViewUp.setLayoutManager(gridLayoutManager1);
+        recyclerAdapter = new RecyclerAdapter(dateItemList);
+        recyclerViewUp.setAdapter(recyclerAdapter);
+    }
+
+    public void setItemList(List<ScheduleItem> itemList){
+        recyclerViewDown.setLayoutManager(gridLayoutManager2);
+        recyclerAdapter = new RecyclerAdapter(itemList);
+        recyclerViewDown.setAdapter(recyclerAdapter);
+    }
+}
+
+4.Activity中调用
+	private CombineRecyclerView combineView;
+	combineView = findViewById(R.id.combineView);
+	
+	然后通过自定义的set方法传入数据
+	combineView.setDateItemList(...);
+    combineView.setItemList(... );
+	
+总结：重点是第3部组合控件类的编写，其中：
+1.必须要重写带两个参数(Context context,AttributeSet attrs)的构造方法，第一行super方法,第二行调用initView方法，必须;
+2.initView(Context context)方法中第一行为LayoutInflate加载布局，后面为对象的声明；
+3.然后可以自定义各种set方法来接收数据设置内容；
+
+
+-------------------------2019.1.18更新-------------------------
+要更改组合部件中的RecyclerView中的元素的属性并刷新显示：
+1.在元素item类中添加相关属性变量，并添加get、set方法
+2.在RecyclerAdapter中添加refreshxxx()方法，传入一个RecyclerView的内部元素item的对象，通过this关键字为RecyclerAdapter的全局对象item赋值，然后调用系统的notifyDataChanged()方法通知视图进行更改；
+3.在组合部件类CombineRecyclerView的类中添加setxxx()方法，传入一个RecyclerView的内部元素item的对象，然后调用RecyclerAdapter中的refreshxxx()方法
+4.在Activity中创建RecyclerView的内部元素item的新对象并实例化，
+  然后调用item的setxxx()方法传入需改改动的属性，
+  最后调用组合部件combineView的setxxx()方法并传入对象；

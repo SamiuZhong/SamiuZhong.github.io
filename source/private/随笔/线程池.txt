@@ -1,0 +1,77 @@
+1.新建线程池管理类
+public class HYThreadPoolManager {
+
+    private static ThreadPoolExecutor threadPoolExecutor;
+
+    public static class HYTPMHolder {
+        private static HYThreadPoolManager instance = new HYThreadPoolManager();
+    }
+
+    public static HYThreadPoolManager getInstance(){
+        return HYTPMHolder.instance;
+    }
+
+    public HYThreadPoolManager(){
+        getThreadPoolExecutor();
+    }
+
+    public static ThreadPoolExecutor getThreadPoolExecutor() {
+        if (threadPoolExecutor == null) {
+            threadPoolExecutor = new ThreadPoolExecutor(3, 5, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(100));
+        }
+        return threadPoolExecutor;
+    }
+
+    //1 ThreadPoolExecutor 创建基本线程池
+    public void execRunnable(Runnable runnable){
+        threadPoolExecutor.execute(runnable);
+    }
+
+    public void release(){
+        threadPoolExecutor.shutdown();
+    }
+
+2.在需要调用的Activity中写入调用方法
+	private void startTiming(){
+        poolManager.getInstance().execRunnable(startTimingRunnable());
+    }
+
+    private Runnable startTimingRunnable(){
+        return new Runnable() {
+            @Override
+            public void run() {
+                count = 0;
+                Log.d("sleep","Count is "+count);
+                while (true) {
+                    try {
+                        Thread.sleep(5 * 1000);
+                        count += 5;
+                        Log.d("sleep","Count is "+count);
+                        if (count >= 20) {
+                            showFragment(homeFragment);
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+    }
+	
+3.在相应位置执行startTiming()方法调用。
+
+
+---------------------------2019.1.15更新---------------------------
+线程池原理：
+启动-->执行execute
+1.若线程池中的线程数未达到核心线程数，则创建核心线程处理任务；
+2.若线程数大于等于核心线程数，则将任务加入任务队列，线程池中的空闲线程会不断地从任务队列中取出任务进行执行；
+3.若任务队列满了，并且线程数没有达到最大线程数，则创建非核心线程去处理任务；
+4.若线程数超过了最大线程数，则执行饱和策略。
+
+线程池的种类：
+1.FixedThreadPool--可重用固定线程数的线程池，即只有固定数量的核心线程，没有非核心线程；
+2.ChachedThreadPool--根据需要创建线程的线程池，即没有核心线程，非核心线程可以按需创建，数量无上限；
+3.SingleThreadExecutor--单个工作线程的线程池，即整个线程池只有一个核心线程，再无其他线程
+4.ScheduleThreadPool----能实现定时和周期性任务的线程池

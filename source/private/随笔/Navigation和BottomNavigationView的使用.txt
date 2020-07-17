@@ -1,0 +1,89 @@
+Bottom NavigationView主要实现底部导航栏，Navigation主要配合导航栏实现Fragment的切换
+1.布局文件
+	<com.google.android.material.bottomnavigation.BottomNavigationView
+		 android:id="@+id/nav_view"
+		 android:layout_width="0dp"
+		 android:layout_height="wrap_content"
+		 android:layout_marginStart="0dp"
+		 android:layout_marginEnd="0dp"
+		 android:background="?android:attr/windowBackground"
+		 app:layout_constraintBottom_toBottomOf="parent"
+		 app:layout_constraintLeft_toLeftOf="parent"
+		 app:layout_constraintRight_toRightOf="parent"
+		 app:menu="@menu/bottom_nav_menu" />
+		 
+	 <fragment
+		 android:id="@+id/nav_host_fragment"
+		 android:name="androidx.navigation.fragment.NavHostFragment"
+		 android:layout_width="match_parent"
+		 android:layout_height="match_parent"
+		 app:defaultNavHost="true"
+		 app:layout_constraintBottom_toTopOf="@id/nav_view"
+		 app:layout_constraintLeft_toLeftOf="parent"
+		 app:layout_constraintRight_toRightOf="parent"
+		 app:layout_constraintTop_toTopOf="parent"
+		 app:navGraph="@navigation/mobile_navigation" />
+	
+	注意：
+		1.这里<fragment>标签为小写，表示没有指定一个具体的fragment类，具体类由android:name标签指定
+		2.app:defaultNavHost="true" 属性确保NavHostFragment拦截系统返回按钮
+		3.app:navGraph标签指定navigation文件
+		4.BottomNavigationView通过app:menu指定导航栏的内容
+
+2.menu文件		
+	<?xml version="1.0" encoding="utf-8"?>
+	<menu xmlns:android="http://schemas.android.com/apk/res/android">
+		 <item
+			 android:id="@+id/navigation_home"
+			 android:icon="@drawable/ic_home_black_24dp"
+			 android:title="@string/title_home" />
+		 <item
+			 android:id="@+id/navigation_dashboard"
+			 android:icon="@drawable/ic_dashboard_black_24dp"
+			 android:title="@string/title_dashboard" />
+		 <item
+			 android:id="@+id/navigation_notifications"
+			 android:icon="@drawable/ic_notifications_black_24dp"
+			 android:title="@string/title_notifications" />
+	</menu>
+	
+	注意：
+		1.在res目录下面创建一个menu包存放
+		2.android:icon指图标，可放selector
+		3.android:title值标题文字
+		4.menu文件里面item的id必须要和下面navigation文件的fragment的id一一对应
+		
+3.navigation文件
+	<?xml version="1.0" encoding="utf-8"?>
+	<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+		 xmlns:app="http://schemas.android.com/apk/res-auto"
+		 xmlns:tools="http://schemas.android.com/tools"
+		 android:id="@+id/mobile_navigation"
+		 app:startDestination="@+id/navigation_home">
+		 
+		 <fragment
+			 android:id="@+id/navigation_home"
+			 android:name="com.samiu.ktlearn.ui.home.HomeFragment"
+			 android:label="@string/title_home"
+			 tools:layout="@layout/fragment_home" />
+		 <fragment
+			 android:id="@+id/navigation_dashboard"
+			 android:name="com.samiu.ktlearn.ui.dashboard.DashboardFragment"
+			 android:label="@string/title_dashboard"
+			 tools:layout="@layout/fragment_dashboard" />
+		 <fragment
+			 android:id="@+id/navigation_notifications"
+			 android:name="com.samiu.ktlearn.ui.notifications.NotificationsFragment"
+			 android:label="@string/title_notifications"
+			 tools:layout="@layout/fragment_notifications" />
+	</navigation>
+	
+	注意：
+		1.navigation就是不同fragment之间跳转逻辑的一个导航
+		2.在res目录下创建一个navigation包存放
+		
+4.使用
+	override fun initData() {
+		 val navController = findNavController(R.id.nav_host_fragment)
+		 navigation_view.setupWithNavController(navController)
+	}

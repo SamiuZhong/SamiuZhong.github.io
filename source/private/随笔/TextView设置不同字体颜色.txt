@@ -1,0 +1,7 @@
+https://blog.csdn.net/qq_32320807/article/details/82497882
+
+方法：SpannableString
+	SpannableString msg = new SpannableString(favorShop.getName() + mContext.getString(R.string.cruise_shop_no_permission));
+	msg.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.check_center_selected_color)),
+			0,favorShop.getName().length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+	expiredDialog.setMessage(msg);

@@ -1,0 +1,4 @@
+方法一：
+setCanceledOnTouchOutside(false);调用这个方法时，按对话框以外的地方不起作用。按返回键还起作用
+方法二：
+setCanceleable(false);调用这个方法时，按对话框以外的地方不起作用。按返回键也不起作用

@@ -1,0 +1,11 @@
+原理：通过修改主题文件style.xml，让application使用该主题来实现，也可以直接在系统默认的AppTheme中添加属性来实现；
+
+例：
+	<!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+
+        <!--更换字体库-->
+        <item name="android:typeface">monospace</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>

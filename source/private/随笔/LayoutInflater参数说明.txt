@@ -1,0 +1,12 @@
+LayoutInflater主要的作用就是把一个布局文件(XML)变成一个View对象，然后把这个对象加载到指定的ViewGroup里面去，就这么简单；
+
+LayoutInflater.inflate方法有两种重载，分别是三个参数和两个参数
+public View inflate(@LayoutRes int resource, @Nullable ViewGroup root, boolean attachToRoot){}
+
+参数说明：
+	1.第一个参数为布局文件，没啥说的，必传
+	2.第二个参数root表示rootView，及要把它添加到的那个ViewGroup，这个参数可以为null
+	3.第三个参数可以不传，表示是否将这个View添加到root里面去，当root为null时这个参数随便true或者false都是一个效果，啥效果喃？效果等同于不传，或者说等同于root为null的情况
+	  注意，只有当root不为null时才传第三个参数，否则要报错
+	4.当root不为null，并且attachToRoot为true时，表示将这个View添加到ViewGroup里面去，否则的话你就只是获得了View对象，还要手动调用addView方法才能添加进去	
+		

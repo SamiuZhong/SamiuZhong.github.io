@@ -1,0 +1,252 @@
+https://www.jianshu.com/p/e9dfb7167f87
+
+RecyclerView实现添加HeaderView和FooterView的核心就是在Adapter里面的onCreateViewHolder根据viewType来判断是列表项还是HeaderView来分别加载不同的布局文件，当然viewType的判断规则也是由我们定义的，废话不多说，看一下具体的实现效果。
+
+1：Gradle配置 build.gradle
+compile 'com.android.support:recyclerview-v7:23.1.1'
+compile 'com.android.support:cardview-v7:23.1.1'
+
+2：主布局文件 activity_main.xml 很简单里面一个RecyclerView
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+  <android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rv_list"
+    />
+</LinearLayout>
+
+3：列表项布局 rv_item.xml 外面一个CardView的卡片式容器里面一个TextView
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+xmlns:card_view="http://schemas.android.com/apk/res-auto"
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_margin="8dp"
+android:id="@+id/cv_item"
+android:foreground="?android:attr/selectableItemBackground"
+card_view:cardCornerRadius="4dp"
+card_view:cardElevation="4dp"
+>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_item_text"
+        android:text="test"
+        android:layout_margin="8dp"
+        />
+</LinearLayout>
+
+</android.support.v7.widget.CardView>
+
+4：列表头部布局 rv_header.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+xmlns:card_view="http://schemas.android.com/apk/res-auto"
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_margin="8dp"
+android:id="@+id/cv_item"
+android:foreground="?android:attr/selectableItemBackground"
+card_view:cardCornerRadius="4dp"
+card_view:cardElevation="4dp"
+card_view:cardBackgroundColor="#4CAF50"
+>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Header"
+        android:textSize="30sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        />
+</LinearLayout>
+</android.support.v7.widget.CardView>
+
+5：列表底部布局 rv_footer.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+xmlns:card_view="http://schemas.android.com/apk/res-auto"
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_margin="8dp"
+android:id="@+id/cv_item"
+android:foreground="?android:attr/selectableItemBackground"
+card_view:cardCornerRadius="4dp"
+card_view:cardElevation="4dp"
+card_view:cardBackgroundColor="#E91E63"
+>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Footer"
+        android:textSize="30sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        />
+
+</LinearLayout>
+</android.support.v7.widget.CardView>
+
+6：HeaderBottomAdapter.java，RecyclerView的Adapter，在getItemViewType方法里面判断了当前Item的类型，然后在onCreateViewHolder跟据item的类型分别加载不同的布局以实现HeaderView和FooterView，其他方法的含义可以参考注释
+**
+public class HeaderBottomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+//item类型
+public static final int ITEM_TYPE_HEADER = 0;
+public static final int ITEM_TYPE_CONTENT = 1;
+public static final int ITEM_TYPE_BOTTOM = 2;
+//模拟数据
+public String [] texts={"java","python","C++","Php",".NET","js","Ruby","Swift","OC"};
+private LayoutInflater mLayoutInflater;
+private Context mContext;
+private int mHeaderCount=1;//头部View个数
+private int mBottomCount=1;//底部View个数
+
+public HeaderBottomAdapter(Context context) {
+    mContext = context;
+    mLayoutInflater = LayoutInflater.from(context);
+}
+
+//内容长度
+public int getContentItemCount(){
+    return texts.length;
+}
+//判断当前item是否是HeadView
+public boolean isHeaderView(int position) {
+    return mHeaderCount != 0 && position < mHeaderCount;
+}
+//判断当前item是否是FooterView
+public boolean isBottomView(int position) {
+    return mBottomCount != 0 && position >= (mHeaderCount + getContentItemCount());
+}
+
+
+//判断当前item类型
+@Override
+public int getItemViewType(int position) {
+    int dataItemCount = getContentItemCount();
+    if (mHeaderCount != 0 && position < mHeaderCount) {
+        //头部View
+        return ITEM_TYPE_HEADER;
+    } else if (mBottomCount != 0 && position >= (mHeaderCount + dataItemCount)) {
+        //底部View
+        return ITEM_TYPE_BOTTOM;
+    } else {
+        //内容View
+        return ITEM_TYPE_CONTENT;
+    }
+}
+
+//内容 ViewHolder
+public static class ContentViewHolder extends RecyclerView.ViewHolder {
+    private TextView textView;
+    public ContentViewHolder(View itemView) {
+        super(itemView);
+        textView=(TextView)itemView.findViewById(R.id.tv_item_text);
+    }
+}
+//头部 ViewHolder
+public static class HeaderViewHolder extends RecyclerView.ViewHolder {
+
+    public HeaderViewHolder(View itemView) {
+        super(itemView);
+    }
+}
+//底部 ViewHolder
+public static class BottomViewHolder extends RecyclerView.ViewHolder {
+
+    public BottomViewHolder(View itemView) {
+        super(itemView);
+    }
+}
+
+@Override
+public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    if (viewType ==ITEM_TYPE_HEADER) {
+        return new HeaderViewHolder(mLayoutInflater.inflate(R.layout.rv_header, parent, false));
+    } else if (viewType == ITEM_TYPE_CONTENT) {
+        return  new ContentViewHolder(mLayoutInflater.inflate(R.layout.rv_item, parent, false));
+    } else if (viewType == ITEM_TYPE_BOTTOM) {
+        return new BottomViewHolder(mLayoutInflater.inflate(R.layout.rv_footer, parent, false));
+    }
+    return null;
+}
+
+@Override
+public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    if (holder instanceof HeaderViewHolder) {
+
+    } else if (holder instanceof ContentViewHolder) {
+        ((ContentViewHolder) holder).textView.setText(texts[position - mHeaderCount]);
+
+    } else if (holder instanceof BottomViewHolder) {
+
+    }
+}
+
+@Override
+public int getItemCount() {
+   return mHeaderCount + getContentItemCount() + mBottomCount;
+}
+
+}
+
+7：最后一步，MainActivity.java
+public class MainActivity extends AppCompatActivity {
+private RecyclerView mRecyclerView;
+private HeaderBottomAdapter adapter;
+GridLayoutManager gridLayoutManager;
+LinearLayoutManager layoutManager;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    mRecyclerView=(RecyclerView)findViewById(R.id.rv_list);
+    //List布局
+    layoutManager=new LinearLayoutManager(this);
+    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    mRecyclerView.setLayoutManager(layoutManager);
+    mRecyclerView.setAdapter(adapter=new HeaderBottomAdapter(this));
+
+    //Grid布局 
+//        gridLayoutManager=new GridLayoutManager(MainActivity.this, 2);
+//        mRecyclerView.setLayoutManager(gridLayoutManager);//这里用线性宫格显示 类似于grid view
+//        mRecyclerView.setAdapter(adapter=new HeaderBottomAdapter(this));
+//
+//
+//            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//                @Override
+//                public int getSpanSize(int position) {
+//                    return (adapter.isHeaderView(position) || adapter.isBottomView(position)) ? gridLayoutManager.getSpanCount() : 1;
+//                }
+//            });
+
+
+    }
+
+}
+这里注意一点，如果你的RecyclerView使用Grid类型列表在设置Adapter后需要调用这个方法，根据当前Item类型来判断占据的横向格数，这也是Adapter里面实现isHeaderView和isBottomView的缘故
+ gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return (adapter.isHeaderView(position) || adapter.isBottomView(position)) ? gridLayoutManager.getSpanCount() : 1;
+            }
+       });

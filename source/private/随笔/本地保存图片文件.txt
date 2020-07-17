@@ -1,0 +1,36 @@
+	public synchronized static final void saveBitmap(Bitmap bitmap, int imgId,String innerFile) {
+        try {
+            final String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "wanJia" +innerFile+ File.separator;
+            File folder = new File(dir);
+            if(!folder.exists()){
+                folder.mkdir();
+            }
+            File file = new File(dir + "face" + imgId + ".jpg");
+            if(file.exists()){
+                file.delete();
+            }
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+	
+对于Mat对象，可先将其转换为Bitmap再调用上面的
+	public synchronized static final void recogSaveMatToBitmap(Mat mat, int imgId){
+        Bitmap bitmap = Bitmap.createBitmap(mat.width(),mat.height(),Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mat,bitmap);
+        saveBitmap(bitmap,imgId);
+    }
+	
+Activity中调用图片：
+	final String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "wanJia" +innerFile+ File.separator;
+        final String path = dir + "face" + imgId + ".jpg";
+        final File file = new File(path);

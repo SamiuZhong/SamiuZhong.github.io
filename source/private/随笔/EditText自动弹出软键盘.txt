@@ -1,0 +1,10 @@
+	search_input.requestFocus()
+	search_input.isFocusable = true
+	search_input.isFocusableInTouchMode = true
+	val timer = Timer()
+	timer.schedule(object : TimerTask() {
+		override fun run() {
+			val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+			inputManager.toggleSoftInput(0, InputMethodManager.SHOW_FORCED)
+		}
+	}, 200)

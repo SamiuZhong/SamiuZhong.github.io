@@ -1,0 +1,5 @@
+	if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			//竖屏
+		} else {
+			//横屏
+		}

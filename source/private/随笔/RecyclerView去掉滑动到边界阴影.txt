@@ -1,0 +1,7 @@
+https://blog.csdn.net/owenchan1987/article/details/73135951
+
+<android.support.v7.widget.RecyclerView
+    android:id="@+id/rv_search_one"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:overScrollMode="never" />

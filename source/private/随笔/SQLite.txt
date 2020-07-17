@@ -1,0 +1,78 @@
+**关于引号和加号的用法
+db.execSQL("DELETE FROM sqlite_sequence WHERE name = '"+tbl_name+"'");
+
+//创建表语句格式
+CREATE TABLE table_name (字段名 数据类型 PRIMARY KEY AUTOINCREMENT,
+			 字段名 数据类型，
+			 ......)
+
+//使用openOrCreateDatabase()创建数据库
+openOrCreateDatabase("tabele_name",	     //数据库名称
+		     Context.MODE_PRIVATE,   //创建数据库文件的方式，也可设为0
+		     null);	
+	     //返回查询结果的类，一般用null
+//使用execSQL()方法执行SQL语句
+SQLiteDatabase db = openOrCreateDatabase(...); //获取数据库对象
+String createTable="CREATE TABLE IF NOT EXISTS "+tbl_name+
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                "name VARCHAR(32),"+
+                "cardNum VARCHAR(32))";
+db.execSQL(createTable);
+
+//使用insert()方法和ContentValues对象新增数据记录
+ContentValues cv = new ContentValues(3);   //创建含两条数据记录的对象
+        cv.put("name",name);
+        cv.put("cardNum",cardNum);
+        db.insert(tbl_name,null,cv);     //将数据添加至表，第二个参数一般为null
+
+//使用SELECT语句进行数据查询:SELECT 字段名 FROM 表明
+//使执行SQLiteDatabase对象的rawQuery()方法查询，第一个参数为SELECT语句，第二个参数设为null,
+  用Cursor对象获取查询结果
+Cursor cur = db.rawQuery("SELECT * FROM table_name");
+if(cur.moveToFirst){
+    do{
+	...
+    }while(cur.moveToNext());
+}
+//移动Cursor对象游标的方法：
+  moveToFirst()移动到第一条记录，moveToLast()移动到最后一条记录
+  moveToNext()移动到下一条记录，moveToPrevious()移动到上一条记录
+
+//使用Cursor对象的getXXX()方法读取数据
+Cursor cur = db.rawQuery("SELECT * FROM table_name");
+...
+cur.getString(0); //0代表数据的第一个字段
+cur.getString(1);//1代表数据的第二个字段
+
+//使用TextView输出数据
+private void showDatas(){
+    Cursor cur = db.rawQuery("SELECT * FROM "+tbl_name,null);
+    if(cur.moveToFirst()){
+        String str = " 共"+cur.getCount()+"条记录\n";
+        str += "-----\n";
+        do {
+            str += cur.getString(0)+"  ";
+            str += cur.getString(1)+"  ";
+            str += cur.getString(2)+"\n";
+            str += "-----\n";
+        }while (cur.moveToNext());
+        dbTextView.setText(str);
+    }
+}
+
+//归零自增变量
+当SQLite数据库中包含自增列时，会自动建立一个名为 sqlite_sequence 的表。这个表包含两个列：name和seq。name记录自增列所在的表，seq记录当前序号（下一条记录的编号就是当前序号加1）。如果想把某个自增列的序号归零，只需要修改 sqlite_sequence表就可以了。
+UPDATEsqlite_sequence SETseq =0 WHEREname ='TableName';
+
+也可以直接把该记录删掉：
+DELETEFROM sqlite_sequenceWHERE name= 'TableName';
+
+要想将所有表的自增列都归零，直接清空sqlite_sequence表就可以了：
+DELETEFROM sqlite_sequence;
+
+------------------------2019.1.8更新------------------------
+执行SQL语句时尽量先定义String字符串，然后再执行这个字符串，而不是在执行的同时写SQL语句
+	String sql = String.format("SELECT * FROM %s WHERE %s='%s' AND %s='%s'",
+        dbUtil.tbl_photo,"cardNo",cardNo,"photoName",photo);
+    Cursor cursor = dbUtil.db.rawQuery(sql,null);
+**引用的变量要加单引号，直接写的不加，表名不加

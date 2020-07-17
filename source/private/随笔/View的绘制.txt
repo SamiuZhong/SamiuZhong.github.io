@@ -1,0 +1,4 @@
+初始ViewRoot和DecorView(顶级View)
+	ViewRoot对应于ViewRootImpl类，是连接WindowManager和DecorView的纽带。在ActivityThread中，当Activity对象被创建完毕后，会将DecorView添加到Window中，同时会创建ViewRootImpl对象，并将ViewRootImpl对象和DecoreView建立关联；
+View的绘制流程
+	从ViewRoot的performTraversals()方法开始，经过measure、layout和draw三个过程最终将一个View绘制出来。其中measure用来测量View的宽高，layout用来确定View在父容器中的放置位置，而draw则负责将View绘制在屏幕上；

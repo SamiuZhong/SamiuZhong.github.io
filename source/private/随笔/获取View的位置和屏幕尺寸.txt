@@ -1,0 +1,4 @@
+val location1 = IntArray(2)	//数组0代表x，1代表y
+binding.player1.getLocationOnScreen(location1)
+
+val screenHeight = resources.displayMetrics.heightPixels	//获取屏幕尺寸

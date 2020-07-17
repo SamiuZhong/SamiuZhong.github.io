@@ -1,0 +1,21 @@
+1.在ViewModel注册Observerble
+	public SingleLiveEvent<Boolean> requestCameraPermission = new SingleLiveEvent<>();
+2.绑定点击事件
+	public BindingCommand addIdentityPositiveCommand = new BindingCommand(new BindingAction() {
+        @Override
+        public void call() {
+            requestCameraPermission.call();
+        }
+    });
+3.Activity或Fragment接收事件,重写initViewObservable()方法,方法里面写要做的操作即可
+	@Override
+    public void initViewObservable() {
+		viewModel.requestCameraPermissions.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+			
+                ...
+				
+            }
+        });
+    }

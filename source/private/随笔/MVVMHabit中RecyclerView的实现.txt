@@ -1,0 +1,135 @@
+0.这里以多布局的Item举例，单一局类似
+1.需要哪些东西
+	1.本体Activity，以及对应的ViewModel和Layout文件
+	2.Adapter
+	3.Item的ViewModel和Layout
+
+2.Activity需要做什么事情
+	抱歉，不需要做什么事情，正常初始化即可
+
+3.Layout文件怎么写	
+	<data>
+        <variable
+            name="viewModel"
+            type="com.klilala.mine.view_model.ItemCollectionPagerViewModel" />
+
+        <variable
+            name="adapter"
+            type="com.klilala.mine.ui.adapter.ItemCollectionAdapter" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--这里要注意在attrs文件中将layoutManager的引用类型改为String-->
+		<!--更新，不改好像也可以，就用reference引用类型也可-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:adapter="@{adapter}"
+            app:itemBinding="@{viewModel.itemBinding}"
+            app:items="@{viewModel.observableList}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    </FrameLayout>
+	
+4.ViewModel需要做什么	
+	private static final String item_type_one = "ITEM_TYPE_ONE";
+    private static final String item_type_two = "ITEM_TYPE_TWO";
+
+	//这里因为是多布局所以塞的泛型是MultiItemViewModel，每个不同的ItemViewModel继承自MultiItemViewModel
+	//单一布局的话直接塞对应的ItemViewModel即可
+    public ObservableList<MultiItemViewModel> observableList = new ObservableArrayList<>();
+    public ItemBinding<MultiItemViewModel> itemBinding = ItemBinding.of((itemBinding, position, item) -> {
+        String itemType = (String) item.getItemType();
+        if (item_type_one.equals(itemType)){
+            itemBinding.set(BR.viewModel,R.layout.item_collection_one_layout);
+        } else if(item_type_two.equals(itemType)){
+            itemBinding.set(BR.viewModel,R.layout.item_collection_two_layout);
+        }
+    });
+	
+	/**
+     * 为Item添加数据
+	 * 注意这里因为是多布局，item声明的时候是MultiItemViewModel，new出来就是具体的ItemViewModel了
+     * @param dataList
+     */
+    private void itemAddData(List<CollectionBean> dataList){
+        for (CollectionBean data : dataList) {
+            String displayPosition = data.getDisplayPosition();
+            if (displayPosition.equals(getApplication().getResources().getString(R.string.health_knowledge))){
+                MultiItemViewModel item = new ItemCollectionOneViewModel(this,data);
+                item.multiItemType(item_type_one);
+                observableList.add(item);
+                observableList.add(item);
+            }else if (displayPosition.equals(getApplication().getResources().getString(R.string.science_book))){
+                MultiItemViewModel item = new ItemCollectionOneViewModel(this,data);
+                item.multiItemType(item_type_one);
+                observableList.add(item);
+                observableList.add(item);
+            }else if (displayPosition.equals(getApplication().getResources().getString(R.string.scientist_interpret))){
+                MultiItemViewModel item = new ItemCollectionOneViewModel(this,data);
+                item.multiItemType(item_type_one);
+                observableList.add(item);
+                observableList.add(item);
+            } else {
+                MultiItemViewModel item = new ItemCollectionTwoViewModel(this,data);
+                item.multiItemType(item_type_two);
+                observableList.add(item);
+                observableList.add(item);
+            }
+        }
+    }
+	
+5.Adapter怎么写	
+		public class ItemCollectionAdapter extends BindingRecyclerViewAdapter {
+
+			@Override
+			public void onBindBinding(@NonNull ViewDataBinding binding, int variableId, int layoutRes, int position, Object item) {
+				super.onBindBinding(binding, variableId, layoutRes, position, item);
+				if (item instanceof ItemCollectionOneViewModel){
+					ItemCollectionOneLayoutBinding binding1 = (ItemCollectionOneLayoutBinding) binding;
+				} else if (item instanceof ItemCollectionTwoViewModel){
+					ItemCollectionTwoLayoutBinding binding1 = (ItemCollectionTwoLayoutBinding) binding;
+				}
+			}
+		}
+	*新发现：Adapter只需要重写出onBindBinding这个方法即可，方法里面可以不做任何事，于是我们可以把Adapter抽取出来供全局使用：
+		public class BaseRecyclerAdapter extends BindingRecyclerViewAdapter {
+
+			@Override
+			public void onBindBinding(@NonNull ViewDataBinding binding, int variableId, int layoutRes, int position, Object item) {
+				super.onBindBinding(binding, variableId, layoutRes, position, item);
+			}
+		}	
+	
+6.Item的ViewModel和Layout正常写即可，多布局的话需要继承自MultiItemViewModel，单一布局继承自ItemViewModel
+
+7.补充：ItemViewModel基类的封装
+	public class MultiItemViewModel<VM extends BaseViewModel> extends ItemViewModel<VM> {
+
+		protected Object multiType;
+
+		public Object getItemType() {
+			return multiType;
+		}
+
+		public void multiItemType(@NonNull Object multiType) {
+			this.multiType = multiType;
+		}
+
+		public MultiItemViewModel(@NonNull VM viewModel) {
+			super(viewModel);
+		}
+
+	}
+	
+	public class ItemViewModel<VM extends BaseViewModel> {
+		protected VM viewModel;
+
+		public ItemViewModel(@NonNull VM viewModel) {
+			this.viewModel = viewModel;
+		}
+	}

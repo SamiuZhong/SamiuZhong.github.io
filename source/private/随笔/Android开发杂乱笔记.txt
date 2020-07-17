@@ -1,0 +1,139 @@
+Activity的基本程序逻辑：
+1.onCreate():MainActivity第一件要做的事，自动生成；
+2.setContentView():载入布局文件；
+3.创建资源时，AS会自动在项目的R.java中创建代表这些资源的资源ID,格式为"R.资源类.资源名称"，每个资源
+  在R.java中都有一个对应的资源ID，程序通过“R.资源类.资源名称”的格式存取res文件夹下的各项资源；
+  如：R.string.app_name;  (Java中使用)
+4.Activity类的findViewById(R.资源类.资源名称)方法通过组件id获取对应的对象；
+5.在属性中设置引用“@资源类/资源名称”
+  如：@string/app_name;   （XML文件中使用)
+  注意：“@+id/组件名称”表示为该组件设置一个id，无加号则表示引用；
+
+事件处理机制：
+先要在activity上实现接口(也可通过匿名内部类实现)：
+  public class MainActivity extends AppCompatActivity
+    implements View.OnClickListener{ }
+单击：public void OnClick(View v){ }
+      btn.setOnClickListener(this);登陆监听对象
+长按：public boolean onLongClick(View v){ }
+      btn.setOnLongClickListener(this);登陆监听对象
+使用getId()判断时间的来源对象:
+  public void OnClick(View v){
+    if(v.getId()==R.id.textView){}
+      else{}
+  }
+
+用户界面的基本组件：
+1.多选一按钮：RadioGrouo中包含的多个RadioButton组件，
+	      getCheckedRadioButtonId()读取单选按钮状态，
+  RadioGroup sex = (RadioGroup) findViewById(...);
+  ...
+  if(sex.getCheckedRadioButtonId()==R.id.male){...}
+  else{...}
+  改变选项的事件onCheckedChaged(RadioGroup group,int checkedId)
+2.可复选的复选框Checkbok,isChecked()返回true或者false；
+3.显示图像的ImageView；
+
+高级UI组件
+1.Spinner下拉菜单:
+  在value/strings.xml中创建字符串组string-array name=xxx选项为<item>xx<tiem>
+  在布局中将entires属性设置为相应的字符组@array/xxx
+  spinner.setPrompt设置提示信息
+  exp：
+	String[] regions = getResources().getStringArray(R.array.spinner);
+            int index =region.getSelectedItemPosition();
+            txv.setText("选择了 "+regions[index]);
+2.ListView列表框：onItemClick()获取单击事件
+
+即时消息与对话框
+1.使用Toast显示即时消息
+2.使用Snackbar显示即时消息
+3.使用日期、时间对话框
+
+使用Alert对话框
+AlertDialog.Builder bdr = new AlertDialog.Builder(this);
+bdr.setMessage("...")
+   .setTitle("...");
+   .setInc(android.R.drawable.presence_away)
+   .show;
+-------代码简化-------
+new AlertDialog.Builder(this).
+   .setMessage("...")
+   .setTitle("...");
+   .setIcon(android.R.drawable.presence_away)
+   .setPositiveButton("确定",this).
+   .setNegativeButton("取消",this).
+   .show();
+
+用Intent启动程序中的其他Activity
+1.用startActivity()显式启动：
+  Intent it = new Intent();
+  it.setClass(this,Act2.class);
+  startActivity(it);
+  ------代码简化-------
+  Intent it = new Intent(this,Act2.class);
+  startActivity(it);
+  ------代码简化-------
+  startActivity(new Intent(this,Act2.class));
+
+  用finish()结束Activity；
+2.在Intent中使用outExtra()夹带数据传给新的Activity
+  Intent it = new Intent(this,Act2.class);
+  it.putExtra(...);
+  it.putExtra(...);
+  startActivity(it);
+  在新的Activity中使用getIntent()与getXxxExtra()取出数据：
+  Intent it = getIntent();
+  int x = it.getIntExtra(...);
+  String y = it.getStringExtra(...);
+3.要求新的Avtivity返回数据：
+  (主Avtivity)：startActivityForResult(Intent it,int 标识符);
+  (新Activity)：setResult(int 结果码,Intent it);
+  (主Activity)：onActivityResult(int 标识符,int 结果码,Intent it);
+
+随时关闭所有Activity：
+  public class ActivityCollector {  
+    public static LinkedList<Activity> activities = new LinkedList<Activity>();  
+    public static void addActivity(Activity activity)  
+    {  
+        activities.add(activity);  
+    }  
+    public static void removeActivity(Activity activity)  
+    {  
+        activities.remove(activity);  
+    }  
+    public static void finishAll()  
+    {  
+        for(Activity activity:activities)  
+        {  
+            if(!activity.isFinishing())  
+            {  
+                activity.finish();  
+            }  
+        }  
+    }  
+  }  
+
+完全退出App：
+  public void AppExit(Context context) {  
+    try {  
+        ActivityCollector.finishAll();  
+        ActivityManager activityMgr = (ActivityManager) context  
+                .getSystemService(Context.ACTIVITY_SERVICE);  
+        activityMgr.killBackgroundProcesses(context.getPackageName());  
+        System.exit(0);  
+    } catch (Exception ignored) {}  
+  }  
+
+结束App进程（System.exit(0)):
+Intent intent = new Intent(Intent.ACTION_MAIN);
+intent.addCategory(Intent.CATEGORY_HOME);
+intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+startActivity(intent);
+android.os.Process.killProcess(android.os.Process.myPid());
+
+Fragment:嵌套在Activity中的模块化显示片段
+子类：对话框:DialogFragment
+      列表:ListFragment
+      选项设置:PreferenceFragment
+      WebView界面:WebViewFragment

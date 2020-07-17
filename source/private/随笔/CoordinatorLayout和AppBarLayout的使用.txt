@@ -1,0 +1,115 @@
+https://www.jianshu.com/p/640f4ef05fb2
+简单来说，就是CoordinatorLayout包含AppBarLayout，对AppBarLayout里面包含的，注意是里面的部件设置一些属性，就可以实现对应的显示效果。
+	app:layout_scrollFlags="XXX|XXX|XXX"
+	
+	根据官方文档，layout_scrollFlags 的取值可以为以下几种:
+	scroll
+	设成这个值的效果就好比本 View 和 Scrolling view 是“一体”的。具体示例我们在上面已经给出。有一点特别需要我们的注意，为了其他的滚动行为生效，必须同时指定 Scroll 和相应的标记，比如我们想要 exitUntilCollapsed 所表现的滚动行为，必须将 layout_scrollFlags 指定为 scroll|exitUntilCollapsed 。
+	exitUntilCollapsed
+	当本 View 离开屏幕时，会被“折叠”直到达到其最小高度。我们可以这样理解这个效果：当我们开始向上滚动 Scrolling view 时，本 View 会先接管滚动事件，这样本 View 会先进行滚动，直到滚动到了最小高度（折叠了），Scrolling view 才开始实际滚动。而当本 View 已完全折叠后，再向下滚动 Scrolling view，直到 Scrolling view 顶部的内容完全显示后，本 View 才会开始向下滚动以显现出来。
+	enterAlways
+	当 Scrolling view 向下滚动时，本 View 会一起跟着向下滚动。实际上就好比我们同时对 Scrolling view 和本 View 进行向下滚动。
+	enterAlwaysCollapsed
+	从名字上就可以看出，这是在 enterAlways 的基础上，加上了“折叠”的效果。当我们开始向下滚动 Scrolling View 时，本 View 会一起跟着滚动直到达到其“折叠高度”（即最小高度）。然后当 Scrolling View 滚动至顶部内容完全显示后，再向下滚动 Scrolling View，本 View 会继续滚动到完全显示出来。
+	snap
+	在一次滚动结束时，本 View 很可能只处于“部分显示”的状态，加上这个标记能够达到“要么完全隐藏，要么完全显示”的效果。
+
+<android.support.design.widget.CoordinatorLayout
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<android.support.design.widget.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fitsSystemWindows="true">
+
+		<LinearLayout
+			android:id="@+id/ft_member_ship_reception_select_ll"
+			android:layout_width="match_parent"
+			android:layout_height="45dp"
+			android:layout_marginTop="1dp"
+			android:baselineAligned="true"
+			android:orientation="horizontal"
+			app:layout_scrollFlags="scroll|enterAlways">
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:background="@color/white">
+
+				<TextView
+					android:id="@+id/ay_member_ship_reception_book_select_shop_tv"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerInParent="true"
+					android:drawableEnd="@drawable/shoplist_drop_down_arrow"
+					android:ellipsize="end"
+					android:gravity="center"
+					android:inputType="text"
+					android:maxLength="6"
+					android:maxLines="1"
+					android:text="@string/str_member_ship_reception_select_shop"
+					android:textColor="@color/main_text_black_color"
+					android:textSize="14sp"/>
+			</RelativeLayout>
+
+			<View
+				android:layout_width="1dp"
+				android:layout_height="match_parent"
+				android:background="@color/line"/>
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_marginStart="1dp"
+				android:layout_weight="1"
+				android:background="@color/white">
+
+				<TextView
+					android:id="@+id/ay_member_ship_reception_book_select_time_tv"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerInParent="true"
+					android:drawableEnd="@drawable/shoplist_drop_down_arrow"
+					android:gravity="center"
+					android:maxLines="1"
+					android:text="@string/str_member_ship_reception_book_select_time"
+					android:textColor="@color/main_text_black_color"
+					android:textSize="14sp"/>
+
+			</RelativeLayout>
+		</LinearLayout>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="@color/line"/>
+	</android.support.design.widget.AppBarLayout>
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<com.ovopark.framework.p2r.PullToRefreshRecycleView
+			android:id="@+id/ay_member_ship_reception_book_list_rv"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/white"/>
+
+		<com.kedacom.ovopark.widgets.StateView
+			android:id="@+id/ay_member_ship_reception_book_state_sv"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+	</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
+
+
+————————————————————————————————2019/7/16————————————————————————————————
+实现布局上部分滑上去隐藏，下部分滑到顶端就固定：
+1.将布局整体分为两个部分，上部分是需要滑动隐藏的简称为A，下部分是需要滑到顶端就固定的简称为B；
+2.全部都用CoordinatorLayout包起来，并且为CoordinatorLayout添加属性android:clipChildren="false"；
+3.在CoordinatorLayout里面添加AppBarLayout，添加属性android:fitsSystemWindows="true"，并且将A放在其里面，同时为A添加属性app:layout_scrollFlags="scroll|snap"和tools:ignore="MissingPrefix"；
+4.将B放在CoordinatorLayout里面，与AppBarLayout同级，同时为B添加属性app:layout_behavior="@string/appbar_scrolling_view_behavior"；
+5.over；

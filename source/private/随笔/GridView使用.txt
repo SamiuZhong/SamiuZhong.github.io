@@ -1,0 +1,163 @@
+原文:http://wiki.jikexueyuan.com/project/twenty-four-Scriptures/gridView-controls.html
+
+1.创建GridView单个元素的布局文件：新建-->XML-->people_layout.xml，选择RelativeLayout
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/u235"/>
+
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv"
+        android:layout_centerHorizontal="true"
+        android:text="Name"
+        android:textSize="18dp" />
+
+</RelativeLayout>
+
+2.对网格单个元素进行封装类：新建-->class-->public class People
+public class People {
+
+    private int imgId;
+    private String name;
+
+    public People(String name,int imgId) {
+        this.imgId = imgId;
+        this.name = name;
+    }
+
+    public int getImgId() {
+        return imgId;
+    }
+
+    public void setImgId(int imgId) {
+        this.imgId = imgId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+3.创建GridView的适配器：新建-->class-->public class GridAdapter extends BaseAdapter
+public class GridAdapter extends BaseAdapter {
+
+    private Context context;
+    private List<People> datas;
+
+    public GridAdapter(Context context,List<People> datas) {
+        this.context = context;
+        this.datas = datas;
+    }
+
+    //返回子项的个数
+    @Override
+    public int getCount() {
+        return datas.size();
+    }
+
+    //返回子项对应的对象
+    @Override
+    public Object getItem(int position) {
+        return datas.get(position);
+    }
+
+    //返回子项的下标
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    //返回子项视图
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        People people = (People) getItem(position);
+        View view;
+        ViewHolder viewHolder;
+        if (convertView == null){
+            view = LayoutInflater.from(context).inflate(R.layout.people_layout,null);
+            viewHolder = new ViewHolder();
+            viewHolder.imageView = (ImageView) view.findViewById(R.id.iv);
+            viewHolder.textView = (TextView) view.findViewById(R.id.tv);
+            view.setTag(viewHolder);
+        } else {
+            view = convertView;
+            viewHolder = (ViewHolder) view.getTag();
+        }
+        viewHolder.textView.setText(people.getName());
+        viewHolder.imageView.setImageResource(people.getImgId());
+        return view;
+    }
+
+    //创建ViewHolder类
+    class ViewHolder{
+        ImageView imageView;
+        TextView textView;
+    }
+}
+
+4.在需要的Activity中添加GridView布局
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="530dp"
+        android:layout_height="720dp"
+        android:background="@android:color/white"
+        android:numColumns="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.536" />
+		
+5.在Activity中实现
+	private GridView gridView;
+    private GridAdapter gridAdapter;
+    private List<People> datas = new ArrayList<People>();
+	
+	@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        gridView = findViewById(R.id.gridView);
+        initDatas();        //初始化数据
+        gridAdapter = new GridAdapter(this,datas);      //实例化适配器
+        gridView.setAdapter(gridAdapter);       //设置适配器
+    }
+	
+	private void initDatas(){
+        People people0 = new People("111",R.mipmap.u235);
+        People people1 = new People("222",R.mipmap.u235);
+        People people2 = new People("333",R.mipmap.u235);
+        People people3 = new People("444",R.mipmap.u235);
+        People people4 = new People("555",R.mipmap.u235);
+        datas.add(people0);
+        datas.add(people1);
+        datas.add(people2);
+        datas.add(people3);
+        datas.add(people4);
+    }
+	
+end;
+
+--------------------------2019.1.4更新---------------------------
+GridView自带监听键盘输入的方法
+	gridView.setOnKeyListener(new View.OnKeyListener() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {    
+            return false;
+        }
+    });

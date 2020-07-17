@@ -1,0 +1,58 @@
+1.继承ContentObserver类读取短信：
+	class SmsObserver(var handler: Handler?) : ContentObserver(handler) {
+
+		constructor(context: Context?, handler: Handler?) : this(handler) {
+			this.context = context!!
+		}
+
+		private lateinit var context: Context
+
+		override fun onChange(selfChange: Boolean, uri: Uri?) {
+			super.onChange(selfChange, uri)
+			val code: String
+			if (uri.toString() == "content://sms/raw") {
+				return
+			}
+			val inboxUri = Uri.parse("content://sms/inbox")
+			context.contentResolver.query(inboxUri, null, null, null, "date desc")?.let {
+				if (it.moveToFirst()) {
+					val body: String = it.getString(it.getColumnIndex("body"))
+					val pattern = Pattern.compile("(\\d{4})")
+					pattern.matcher(body).let { it1 ->
+						if (it1.find()) {
+							code = it1.group(0)!!
+							handler?.obtainMessage(InputCodeActivity.MSG_RECEIVED_CODE, code)?.sendToTarget()
+						}
+					}
+				}
+				it.close()
+			}
+		}
+	}
+
+2.Activity使用：
+	companion object {
+        const val MSG_RECEIVED_CODE = 1
+    }
+
+	private val handler = Handler {
+        if (it.what == MSG_RECEIVED_CODE){
+            msg_code.text = it.obj as String
+            return@Handler true
+        }
+        return@Handler false
+    }
+	
+	//读取手机短信
+	RxPermissions(this).request(
+			android.Manifest.permission.RECEIVE_SMS,
+			android.Manifest.permission.READ_SMS
+	).subscribeBy(
+			onNext = {
+				if (it){
+					val observer = SmsObserver(this,handler)
+					val uri = Uri.parse("content://sms")
+					contentResolver.registerContentObserver(uri,true,observer)
+				}
+			}
+	)

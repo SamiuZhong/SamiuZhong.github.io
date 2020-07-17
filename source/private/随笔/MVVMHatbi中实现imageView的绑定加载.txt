@@ -1,0 +1,17 @@
+1.对于网络图片对应url
+  本地drawable图片对应src
+XML中：
+	<ImageView
+		android:id="@+id/picture"
+		android:scaleType="fitXY"
+		app:url="@{viewModel.cover}"
+		android:src="@{viewModel.drawableImg}"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" />
+		
+viewModel中：		
+	public Drawable drawableImg;
+    public ObservableField<String> cover = new ObservableField<>();
+	
+	drawableImg = ContextCompat.getDrawable(viewModel.getApplication(), R.mipmap.ic_launcher);
+	cover.set(.......);

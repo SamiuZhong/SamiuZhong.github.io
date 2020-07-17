@@ -1,0 +1,48 @@
+Reference from: https://blog.csdn.net/qq_20785431/article/details/80484765
+
+（1）%n$md：代表输出的是整数，n代表是第几个参数，设置m的值可以在输出之前放置空格
+
+（2）%n$ms：代表输出的是字符串，n代表是第几个参数，设置m的值可以在输出之前放置空格
+
+（3）%n$mf：代表输出的是浮点数，n代表是第几个参数，设置m的值可以控制小数位数，如m=2.2时，输出格式为0.00
+
+1.整型 
+比如：“他今年XX岁了”，这个具体XX岁可能需要从服务端取的，那我们可以这么写
+
+ <string name="old">他今年%1$d岁了</string>
+1
+在程序中
+
+TextView tvOld = (TextView)findViewById(R.id.tv_old);
+tvOld.setText(getContext().getString(R.string.old, 18)); 
+1
+2
+“%1$d”表达的意思是整个name=”old”中，第一个整型的替代，执行结果就是：“他今年18岁了”。
+
+2.String类型 
+比如，“我叫XX，来自XXX”，这里的XX和XXX都需要替换，在strings.xml中可以这么写：
+
+<string name="introduce">我的名字叫%1$s，我来自%2$s</string>
+1
+在程序中：
+
+TextView tvIntroduce = (TextView)findViewById(R.id.tv_introduce);
+tvIntroduce.setText(getContext().getString(R.string.introduce, “宋仲基”，“太阳的后裔”));
+1
+2
+执行结果就是：“我的名字叫宋仲基，我来自太阳的后裔”。 
+当然，如果一句话里边只有一个占位符的话，可以直接用%s或%d。
+
+3.float类型
+
+<string name="loading">离配置结束还剩%1$3.3f秒</string>
+String temp = getResources().getString(R.string.loading);
+String timeTip = String.format(temp,123456.123456);
+
+结果：离配置结束还剩123456.123秒 
+注：m设置为3.3，小数位只取3位
+
+
+例：
+<string name="blacklist_several_arrive">到店%1$d次</string>
+holder.arriveTimeTv.setText(context.getString(R.string.blacklist_several_arrive, mList.get(position).getCount()));

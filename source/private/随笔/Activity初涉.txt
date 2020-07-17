@@ -1,0 +1,31 @@
+启动一个Activity的几种方式
+1. 显式启动：通过包名来启动，写法如下：
+
+①最常见的：
+
+startActivity(new Intent(当前Act.this,要启动的Act.class));
+②通过Intent的ComponentName：
+
+ComponentName cn = new ComponentName("当前Act的全限定类名","启动Act的全限定类名") ;
+Intent intent = new Intent() ;
+intent.setComponent(cn) ;
+startActivity(intent) ;
+③初始化Intent时指定包名：
+
+Intent intent = new Intent("android.intent.action.MAIN");
+intent.setClassName("当前Act的全限定类名","启动Act的全限定类名");
+startActivity(intent);
+
+----------------------2019.1.24更新----------------------
+启动活动的最佳方法
+1.给需要被启动的SecondActivity中添加方法
+	public class SecondActivity extends BaseActivity{
+		public static void activityStart(Context context,String data1,String data2){
+			Intent intent = new Intent("parma1",data1);
+			Intent intent = new Intent("parma2",data2);
+			context.startActivity(intent);
+		}
+	}
+2.在FristActivity中执行以下代码就可以启动SecondActivity啦
+	SecondActivity.activityStart(FirstActivity.this,"data1","data2");
+3.好处：避免了当你想要启动SecondActivity时却不知道启动他需要传递哪些数据这种情况

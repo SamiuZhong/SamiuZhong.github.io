@@ -1,0 +1,1 @@
+blacklistAddNextStepTv.setAlpha(0.2f);

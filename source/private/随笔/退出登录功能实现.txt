@@ -1,0 +1,7 @@
+	SPUtils.getInstance().put(SPKeyGlobal.TOKEN,"")
+	val intent: Intent? = mActivity.baseContext.packageManager.getLaunchIntentForPackage(mActivity.baseContext.packageName)
+	if (intent != null) {
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+		startActivity(intent)
+	}
+	AppManager.getAppManager().finishAllActivity()
