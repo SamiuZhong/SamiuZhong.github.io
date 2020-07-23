@@ -16,5 +16,8 @@ Android进程启动的常用套路
 
 ### Zygote进程是怎么启动的？
 
+- fork + handle
+- fork + execve
+
 ### 进程启动之后做了什么？
 
