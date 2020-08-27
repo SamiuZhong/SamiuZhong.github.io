@@ -8,7 +8,7 @@
 
 menu:
   首页: / || fas fa-home
-  时间轴: /archives/ || fas fa-archive
+  归档: /archives/ || fas fa-archive
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   # List||fas fa-list:
@@ -598,10 +598,10 @@ aside:
     description:
     button:
       icon: fab fa-github
-      text: Follow Me
+      text: Github
       link: https://github.com/SamiuZhong
   card_announcement:
-    enable: true
+    enable: false
     content: This is my Blog
   card_recent_post:
     enable: true
