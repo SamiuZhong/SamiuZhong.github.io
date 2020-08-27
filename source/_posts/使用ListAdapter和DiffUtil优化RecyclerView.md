@@ -1,3 +1,12 @@
+---
+title: 使用ListAdapter和DiffUtil优化RecyclerView
+keywords: 使用ListAdapter和DiffUtil优化RecyclerView
+date: 2020-06-16 19:31:30
+categories: Android
+tags: 
+	- Android
+---
+
 ## 这玩意儿是个啥？
 
 所谓ListAdapter就是我们通常使用的RecyclerView，官方对它的Adapter又做了一次封装，同时配合DiffUtil这个类来使用。
@@ -16,7 +25,7 @@
 
 我们先来看看它长什么样子
 
-```
+```java
 public abstract static class ItemCallback<T> {
 
       public abstract boolean areItemsTheSame(@NonNull T oldItem, @NonNull T newItem);
@@ -43,7 +52,7 @@ public abstract static class ItemCallback<T> {
 
 首先看看这玩意儿长啥样子
 
-```
+```java
 public abstract class ListAdapter<T, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
 
@@ -107,7 +116,7 @@ public abstract class ListAdapter<T, VH extends RecyclerView.ViewHolder>
 ## For Example
 
 那就先给封装一个Item的类,注意我们DiffUtil.ItemCallback基本上也写在这个类里面
-```
+```Kotlin
 sealed class NavigationModelItem {
 
     data class NavMenuItem(
@@ -150,7 +159,7 @@ sealed class NavigationModelItem {
 ```
 
 然后封装一个Holder
-```
+```kotlin
 sealed class NavigationViewHolder<T : NavigationModelItem>(
     view: View
 ) : RecyclerView.ViewHolder(view) {
@@ -172,7 +181,7 @@ sealed class NavigationViewHolder<T : NavigationModelItem>(
 ```
 
 最后是Adapter
-```
+```kotlin
 private const val VIEW_TYPE_NAV_MENU_ITEM = 4
 
 @Suppress("UNCHECKED_CAST")
@@ -216,7 +225,7 @@ class NavigationAdapter() : ListAdapter<NavigationModelItem, NavigationViewHolde
 }
 ```
 最后就是使用这个Adapter
-```
+```kotlin
     //给recyclerView设置adapter
     val adapter = NavigationAdapter()
     navRecyclerView.adapter = adapter

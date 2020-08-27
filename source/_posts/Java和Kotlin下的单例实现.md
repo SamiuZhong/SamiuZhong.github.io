@@ -13,7 +13,7 @@ tags:
 
 饿汉式的单例在类加载时就完成了初始化，所以类的加载较慢，但获取对象的速度快。这种方式直接就避免多线程的问题。
 
-```
+```java
 //Java实现
 public class Singleton{
 
@@ -25,7 +25,9 @@ public class Singleton{
         return instance;
     }
 }
+```
 
+```kotlin
 //Kotlin实现
 object Singleton
 ```
@@ -36,7 +38,7 @@ object Singleton
 分别有线程安全和线程不安全的两种写法，Java可通过synchronized同步锁来解决。
 Kotlin直接使用by lazy代理即可实现，线程安全问题通过参数可控制，具体可参考我的另一篇文章[Kotlin延迟加载的线程安全探究](https://samiu.top/2020/04/10/kotlin-yan-chi-shu-xing-de-xian-cheng-an-quan-tan-jiu/)
 
-```
+```java
 //Java实现（线程不安全）
 public class Singleton{
 
@@ -65,7 +67,9 @@ public class Singleton{
         return instance;
     }
 }
+```
 
+```kotlin
 //Kotlin实现
 class Singleton private constructor() {
 
@@ -82,7 +86,7 @@ class Singleton private constructor() {
 Java写法在获取实例的时候进行了两次判控，第一次判空是为了不必要的同步，只有第二次在实例为空的时候才创建实例，很好的解决了线程安全的问题。
 Kotlin写法与上面的懒汉式类似。
 
-```
+```java
 //Java实现
 public class Singleton{
 
@@ -103,7 +107,7 @@ public class Singleton{
 
 ## 静态内部类模式
 
-```
+```java
 //Java实现
 public class Singleton{
 
@@ -117,7 +121,9 @@ public class Singleton{
         return SingletonHolder.instance;
     }
 }
+```
 
+```kotlin
 //Kotlin实现
 class Singleton private constructor(){
 
@@ -130,3 +136,4 @@ class Singleton private constructor(){
     }
 }
 ```
+
