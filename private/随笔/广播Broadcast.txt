@@ -1,0 +1,68 @@
+静态注册：在AndroidManifest.xml中注册：右键->New->Other->Broadcast Receiver
+动态注册：在代码中注册
+动态注册只有打开程序才能接收广播，静态注册可以实现不打开程序也能接收广播
+
+如何接收广播？
+只需要新建一个类，让他继承自BroadcastReceiver，并重写父类的onReceiver()方法就行了；
+动态注册的广播接收器一定都要取消注册才行，才onDestroy()方法中调用unregisterReceiver()方法实现；
+
+------------------------动态注册Broadcast实现监听网络状态---------------------------------
+1.AndroidManifest.XML文件写入权限
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+2.Activity写入内部类即为广播
+	class NetworkChangeReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager connectivityManager = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()){
+                Toast.makeText(context,"网络已连通",Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(context,"网络已断开",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+3.Activity中声明
+	private IntentFilter intentFilter;
+	private NetworkChangeReceiver networkChangeReceiver;    //网络发生变化的广播接收对象
+4.onCreate中实现
+	intentFilter = new IntentFilter();
+    intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+    networkChangeReceiver = new NetworkChangeReceiver();
+    registerReceiver(networkChangeReceiver,intentFilter);
+5.重写onDestroy方法用来取消动态注册的广播
+	@Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unregisterReceiver(networkChangeReceiver);  //取消动态注册的广播
+    }
+	
+------------------------静态注册Broadcast实现开机启动---------------------------------
+1.创建Broadcast Receiver
+  右击包名-->New-->Other-->Broadcast Receiver，弹出框中Exported表示是否允许这个广播接收器接收本程序以外的广播，Enabled表示是否启用这个广播接收器，都勾选之，Finish完成创建
+2.修改AndroidManifest.XML文件
+  添加权限<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+3.修改<receiver的内容
+  <receiver
+      android:name=".BootCompleteReceiver"
+      android:enabled="true"
+      android:exported="true">
+      <intent-filter>
+          <action android:name="android.intent.action.BOOT_COMPLETED"/>
+      </intent-filter>
+  </receiver>
+4.在广播的onReceiver方法中写入实现逻辑
+  if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+      try {
+          Toast.makeText(context,"Boot Complete",Toast.LENGTH_LONG).show();
+          Log.e(TAG,"onReceiver:自启动成功！");
+          Intent start = context.getPackageManager().getLaunchIntentForPackage("com.example.app12");	//这里要修改为当前程序的包名
+          context.startActivity(start);
+      } catch (Exception e){
+          Log.e(TAG,"onReceiver:自启动失败！");
+      }
+  } else {
+      Log.e(TAG,"onReceiver:自启动失败！");
+  }

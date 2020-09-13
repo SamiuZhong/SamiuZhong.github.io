@@ -1,0 +1,7 @@
+https://www.jianshu.com/p/447972d1c5c5
+
+//先有PopWindow后弹出软键盘时，软键盘显示在最上层（盖住PopWindow）（当在PopWindow上操作弹出键盘时）
+//先有软键盘后弹出PopWindow时，软键盘自动收回
+mPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED); //解决不压键盘
+mPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);  //解决不压键盘
+在manifest文件为当前Activity加上android:windowSoftInputMode="adjustPan"

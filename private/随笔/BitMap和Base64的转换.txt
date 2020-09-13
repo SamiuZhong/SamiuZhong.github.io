@@ -1,0 +1,37 @@
+//BitmapתBase64
+public static String bitmapToBase64(Bitmap bitmap) {
+    String result = null;
+    ByteArrayOutputStream baos = null;
+    try {
+        if (bitmap != null) {
+            baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            baos.flush();
+            baos.close();
+            byte[] bitmapBytes = baos.toByteArray();
+            result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (baos != null) {
+                baos.flush();
+                baos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    return result;
+}
+//Base64תBitmap
+public static Bitmap base64ToBitmap(String base64Data) {
+    byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+}
+
+-------------------2019.2.18更新--------------------
+关于Bace64码在http传输过程中【加号】变【空格】的问题
+解决方案：把【加号】替换为【%2B】即可正常传输
+	photo = cur.getString(3).replace("+","%2B");

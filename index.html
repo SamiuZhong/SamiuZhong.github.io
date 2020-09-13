@@ -1,0 +1,322 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>张尼玛的博客</title><meta name="description"><meta name="author" content="机智的张尼玛"><meta name="copyright" content="机智的张尼玛"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="website"><meta property="og:title" content="张尼玛的博客"><meta property="og:url" content="http://yoursite.com/"><meta property="og:site_name" content="张尼玛的博客"><meta property="og:description"><meta property="og:image" content="http://yoursite.com/img/avatar.jpg"><meta property="article:published_time" content="2020-09-13T11:03:09.138Z"><meta property="article:modified_time" content="2020-09-13T11:03:09.138Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.1.1',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '天',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2020-09-13 19:03:09'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">11</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">9</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">5</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://i.loli.net/2020/05/01/IuWi8QbHvzjlOPw.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">张尼玛的博客</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">张尼玛的博客</h1><div id="site_subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/SamiuZhong" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:samiuzhong@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div id="scroll_down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/06/16/%E4%BD%BF%E7%94%A8ListAdapter%E5%92%8CDiffUtil%E4%BC%98%E5%8C%96RecyclerView/" title="使用ListAdapter和DiffUtil优化RecyclerView">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用ListAdapter和DiffUtil优化RecyclerView"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/06/16/%E4%BD%BF%E7%94%A8ListAdapter%E5%92%8CDiffUtil%E4%BC%98%E5%8C%96RecyclerView/" title="使用ListAdapter和DiffUtil优化RecyclerView">使用ListAdapter和DiffUtil优化RecyclerView</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-06-16T11:31:30.000Z" title="发表于 2020-06-16 19:31:30">2020-06-16</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Android/">Android</a></span></div><div class="content">这玩意儿是个啥？所谓ListAdapter就是我们通常使用的RecyclerView，官方对它的Adapter又做了一次封装，同时配合DiffUtil这个类来使用。
+那么为啥要做这个操作喃？是因为传统的Adapter写法，一个缺点就是代码冗余，不够优雅；另一个缺点就是我们刷新数据的时候必须要手动调用notifyDataSetChanged方法才行，这个方法不光是调用麻烦，而且它每次刷新都是全部item都刷一遍，那我只修改了一个item也要全部刷新，性能就很低。所以官方就又出了个DiffUtil来解决这个问题。
+那下面我们就一一道来。
+DiffUtil对于DiffUtil，我们其实只需要关注这个类
+
+DiffUtil.ItemCallback：具体用于限定数据集比对规则
+
+DiffUtil.ItemCallback我们先来看看它长什么样子
+12345678910111213public abstract static class ItemCallback&lt;T&gt; &#123;      public abstract boolean areItemsTheSame(@NonNu ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/05/06/Java%E5%92%8CKotlin%E4%B8%8B%E7%9A%84%E5%8D%95%E4%BE%8B%E5%AE%9E%E7%8E%B0/" title="Java和Kotlin下的单例实现">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java和Kotlin下的单例实现"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/05/06/Java%E5%92%8CKotlin%E4%B8%8B%E7%9A%84%E5%8D%95%E4%BE%8B%E5%AE%9E%E7%8E%B0/" title="Java和Kotlin下的单例实现">Java和Kotlin下的单例实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-05-06T11:31:30.000Z" title="发表于 2020-05-06 19:31:30">2020-05-06</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></span></div><div class="content">饿汉式饿汉式的单例在类加载时就完成了初始化，所以类的加载较慢，但获取对象的速度快。这种方式直接就避免多线程的问题。
+1234567891011//Java实现public class Singleton&#123;    private static Singleton instance = new Singleton();    private Singleton()&#123;&#125;    public static Singleton getInstance()&#123;        return instance;    &#125;&#125;
+
+12//Kotlin实现object Singleton
+
+懒汉式在第一次调用的时候进行初始化，实现了懒加载。分别有线程安全和线程不安全的两种写法，Java可通过synchronized同步锁来解决。Kotlin直接使用by lazy代理即可实现，线程安全问题通过参数可控制，具体可参考我的另一篇文章Kotlin延迟加载的线程安全探究
+123456789101112131415161718192021222324252627 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" title="Activity的启动流程探究">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Activity的启动流程探究"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" title="Activity的启动流程探究">Activity的启动流程探究</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-04-16T11:31:30.000Z" title="发表于 2020-04-16 19:31:30">2020-04-16</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Android/">Android</a></span></div><div class="content">概述Activity的启动过程分为两种
+
+Activity跨进程启动
+Activity进程内启动
+
+通常我们从桌面点击应用图标时就是跨进程启动Activity，而应用内普通的startActivity就是进程内启动。
+这里我们大致说一下。
+Activity跨进程启动在请求进程startActivity会请求AMS（Binder通信），AMS在这个过程中主要做了一下几点事情
+
+解析Activity信息（Manifest里面的那些参数等）
+处理启动参数
+启动目标进程（Zygote）
+绑定新进程
+
+AMS在完成了以上的这些操作之后就会把请求转交到ApplicationThread（Binder通信）（ApplicationThread是ActivityThread的内部类），后续由ApplicationThread做相应的处理，直到我们熟知的Activity生命周期。
+Activity进程内启动进程内启动activity也会请求AMS，过程和上面相仿，只是AMS的处理过程会少了3、4两个步骤，也就是说不会启动新进程了，然后转到当前进程的ApplicationThread继续做处理。
+Acti ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/04/10/Kotlin%E5%BB%B6%E8%BF%9F%E5%B1%9E%E6%80%A7%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A2%E7%A9%B6/" title="Kotlin延迟加载的线程安全探究">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kotlin延迟加载的线程安全探究"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/04/10/Kotlin%E5%BB%B6%E8%BF%9F%E5%B1%9E%E6%80%A7%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A2%E7%A9%B6/" title="Kotlin延迟加载的线程安全探究">Kotlin延迟加载的线程安全探究</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-04-10T11:31:30.000Z" title="发表于 2020-04-10 19:31:30">2020-04-10</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Kotlin/">Kotlin</a></span></div><div class="content">由单例模式引发的思考众所周知，在Java语言中，创建一个对象我们可以在声明的时候就进行实例化，也可以把对象的声明和实例化分开进行。如
+饿汉模式的单例
+12345678910public class Singleton&#123;    	private static Singleton instance = new Singleton();		private Singleton()&#123;&#125;;		public static Singleton getInstance()&#123;		return instance;	&#125;&#125;
+
+懒汉模式的单例
+123456789101112public class Singleton&#123;    	private static Singleton instance;    	private Singleton()&#123;&#125;;    	public static Singleton getInstance()&#123;		if(instance == null)			instance = new Si ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/03/14/Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E4%BD%8D%E8%BF%90%E7%AE%97/" title="Java基本数据类型和位运算">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基本数据类型和位运算"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/14/Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E4%BD%8D%E8%BF%90%E7%AE%97/" title="Java基本数据类型和位运算">Java基本数据类型和位运算</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-03-14T11:31:30.000Z" title="发表于 2020-03-14 19:31:30">2020-03-14</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">数据类型Java存储的是有符号数，所以第一位用来表示符号，后面的才用来存放数据
+下面总结一下基本数据类型
+
+
+
+数据类型
+位数
+最大值
+最小值
+
+
+
+Byte
+8
+2^7-1
+-2^7
+
+
+Short
+16
+2^15-1
+-2^15
+
+
+Int
+32
+2^31-1
+-2^31
+
+
+Long
+64
+2^63-1
+-2^63
+
+
+Float
+32
+
+
+
+
+Double
+64
+
+
+
+
+Boolean
+1
+
+
+
+
+Char
+16（两个Byte）
+
+
+
+
+位运算
+
+
+描述
+符号
+描述
+
+
+
+与
+&amp;
+两个都是1则为1，否则为0
+
+
+或
+|
+只要有一个为1，就为1，否则为0
+
+
+非
+~
+1变0，0变1
+
+
+异或
+^
+两个值相同就是0，否则为1
+
+
+左移
+&lt;&lt;
+
+
+
+右移
+&gt;&gt;
+带符号
+
+
+右移
+&gt;&gt;&gt;
+无符号（符号位变成0）
+
+
+举例说明
+1234567int a = 60;	//0011 1100int b = 13;	//0000 1101a &amp; b = 0000 1100a | b = 0011 1101a ^ b = 0011 000 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/03/13/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%E5%92%8C%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/" title="原型模式和深浅拷贝">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="原型模式和深浅拷贝"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/13/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%E5%92%8C%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/" title="原型模式和深浅拷贝">原型模式和深浅拷贝</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-03-13T11:31:30.000Z" title="发表于 2020-03-13 19:31:30">2020-03-13</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></span></div><div class="content">原型模式在说深拷贝和浅拷贝之前我们先来了解下什么是原型模式：
+
+用原型实例指定创建对象的种类，并且通过拷贝这些原型创建新的对象。
+
+什么意思？通常来说我们要创建一个对象的话会使用new关键词创建，但是假设现在的业务场景我们需要反复创建n多个同一个类的对象，那么我们就需要new很多次。
+这个时候我们就可以考虑使用原型模式，只第一次new一个对象出来作为原型，然后后面的对象都通过clone方法来对原型进行拷贝，拷贝的效率会比直接new要高一些。
+下面尝试实现一下原型模式，首先创建一个原型类Thing
+1234567891011121314151617public class Thing implements Cloneable &#123;	public Thing() &#123;        System.out.println(&quot;走到了构造方法&quot;);    &#125;    @Override    protected Thing clone() throws CloneNotSupportedException &#123;        Thing thi ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/03/13/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E4%B9%8BActivity/" title="四大组件之Activity">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="四大组件之Activity"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/13/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E4%B9%8BActivity/" title="四大组件之Activity">四大组件之Activity</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-03-13T11:31:30.000Z" title="发表于 2020-03-13 19:31:30">2020-03-13</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Android/">Android</a></span></div><div class="content">Activity的生命周期典型情况下
+onCreate： 表示Activity正在被创建
+onRestart： 表示Activity正在重新启动
+onStart： 表示Activity正在被启动（已经显示出来了，但是我们还看不到）
+onResume： 表示Activity已经可见了
+onPause： 表示Activity正在停止
+onStop： 表示Activity即将停止
+onDestroy： 表示Activity即将被销毁
+
+举例说明
+
+第一次启动：onCreate -&gt; onStart -&gt; onResume
+回到桌面：onPause -&gt; onStop
+再次回到原Activity：onRestart -&gt; onStart -&gt; onResume
+back键返回：onPause -&gt; onStop -&gt; onDestroy
+A Activity到B Activity：A.onPause -&gt; B.onCreate -&gt; B.onStart -&gt; B.onResume -&gt; A.onStop
+
+异常情况下Activi ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/03/12/%E7%BB%86%E8%AF%B4Android%E7%9A%84Window/" title="细说Android的Window">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="细说Android的Window"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/12/%E7%BB%86%E8%AF%B4Android%E7%9A%84Window/" title="细说Android的Window">细说Android的Window</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-03-12T11:31:30.000Z" title="发表于 2020-03-12 19:31:30">2020-03-12</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Android/">Android</a></span></div><div class="content">Window是个啥？Android中的Window是一个窗口的概念，并且它是一个抽象的东西，我们日常开发直接接触到的东西是View，包括Activity、Dialog、Toast等，他们的View都是附着在Window之上的。
+所以我们可以说Window是View的直接管理者。
+Window一家人都有哪些成员？
+Window
+
+Window是一个抽象类，具体实现类为PhoneWindow，它的职责是对View进行管理。
+
+WindowManager
+
+WindowManager是一个接口，继承自ViewManager接口，它的实现类为WindowManagerImpl，而WindowManagerImpl又会具体的功能实现委托给WindowManagerGlobal。WindowManager的爸爸给它定义了三个方法
+12345public interface ViewManager&#123;	public void addView(View view, ViewGroup.LayoutParams params);	public void updateViewLayout(View ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/02/27/%E7%BB%86%E8%AF%B4Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/" title="细说Java反射机制">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="细说Java反射机制"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/02/27/%E7%BB%86%E8%AF%B4Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/" title="细说Java反射机制">细说Java反射机制</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-02-27T11:31:30.000Z" title="发表于 2020-02-27 19:31:30">2020-02-27</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">反射到底是个啥？
+能够分析类能力的程序被称为反射（reflective），通过反射可以在运行时（而不是在编译时）动态地分析软件组件并描述组件的功能。
+
+首先我们要明确一点，反射并不是什么很难很高深的东西。正相反，反射其实就是Java系统提供给我们的一系列API，具体来说就是由java.lang.reflect包提供的。就跟调用其他API一个道理，我们只要了解了这个API用法，那就掌握了反射。
+所谓存在即合理，既然Java给我们提供了这个功能，那么它一定是有用的。那它具体有啥用？通过反射，我们可以
+
+分析类的能力
+获得类的对象，即使你不知道这个类到底是个啥玩意儿
+
+试想这样一个场景，我们有一个产品类
+123456public class Product &#123;        private String mName;    private int mPrice;&#125;
+
+然后我们现在要弄一个工厂类来生产这个产品。
+有朋友说这有何难？看我的
+123456public class Factory &#123;    public Product create()&#123;    ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/02/21/%E7%BB%86%E8%AF%B4Android%E4%B8%8B%E7%9A%84%E5%A4%9A%E7%BA%BF%E7%A8%8B/" title="细说Android下的多线程">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="细说Android下的多线程"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/02/21/%E7%BB%86%E8%AF%B4Android%E4%B8%8B%E7%9A%84%E5%A4%9A%E7%BA%BF%E7%A8%8B/" title="细说Android下的多线程">细说Android下的多线程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-02-21T11:31:30.000Z" title="发表于 2020-02-21 19:31:30">2020-02-21</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Android/">Android</a></span></div><div class="content">多线程是什么？我为什么要用多线程？线程和进程的概念按照操作系统中的描述，线程是CPU调度的最小单元，同时线程是一种有限的系统资源。而进程一般指一个执行单元，在PC和移动设备上指一个程序或者一个应用。一个进程可以包含多个线程。
+简单点理解，一个Android APP就是一个进程，一个APP里面有多个线程，我们多线程编程的意义就是实现“一个APP多个线程”。
+有杠精可能会问，那我可不可以一个APP多个进程？又可不可以一个进程只有一个线程？
+我告诉你，可以，都可以。
+单线程的APP只包括Android的UI线程也是能运行的；一个APP多个进程也是可以达到的，实现方式涉及到Android的IPC机制，这里不细说。
+为什么要使用多线程？这里杠精可能会说，那你单线程也能跑，我为啥还要整多线程？
+我告诉你，首先这句话从Android开发的角度来讲，近似于一个假命题。因为谷歌爸爸现在强制规定了不能在UI线程进行耗时操作，必须放到子线程里面去，除非你的程序不涉及耗时操作。究其原因，是因为在UI线程进行耗时操作的话，给用户的使用体验就是界面“卡顿”。同时，如果UI线程被阻塞超过一定时间会触发ANR(App ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" data-lazy-src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">机智的张尼玛</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length_num">11</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length_num">9</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length_num">5</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/SamiuZhong"><i class="fab fa-github"></i><span>Github</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SamiuZhong" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:samiuzhong@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2020/06/16/%E4%BD%BF%E7%94%A8ListAdapter%E5%92%8CDiffUtil%E4%BC%98%E5%8C%96RecyclerView/" title="使用ListAdapter和DiffUtil优化RecyclerView"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用ListAdapter和DiffUtil优化RecyclerView"/></a><div class="content"><a class="title" href="/2020/06/16/%E4%BD%BF%E7%94%A8ListAdapter%E5%92%8CDiffUtil%E4%BC%98%E5%8C%96RecyclerView/" title="使用ListAdapter和DiffUtil优化RecyclerView">使用ListAdapter和DiffUtil优化RecyclerView</a><time datetime="2020-06-16T11:31:30.000Z" title="发表于 2020-06-16 19:31:30">2020-06-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/05/06/Java%E5%92%8CKotlin%E4%B8%8B%E7%9A%84%E5%8D%95%E4%BE%8B%E5%AE%9E%E7%8E%B0/" title="Java和Kotlin下的单例实现"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java和Kotlin下的单例实现"/></a><div class="content"><a class="title" href="/2020/05/06/Java%E5%92%8CKotlin%E4%B8%8B%E7%9A%84%E5%8D%95%E4%BE%8B%E5%AE%9E%E7%8E%B0/" title="Java和Kotlin下的单例实现">Java和Kotlin下的单例实现</a><time datetime="2020-05-06T11:31:30.000Z" title="发表于 2020-05-06 19:31:30">2020-05-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" title="Activity的启动流程探究"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Activity的启动流程探究"/></a><div class="content"><a class="title" href="/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" title="Activity的启动流程探究">Activity的启动流程探究</a><time datetime="2020-04-16T11:31:30.000Z" title="发表于 2020-04-16 19:31:30">2020-04-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/04/10/Kotlin%E5%BB%B6%E8%BF%9F%E5%B1%9E%E6%80%A7%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A2%E7%A9%B6/" title="Kotlin延迟加载的线程安全探究"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kotlin延迟加载的线程安全探究"/></a><div class="content"><a class="title" href="/2020/04/10/Kotlin%E5%BB%B6%E8%BF%9F%E5%B1%9E%E6%80%A7%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A2%E7%A9%B6/" title="Kotlin延迟加载的线程安全探究">Kotlin延迟加载的线程安全探究</a><time datetime="2020-04-10T11:31:30.000Z" title="发表于 2020-04-10 19:31:30">2020-04-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/03/14/Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E4%BD%8D%E8%BF%90%E7%AE%97/" title="Java基本数据类型和位运算"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基本数据类型和位运算"/></a><div class="content"><a class="title" href="/2020/03/14/Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E4%BD%8D%E8%BF%90%E7%AE%97/" title="Java基本数据类型和位运算">Java基本数据类型和位运算</a><time datetime="2020-03-14T11:31:30.000Z" title="发表于 2020-03-14 19:31:30">2020-03-14</time></div></div></div></div></div><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Android/"><span class="card-category-list-name">Android</span><span class="card-category-list-count">5</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Kotlin/"><span class="card-category-list-name">Kotlin</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%9F%BA%E6%9C%AC%E4%BF%AE%E5%85%BB/"><span class="card-category-list-name">基本修养</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="card-category-list-name">设计模式</span><span class="card-category-list-count">2</span></a></li>
+            
+            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href='/tags/Android/' style='font-size:1.31em; color:rgb(45, 72, 14)'>Android</a><a href='/tags/Framework/' style='font-size:1.26em; color:rgb(43, 94, 103)'>Framework</a><a href='/tags/Java/' style='font-size:1.28em; color:rgb(58, 188, 62)'>Java</a><a href='/tags/Kotlin/' style='font-size:1.10em; color:rgb(22, 84, 87)'>Kotlin</a><a href='/tags/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/' style='font-size:1.42em; color:rgb(109, 196, 25)'>四大组件</a><a href='/tags/%E5%9F%BA%E6%9C%AC%E4%BF%AE%E5%85%BB/' style='font-size:1.47em; color:rgb(200, 77, 83)'>基本修养</a><a href='/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/' style='font-size:1.49em; color:rgb(93, 102, 0)'>多线程</a><a href='/tags/%E6%BA%90%E7%A0%81/' style='font-size:1.27em; color:rgb(29, 193, 136)'>源码</a><a href='/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/' style='font-size:1.18em; color:rgb(195, 67, 41)'>设计模式</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/06/"><span class="card-archive-list-date">六月 2020</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/05/"><span class="card-archive-list-date">五月 2020</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/04/"><span class="card-archive-list-date">四月 2020</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/03/"><span class="card-archive-list-date">三月 2020</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/02/"><span class="card-archive-list-date">二月 2020</span><span class="card-archive-list-count">3</span></a></li></ul></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By 机智的张尼玛</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

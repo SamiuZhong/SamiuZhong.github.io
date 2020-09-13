@@ -1,0 +1,221 @@
+1.新建要显示的item类
+public class Fruit {
+
+    private String  name;
+    private int imageId;
+
+    public Fruit(String name,int imageId){
+        this.name = name;
+        this.imageId = imageId;
+    }
+
+    public Fruit(String name){
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getImageId() {
+        return imageId;
+    }
+}
+
+2.新建item类相应的XML布局文件
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/fruit_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/fruit_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="111"
+        android:textSize="50dp" />
+</LinearLayout>
+
+3.新建对应的Adapter类继承至RecyclerView.Adapter
+public class MainRecylerAdapter extends RecyclerView.Adapter {
+
+    private List<Function> functionList;
+
+    static class FunctionViewHolder extends  RecyclerView.ViewHolder {
+        TextView funNameTv;
+
+        public FunctionViewHolder(@NonNull View itemView) {
+            super(itemView);
+            funNameTv = itemView.findViewById(R.id.function_name_tv);
+        }
+    }
+
+    public MainRecylerAdapter(List<Function> functionList){
+        this.functionList = functionList;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).
+                inflate(R.layout.function_layout,parent,false);
+        return new FunctionViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        Function function = functionList.get(position);
+        FunctionViewHolder holder = (FunctionViewHolder) viewHolder;
+        holder.funNameTv.setText(function.getName());
+    }
+
+    @Override
+    public int getItemCount() {
+        return functionList.size();
+    }
+}
+
+4.Activity中调用
+	private List<Fruit> fruitList = new ArrayList<>();
+
+	private void initRecycleView(){
+        RecyclerView recyclerView = findViewById(R.id.recycleView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        FruitAdapter adapter = new FruitAdapter(fruitList);
+        recyclerView.setAdapter(adapter);
+    }
+	
+	private void initFruits(){
+        for (int i=0;i<2;i++) {
+            Fruit apple1 = new Fruit("111");
+            fruitList.add(apple1);
+            Fruit apple2 = new Fruit("222");
+            fruitList.add(apple2);
+            Fruit apple3 = new Fruit("333");
+            fruitList.add(apple3);
+            Fruit apple4 = new Fruit("444");
+            fruitList.add(apple4);
+            Fruit apple5 = new Fruit("555");
+            fruitList.add(apple5);
+            Fruit apple6 = new Fruit("666");
+            fruitList.add(apple6);
+        }
+    }
+	
+	
+-------------------------2019.1.17更新-------------------------
+要使RecyclerView显示为GridView效果，只需把LinearLayoutManager换成GridLayoutManager
+	GridLayoutManager manager = new GridLayoutManager(this,3);
+	recyclerView.setLayoutManager(manager);
+	
+-------------------------2019.1.18更新-------------------------
+要更改组合部件中的RecyclerView中的元素的属性并刷新显示：
+1.在元素item类中添加相关属性变量，并添加get、set方法
+2.在RecyclerAdapter中添加refreshxxx()方法，传入一个RecyclerView的内部元素item的对象，通过this关键字为RecyclerAdapter的全局对象item赋值，然后调用系统的notifyDataChanged()方法通知视图进行更改；
+3.在组合部件类CombineRecyclerView的类中添加setxxx()方法，传入一个RecyclerView的内部元素item的对象，然后调用RecyclerAdapter中的refreshxxx()方法
+4.在Activity中创建RecyclerView的内部元素item的新对象并实例化，
+  然后调用item的setxxx()方法传入需改改动的属性，
+  最后调用组合部件combineView的setxxx()方法并传入对象；
+  
+RecyclerView内部元素的间隔设置
+1.LinearLayoutManager设置Item间距：
+(1)新建辅助类：
+public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+    private int space;
+
+    public SpacesItemDecoration(int space) {
+        this.space = space;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view,
+                               RecyclerView parent, RecyclerView.State state) {
+        outRect.left = space;
+        outRect.right = space;
+        outRect.bottom = space;
+
+        // Add top margin only for the first item to avoid double space between items
+        if (parent.getChildPosition(view) == 0)
+            outRect.top = space;
+    }
+}
+(2)Activity中调用
+int space = 8;
+mRecyclerView.addItemDecoration(new SpacesItemDecoration(space));
+
+2.GridLayoutManager设置Item间距：
+(1)新建辅助类：
+public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+   private int spanCount; //列数
+   private int spacing; //间隔
+   private boolean includeEdge; //是否包含边缘
+
+    public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+        this.spanCount = spanCount;
+        this.spacing = spacing;
+        this.includeEdge = includeEdge;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+       
+       //这里是关键，需要根据你有几列来判断
+        int position = parent.getChildAdapterPosition(view); // item position
+        int column = position % spanCount; // item column
+
+        if (includeEdge) {
+            outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+            outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+            if (position < spanCount) { // top edge
+                outRect.top = spacing;
+            }
+            outRect.bottom = spacing; // item bottom
+        } else {
+            outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+            outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+            if (position >= spanCount) {
+                outRect.top = spacing; // item top
+            }
+        }
+    }
+}
+(2)调用
+int spanCount = 3; // 3 columns
+int spacing = 50; // 50px
+boolean includeEdge = false;
+mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, includeEdge));
+(3)如果你了别人的RecycleView 上拉加载下拉刷新，addItemDecoration 这个方法 不一定会给你加上，你可以在源码上自行添加:
+public void addItemDecoration(RecyclerView.ItemDecoration decor) {
+    mRecyclerView.addItemDecoration(decor,-1);
+}
+
+
+---------------------2019.2.27更新-------------------------
+RecyclerView在Activity中的刷新数据
+1.在Adapter中添加方法：
+	public void insertItem(PersonShow personShow){
+        if (mPersonShowList!=null){
+            mPersonShowList.add(0,personShow);
+        }else {
+            mPersonShowList = new ArrayList<>();
+            mPersonShowList.add(personShow);
+        }
+        notifyItemInserted(0);
+    }
+2.在Activity中相应位置调用：(这里的PersonShow为我们自己定义的RecyclerView显示的item类)
+	adapter.insertItem(personShow);
+    recyclerView.scrollToPosition(0);
+	
+	
+---------------------2019.3.18更新-------------------------	
+实现RecyclerView的横向滑动：
+	使用 RecyClerView 的线性布局管理器 LinearLayoutManager，调用
+	setOrientation(LinearLayoutManager.HORIZONTAL);

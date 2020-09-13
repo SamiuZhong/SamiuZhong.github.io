@@ -1,0 +1,67 @@
+静态加载：
+  1.在Activaty的Layout文件中添加Fragment;
+  2.Activity实现接口 Fragment.OnFragmentInteractionListener;
+动态加载：
+  1.在Activity的布局文件中手动添加一个Layout布局，如FrameLayout;
+  2.Activity实现接口 Fragment.OnFragmentInteractionListener;
+  3.定义相关全局变量
+    private HomeFragment homeFragment;                      //碎片对象
+    private FragmentManager fragmentManager;                //碎片管理器
+    private FragmentTransaction transaction;                //碎片事务
+  4.碎片对象实例化
+    homeFragment = new HomeFragment;
+  5.定义replaceFragment方法
+	private void replaceFragment(Fragment fragment){
+        fragmentManager = getSupportFragmentManager();
+        transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.frameLayout,fragment);
+        transaction.commit();
+    }
+  6.调用replaceFragment方法：replaceFragment(new Fragment());
+隐藏碎片：
+	private void hideFragment(Fragment fragment){
+        fragmentManager = getSupportFragmentManager();
+        transaction = fragmentManager.beginTransaction();
+        transaction.hide(fragment);
+        transaction.commit();
+    }
+
+Fragment和Activaty之间的进行通信
+活动调用碎片：Fragment fragment = (Fragment) getFragmentManager.finFragmentByIf(R.id.fragment);
+碎片调用活动：Activaty activaty = (Activaty) getActivaty();
+
+一般来说，你创建一个fragment，需要至少复写如下几个生命周期回调函数：
+1.onCreate() 
+当创建fragment时，系统会调用onCreate()。所以，你可以把一些需要初始化的变量在那里初始化。
+2.onCreateView() 
+当需要第一次画fragment维护的ui碎片时，系统会调用该回调函数。 
+它需要返回一个view，该view就是fragment维护的ui碎片。当然你可以返回null，如果你只想要这个fragment给你办点ui以外的事情。
+3.onPause() 
+当用户离开该fragment时会调用该回调函数。一般是它的宿主activity进入onPause()。
+
+我整理一下：
+onAttach():当fragment与宿主activity关联时调用。 
+onCreate():当fragment被创建时。 
+onCreateView():当为碎片创建视图时调用。 
+onActivityCreated()：当宿主activity已经执行完onCreate()时调用。
+onStart()，onResume()，onPause()和onStop()这几个和activity的那几个一样，就不说了。
+onDestroyView()：与onCreateView()相对应，当要销毁view时调用。你可以在那里清理资源。 
+onDestroy()：与onCreate()相对应，当要销毁fragment时调用。 
+onDetach()：与onAttach()相对应，被宿主activity取消关联。
+这里需要指出的是，fragment的生命周期也可以独立改变，一般是在宿主activity处于resumed状态。比方说添加、移除或隐藏fragment。
+
+每个fragment都需要一个唯一的标识符，其一，系统本身要用到，当activity重启时，通过标识符寻找；其二，我们可能也需要用到，比方说，动态添加删除等。
+有两个方法添加标识符：
+1.通过android:id指定唯一id 
+2.通过android:tag指定唯一string
+如果你两者都没提供，系统会默认使用fragment所在的容器的id。
+
+---------------------2018.12.27更新----------------------
+在Fragment中声明View组件及实例化：
+1.声明：private ImageView imageView;
+2.重写onViewCreated()方法，在里面实例化对象
+	@Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        imageView = getView().findViewById(R.id.imageView2);
+        super.onViewCreated(view, savedInstanceState);
+    }

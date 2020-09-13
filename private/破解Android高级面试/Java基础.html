@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>张尼玛的博客 | 张尼玛的博客</title><meta name="description" content="Java的char是两个字节，是怎么存储UTF-8字符的？ Java char不存UTF-8的字节，而是存UTF-16的 Unicode通用字符集占两个字节，例如“中” Unicode扩展字符集需要用一对char来表示，例如emoji表情 Unicode是字符集，不是编码，作用类似于ASCII码 Java String的length不是字符数，而是char的个数  Java的String有多长？S"><meta name="author" content="机智的张尼玛"><meta name="copyright" content="机智的张尼玛"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/private/%E7%A0%B4%E8%A7%A3Android%E9%AB%98%E7%BA%A7%E9%9D%A2%E8%AF%95/Java%E5%9F%BA%E7%A1%80"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="website"><meta property="og:title" content="张尼玛的博客"><meta property="og:url" content="http://yoursite.com/private/%E7%A0%B4%E8%A7%A3Android%E9%AB%98%E7%BA%A7%E9%9D%A2%E8%AF%95/Java%E5%9F%BA%E7%A1%80"><meta property="og:site_name" content="张尼玛的博客"><meta property="og:description" content="Java的char是两个字节，是怎么存储UTF-8字符的？ Java char不存UTF-8的字节，而是存UTF-16的 Unicode通用字符集占两个字节，例如“中” Unicode扩展字符集需要用一对char来表示，例如emoji表情 Unicode是字符集，不是编码，作用类似于ASCII码 Java String的length不是字符数，而是char的个数  Java的String有多长？S"><meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><meta property="article:published_time" content="2020-09-13T09:13:35.269Z"><meta property="article:modified_time" content="2020-09-13T09:13:35.269Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.1.1',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '天',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2020-09-13 17:13:35'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">11</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">9</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">5</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><header class="not-index-bg" id="page-header" style="background-image: url(https://i.loli.net/2020/05/01/IuWi8QbHvzjlOPw.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">张尼玛的博客</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="page_site-info"><h1 id="site_title">张尼玛的博客</h1></div></header><main class="layout_page" id="content-inner"><div id="page"><div id="article-container"><h2 id="Java的char是两个字节，是怎么存储UTF-8字符的？"><a href="#Java的char是两个字节，是怎么存储UTF-8字符的？" class="headerlink" title="Java的char是两个字节，是怎么存储UTF-8字符的？"></a>Java的char是两个字节，是怎么存储UTF-8字符的？</h2><ul>
+<li>Java char不存UTF-8的字节，而是存UTF-16的</li>
+<li>Unicode通用字符集占两个字节，例如“中”</li>
+<li>Unicode扩展字符集需要用一对char来表示，例如emoji表情</li>
+<li>Unicode是字符集，不是编码，作用类似于ASCII码</li>
+<li>Java String的length不是字符数，而是char的个数</li>
+</ul>
+<h2 id="Java的String有多长？"><a href="#Java的String有多长？" class="headerlink" title="Java的String有多长？"></a>Java的String有多长？</h2><p>String两个不同的存储位置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//存放在栈内</span></span><br><span class="line">String longString = <span class="string">&quot;aaa...aaa&quot;</span>;	</span><br><span class="line"></span><br><span class="line"><span class="comment">//存放在堆</span></span><br><span class="line"><span class="keyword">byte</span>[] bytes = loadFromFile(<span class="keyword">new</span> File(<span class="string">&quot;xxx.txt&quot;</span>));</span><br><span class="line">String superLongString = <span class="keyword">new</span> String(bytes);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>受字节码限制，字符串最终的MUTF-8字节数不超过65535个</p>
+</li>
+<li><p>Latin字符，受Javac代码限制，最多65534个</p>
+</li>
+<li><p>非Latin字符最多字节数是65535个</p>
+</li>
+<li><p>如果运行时方法区设置较小，也会收到方法区大小的限制</p>
+</li>
+</ul>
+<ul>
+<li><p>受虚拟机指令限制，堆存放的字符数理论上线为Integer.MAX_VALUE，实际情况上线可能小于Integer.MAX_VALUE</p>
+</li>
+<li><p>如果堆内存较小，也会收到堆内存的限制</p>
+</li>
+</ul>
+<h2 id="Java的匿名内部类有哪些限制？"><a href="#Java的匿名内部类有哪些限制？" class="headerlink" title="Java的匿名内部类有哪些限制？"></a>Java的匿名内部类有哪些限制？</h2><p>匿名内部类的名字为外部类加$n，n是匿名内部类的名字，如com.samiu.doctor.Home$1</p>
+<p>匿名内部类的构造方法：</p>
+<ul>
+<li>编译器生成</li>
+<li>参数列表包括<ul>
+<li>外部对象</li>
+<li>父类的外部对象</li>
+<li>父类的构造方法参数</li>
+<li>外部捕获的变量（final）</li>
+<li>只有单一方法的接口可以用Lambda转换</li>
+</ul>
+</li>
+</ul>
+<h2 id="Java的方法分派"><a href="#Java的方法分派" class="headerlink" title="Java的方法分派"></a>Java的方法分派</h2><ul>
+<li>静态分派——方法重载分派<ul>
+<li>编译期确定</li>
+<li>依据调用者的声明类型和方法参数类型</li>
+</ul>
+</li>
+<li>动态分派——方法重写分派<ul>
+<li>运行时确定</li>
+<li>一句调用者的实际类型分派</li>
+</ul>
+</li>
+</ul>
+<h2 id="Java泛型的实现机制是怎样的？"><a href="#Java泛型的实现机制是怎样的？" class="headerlink" title="Java泛型的实现机制是怎样的？"></a>Java泛型的实现机制是怎样的？</h2><p>泛型擦除：在编译的时候会进行泛型擦除，也就是说编译的时候所有的泛型都会变成Object</p>
+<ol>
+<li><p>基本类型无法所谓泛型实参</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">int</span>&gt; list;		<span class="comment">//编译出错</span></span><br><span class="line">List&lt;Integer&gt; list;	<span class="comment">//编译通过	</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>泛型类型无法用作方法重载的参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printList</span><span class="params">(List&lt;Integer&gt; list)</span></span>&#123;&#125;	<span class="comment">//编译出错</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>泛型类型无法当作真实类型使用（因为编译时擦除了）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(T t)</span></span>&#123;</span><br><span class="line">	T newInstance = <span class="keyword">new</span> T();</span><br><span class="line">	T[] array = <span class="keyword">new</span> T[<span class="number">0</span>];</span><br><span class="line">	Class c = T.class;</span><br><span class="line">    List&lt;T&gt; list = <span class="keyword">new</span> ArrayList&lt;T&gt;();	<span class="comment">//只有这一行可以编译，其他都不行</span></span><br><span class="line">	<span class="keyword">if</span>(list <span class="keyword">instanceof</span> List&lt;String&gt;)&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里也就能解释为什么Gson的fromJson方法需要传一个classOfT参数了，因为不传的话它就不晓得你到底要啥类型的，虽然你有T，但是编译会进行泛型擦除，T都变成Object了。</p>
+</li>
+</ol>
+<h2 id="onActivityResult使用起来非常麻烦，为什么不设计成回调？"><a href="#onActivityResult使用起来非常麻烦，为什么不设计成回调？" class="headerlink" title="onActivityResult使用起来非常麻烦，为什么不设计成回调？"></a>onActivityResult使用起来非常麻烦，为什么不设计成回调？</h2><ol>
+<li><p><strong>Activity的销毁和恢复机制不允许匿名内部类出现：</strong></p>
+<p>假设A Activity使用回调启动了B activity，假设在使用B的过程中因为内存不足A被回收了，这个时候再从B回到A，Activity的恢复机制会恢复一个A Activity，但是这里的A已经不是最初的那个A了，是两个对象。</p>
+<p>这个时候如果在回调里面做操作，比如说更新UI，这里操作的对象是最初那个A，已经不是当前的A了，所以就会表现出来这个操作没有作用。</p>
+</li>
+<li><p><strong>非要这么做怎么实现？</strong></p>
+<p>基于注解处理器和Fragment的回调</p>
+</li>
+</ol>
+<h2 id="面试技巧"><a href="#面试技巧" class="headerlink" title="面试技巧"></a>面试技巧</h2><ul>
+<li>抓住细节，有技巧的回避知识盲区</li>
+<li>把我节奏，不要等面试官追问</li>
+<li>主动深入，让面试官了解你的知识体系</li>
+<li>触类旁通，让面试官眼前一亮</li>
+</ul>
+</div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" data-lazy-src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">机智的张尼玛</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length_num">11</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length_num">9</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length_num">5</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/SamiuZhong"><i class="fab fa-github"></i><span>Github</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SamiuZhong" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:samiuzhong@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2020/06/16/%E4%BD%BF%E7%94%A8ListAdapter%E5%92%8CDiffUtil%E4%BC%98%E5%8C%96RecyclerView/" title="使用ListAdapter和DiffUtil优化RecyclerView"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用ListAdapter和DiffUtil优化RecyclerView"/></a><div class="content"><a class="title" href="/2020/06/16/%E4%BD%BF%E7%94%A8ListAdapter%E5%92%8CDiffUtil%E4%BC%98%E5%8C%96RecyclerView/" title="使用ListAdapter和DiffUtil优化RecyclerView">使用ListAdapter和DiffUtil优化RecyclerView</a><time datetime="2020-06-16T11:31:30.000Z" title="发表于 2020-06-16 19:31:30">2020-06-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/05/06/Java%E5%92%8CKotlin%E4%B8%8B%E7%9A%84%E5%8D%95%E4%BE%8B%E5%AE%9E%E7%8E%B0/" title="Java和Kotlin下的单例实现"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java和Kotlin下的单例实现"/></a><div class="content"><a class="title" href="/2020/05/06/Java%E5%92%8CKotlin%E4%B8%8B%E7%9A%84%E5%8D%95%E4%BE%8B%E5%AE%9E%E7%8E%B0/" title="Java和Kotlin下的单例实现">Java和Kotlin下的单例实现</a><time datetime="2020-05-06T11:31:30.000Z" title="发表于 2020-05-06 19:31:30">2020-05-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" title="Activity的启动流程探究"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Activity的启动流程探究"/></a><div class="content"><a class="title" href="/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" title="Activity的启动流程探究">Activity的启动流程探究</a><time datetime="2020-04-16T11:31:30.000Z" title="发表于 2020-04-16 19:31:30">2020-04-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/04/10/Kotlin%E5%BB%B6%E8%BF%9F%E5%B1%9E%E6%80%A7%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A2%E7%A9%B6/" title="Kotlin延迟加载的线程安全探究"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kotlin延迟加载的线程安全探究"/></a><div class="content"><a class="title" href="/2020/04/10/Kotlin%E5%BB%B6%E8%BF%9F%E5%B1%9E%E6%80%A7%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A2%E7%A9%B6/" title="Kotlin延迟加载的线程安全探究">Kotlin延迟加载的线程安全探究</a><time datetime="2020-04-10T11:31:30.000Z" title="发表于 2020-04-10 19:31:30">2020-04-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/03/14/Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E4%BD%8D%E8%BF%90%E7%AE%97/" title="Java基本数据类型和位运算"><img data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基本数据类型和位运算"/></a><div class="content"><a class="title" href="/2020/03/14/Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E4%BD%8D%E8%BF%90%E7%AE%97/" title="Java基本数据类型和位运算">Java基本数据类型和位运算</a><time datetime="2020-03-14T11:31:30.000Z" title="发表于 2020-03-14 19:31:30">2020-03-14</time></div></div></div></div></div><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Android/"><span class="card-category-list-name">Android</span><span class="card-category-list-count">5</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Kotlin/"><span class="card-category-list-name">Kotlin</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%9F%BA%E6%9C%AC%E4%BF%AE%E5%85%BB/"><span class="card-category-list-name">基本修养</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="card-category-list-name">设计模式</span><span class="card-category-list-count">2</span></a></li>
+            
+            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href='/tags/Android/' style='font-size:1.31em; color:rgb(45, 72, 14)'>Android</a><a href='/tags/Framework/' style='font-size:1.26em; color:rgb(43, 94, 103)'>Framework</a><a href='/tags/Java/' style='font-size:1.28em; color:rgb(58, 188, 62)'>Java</a><a href='/tags/Kotlin/' style='font-size:1.10em; color:rgb(22, 84, 87)'>Kotlin</a><a href='/tags/%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/' style='font-size:1.42em; color:rgb(109, 196, 25)'>四大组件</a><a href='/tags/%E5%9F%BA%E6%9C%AC%E4%BF%AE%E5%85%BB/' style='font-size:1.47em; color:rgb(200, 77, 83)'>基本修养</a><a href='/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/' style='font-size:1.49em; color:rgb(93, 102, 0)'>多线程</a><a href='/tags/%E6%BA%90%E7%A0%81/' style='font-size:1.27em; color:rgb(29, 193, 136)'>源码</a><a href='/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/' style='font-size:1.18em; color:rgb(195, 67, 41)'>设计模式</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/06/"><span class="card-archive-list-date">六月 2020</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/05/"><span class="card-archive-list-date">五月 2020</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/04/"><span class="card-archive-list-date">四月 2020</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/03/"><span class="card-archive-list-date">三月 2020</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/02/"><span class="card-archive-list-date">二月 2020</span><span class="card-archive-list-count">3</span></a></li></ul></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By 机智的张尼玛</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

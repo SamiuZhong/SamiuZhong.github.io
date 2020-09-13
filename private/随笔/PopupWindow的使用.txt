@@ -1,0 +1,46 @@
+https://www.jianshu.com/p/6c32889e6377
+
+平时我们可能是这样用PopupWindow的：
+
+创建一个布局，再创建一个类继承PopupWindow
+
+
+public class TestPopupWindow extends PopupWindow {
+
+    public TestPopupWindow(Context context) {
+        super(context);
+        setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        setOutsideTouchable(true);
+        setFocusable(true);
+        setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        View contentView = LayoutInflater.from(context).inflate(R.layout.popup_test, 
+              null, false);
+        setContentView(contentView);
+    }
+}
+
+
+然后直接使用它
+
+TestPopupWindow mWindow = new TestPopupWindow(this);
+//根据指定View定位
+PopupWindowCompat.showAsDropDown(mWindow, mButtom, 0, 0, Gravity.START);
+//或者
+mWindow.showAsDropDown(...);
+//又或者使用showAtLocation根据屏幕来定位
+mWindow.showAtLocation(...);
+
+Gravity.LEFT(Gravity.START)：相对于View左对齐；
+Gravity.RIGHT(Gravity.END)：相对于View靠右显示。
+
+Gravity.CENTER：在showAsDropDown()中是跟 Gravity.LEFT一样，在showAtLocation()中Gravity.CENTER才有效果
+
+
+
+得到效果
+
+
+
+查了下showAsDropDown()，发现只能在指定控件的下面弹出，总感觉少了点什么~~
+有时候我想弹在View的上面、左边、右边？怎么解？

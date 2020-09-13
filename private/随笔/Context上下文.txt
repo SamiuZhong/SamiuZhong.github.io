@@ -1,0 +1,8 @@
+Android中获取Context的方法和区别：
+1.Activity.this  //表示Activity对象，一般用在内部类中指示外面的this，若在内部类中直接使用this，指示的是内部类本身
+2.this //表示当前对象;一般而言，在哪个类中调用，就是指向该对象
+3.getContext()  //这个是View类中提供的方法，在继承了View的类中才可以调用，返回的是当前View运行在哪个Activity Context中
+
+Fragment中获取Context：
+1.getActivity()；//获取包含该fragment的活动（activity）上下文 
+2.getContext()；//获取该fragment上下文 

@@ -1,0 +1,8 @@
+SQL语句应在使用之前就定义为一个String格式的变量，而不是在使用的时候再定义并且用+拼接符，这样会导致很多不必要的麻烦
+	String sql = String.format("SELECT * FROM %s WHERE %s='%s'",
+                dbUtil.tbl_photo,"cardNo",cardNo);
+    Cursor cursor = dbUtil.db.rawQuery(sql,null);
+	
+	String sql = String.format("SELECT * FROM %s WHERE %s='%s' AND %s!='%s'",
+                dbUtil.tbl_info,"cardNo",str,"timeMark","0");
+    Cursor cur = dbUtil.db.rawQuery(sql,null);

@@ -1,0 +1,34 @@
+1.在Activity中监视键盘按键触发：
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        gridView.onKeyDown(keyCode,event);
+        if(keyCode == KEYCODE_ENTER){
+            Log.d("监听","卡号接收完成，卡号为"+str+",开始执行刷卡");
+            doSwipe(str);
+            str = "";
+            Log.d("监听","刷牙完成，卡号缓存已清空，卡号为"+str);
+        }else {
+            Log.d("监听","接收卡号中，cardNo = "+str);
+            caseNumber(keyCode);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+2.当其他的View中自带的监听方法拦截了Activity中的监听时，重写该View中的方法，使之拦截到的按键再传到Activity中供我们的方法获取：
+		//注意，一般的Listener方法监听到的是按下和抬起两个事件，注意区分
+		gridView.setOnKeyListener(new View.OnKeyListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                switch (event.getAction()){
+                    case KeyEvent.ACTION_DOWN:{
+                        if (keyCode == 66) {
+                            MainActivity.this.onKeyDown(keyCode,event);
+                        } else {
+                            MainActivity.this.onKeyDown(keyCode,event);
+                        }
+                        break;
+                    }
+                }
+                return true;
+            }
+        });

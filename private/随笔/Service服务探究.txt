@@ -1,0 +1,54 @@
+1.创建：File-->New-->Service-->Service
+	obBind()方法是Service中唯一的一个抽象方法，必须要在子类里面实现；
+2.在Service里面重写如下方法来编写执行逻辑代码
+	@Override
+	public void onCreate(){
+		super.onCreate();
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent,int flags,int startId){
+		return super.onStartCommand(intent,flags,startId);
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+	}
+	
+	其中onCreate()会在创建服务的时候调用，onStartCommand()会在每次服务启动的时候调用，onDestroy()会在服务销毁的时候调用；
+
+3.启动服务：
+	Intent startIntent = new Intent(this,MyService.class);
+	startService(startIntent);
+  停止服务：
+	Intent stopIntent = new Intent(this,xxx.class);
+	stopService(stopIntent);
+  Tips:可以在Service的方法里面打印Log日志来查看服务是否启动/停止；
+  
+------------------------2019.1.25更新-----------------------
+1.以绑定的方式启动一个Service
+	private MyService myService;	//创建一个Service对象
+	
+	//在需要启动的地方,一般是onCreate()里面
+	Intent intentService = new Intent(this,MyService.class);
+	bindService(intentService,connection,BIND_AUTO_CREATE);
+	
+	//创建ServiceConnection对象,并重写里面的方法使之实例化
+	private ServiceConnection connection = new ServiceConnection{
+		@Override
+		public void onServiceConnected(ComponentName name,IBinder service){
+			if(myService == null){
+				MyService.MyBinder binder = (MyService.MyBinder) service;
+				binder.XXX; //此为启动Service里面MyBinder里面的方法
+			}
+		}
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name){
+			myService = null;
+		}
+	};
+	
+2.解绑Service
+	unbinderService(connection);

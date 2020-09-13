@@ -1,0 +1,44 @@
+1.新建XML文件-->Layout XML Files-->复制代码-->在shape处按Alt+Enter自动弹出move to drawable
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <solid android:color="#DFDFE0" />
+
+    <corners
+        android:bottomLeftRadius="8dp"
+        android:bottomRightRadius="8dp"
+        android:topLeftRadius="8dp"
+        android:topRightRadius="8dp" />
+
+    <stroke
+        android:width="3dp"
+        android:color="#2E3135" />
+
+</shape>
+或
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+  <solid android:color="#00FFFF" />
+    <corners android:radius="15dp" />
+      <padding 
+          	android:left="5dp" 
+          	android:top="5dp"
+          	android:right="5dp" 
+          	android:bottom="5dp" />
+</shape>
+
+2.在需要设置背景的View的XML Layout里面设置
+android:background="@drawable/schedule_item_background"
+
+3.Java代码
+// prepare
+int strokeWidth = 5; // 3px not dp
+int roundRadius = 15; // 8px not dp
+int strokeColor = Color.parseColor("#2E3135");
+int fillColor = Color.parseColor("#DFDFE0");
+
+GradientDrawable gd = new GradientDrawable();
+gd.setColor(fillColor);
+gd.setCornerRadius(roundRadius);
+gd.setStroke(strokeWidth,strokeColor)

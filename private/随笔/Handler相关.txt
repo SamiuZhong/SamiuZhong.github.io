@@ -1,0 +1,61 @@
+andler类的主要作用有两个：
+1.在新启动的线程中发送消息
+2.在主线程中获取、处理消息
+
+Handler类包含如下方法：
+1.void handleMessage(Message msg)			//处理消息的方法，常被重写
+2.final boolean hasMessages(int what)		//检查消息队列中是否包含what属性为指定值的消息
+3.final boolean hasMessages(int what,Object object)	
+			//检查消息队列中是否包含what属性为指定值且object属性为指定对象的消息的消息
+4.多个重载的Message obtainMessage()			//获取消息
+5.sendEmptyMessage(int what)				//发送空消息
+6.final boolean sendEmptyMessageDelayed(int what,long delayMillis)
+			//指定多少毫秒之后发送空消息
+7.final boolean sendMessage(Message msg)	//立即发送消息
+8.final boolean sendMessageDelayed(Message msg,long delayMillis);
+			//指定多少毫秒之后发送消息
+			
+Looper,MessageQueue,Handler的作用：
+1.Looper：每个线程只有一个Looper,它负责管理MessageQueue,会不断地从MessageQueue中取出消息，并将消息分给对应的Handler处理；
+2.MessageQueue：由Looper负责管理，它采用先进先出的方式来管理Message；
+3.Handler:它能把消息发送给Looper管理的MessageQueue，并负责处理Looper分给它的消息；
+
+在线程中使用Handler的步骤：
+1.调用Looper的prepare()方法为当前线程创建Looper对象，创建Looper对象时，它的构造器会创建与之配套的MessageQueue;
+2.有了Looper之后，创建Handler子类的实例，重写HandlerMessage()方法，该方法负责处理来自于其他线程的消息；
+3.调用Looper的loop()方法启动Looper；
+
+-------------------------------2020.2.21----------------------------------
+class MessageActivity extends AppCompatActivity {
+
+    private static final int FLAG = 1;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if (FLAG == msg.what){
+                //这里已经回到主线程了
+                doSomething();
+            }
+        }
+    };
+
+    private void fun(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //子线程发送消息
+                Message message = new Message();
+                message.what = FLAG;
+                mHandler.sendMessage(message);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
+    private void doSomething(){}
+}

@@ -1,0 +1,38 @@
+1.1 文件储存：
+    通过openFileOutput()方法，第一个参数为文件名，第二个参数为文件的操作模式；
+    操作模式有两种可选：MODE_PRIVATE表示文件名相同时覆盖原有文件，MODE_APPEND表示文件存在时追加类容；           openFileOutput()方法返回的是一个FileOutputStream对象，获取对象后使用JAVA文件流的方式将数据写入文件；
+1.2 从文件中读取数据
+    使用openFileInout()方法，只有一个参数为要读取的文件名，返回一个FileInputStream对象，获取对象之后可通过      Java文件流的方式读取；
+
+2.1 SharedPreferences存储
+    SharedPreferences是使用键值对的方式来存储数据
+	
+	
+---------------------2019.2.18-------------------------
+Mat,BitMap文件本地存储(输入Mat类型，先通过转换为Bitmap再进行存储)
+	private static Bitmap bitmap;
+    public static final void saveMatToBitmap(Mat mat){
+        bitmap = Bitmap.createBitmap(mat.width(),mat.height(),Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mat,bitmap);
+
+        final String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "wanJia" + File.separator;
+        try {
+            File folder = new File(dir);
+            if(!folder.exists()){
+                folder.mkdir();
+            }
+            File file = new File(dir + "face" + ".jpg");
+            if(file.exists()){
+                file.delete();
+            }
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }	

@@ -1,0 +1,43 @@
+reference from: http://www.rcyd.net/Androidbc/50796.html
+
+今天项目中需求是写出一个很简单的edittext输入框,但要求当输入字数过长时需要上下滑动以便查看所有文字,因为页面底部有一个"确定"的button,但刚开始输入框内的问题怎么都滑动不了,我一开始就想到了这是事件传递冲突问题,但试了很多种方法都不行,最后也是一个一个试才解决的,不多说,贴代码:
+
+<ScrollView
+    android:id="@+id/sc_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:minHeight="360dp"
+    android:scrollbars="none">
+    <EditText
+      android:id="@+id/editText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="10dp"
+      android:layout_marginStart="15dp"
+      android:layout_marginTop="10dp"
+      android:background="@null"
+      android:gravity="top|start"
+      android:hint="@string/FeedBackViewController_Placeholder"
+      android:lineSpacingMultiplier="1.0"
+      android:paddingEnd="10dp"
+      android:paddingStart="10dp"
+      android:maxHeight="450dp" //当初这个没加,也出现了滑动不了的情况
+      android:textSize="@dimen/font_size16"/>
+  </ScrollView>
+代码里面需要:
+
+editText.setOnTouchListener(new View.OnTouchListener() {
+        @Override
+          public boolean onTouch(View v, MotionEvent event) {
+           // 解决scrollView中嵌套EditText导致不能上下滑动的问题
+             v.getParent().requestDisallowInterceptTouchEvent(true);
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+              case MotionEvent.ACTION_UP:
+            v.getParent().requestDisallowInterceptTouchEvent(false);
+            break;
+           }
+           return false;
+          }
+      });
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持帮客之家。

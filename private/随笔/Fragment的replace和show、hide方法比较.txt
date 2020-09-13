@@ -1,0 +1,74 @@
+1.声明周期的比较
+	replace: onPause --> onStop --> onDestroy --> onCreate --> onStart
+	hide\show: onCreate --> onStart
+
+2.使用方法
+
+replace:
+	private List<Fragment> fragmentList = new ArrayList<>();
+
+    /**
+     * 初始化Fragment
+     */
+    private void initFragment() {
+        Fragment toolFragment = new ToolFragment();
+        Fragment mineFragment = new MineFragment();
+        fragmentList.add(toolFragment);
+        fragmentList.add(mineFragment);
+        if (fragmentList != null && !fragmentList.isEmpty() && !fragmentList.get(0).isAdded()) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.home_frameLayout, fragmentList.get(0));
+            transaction.commitAllowingStateLoss();
+        }
+    }
+
+    /**
+     * 替换Fragment
+     *
+     * @param index
+     */
+    private void replaceFragment(int index) {
+        Fragment currentFragment = fragmentList.get(index);
+        if (currentFragment != null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.home_frameLayout, currentFragment);
+            transaction.commitAllowingStateLoss();
+        }
+    }
+
+show\hide:
+	private val fragmentList = ArrayList<Fragment>()
+	
+	/**
+     * 初始化Fragment
+     */
+    private fun initFragment(){
+        val workFragment = WorkFragment()
+        val studyFragment = StudyFragment()
+        val platformFragment = PlatformFragment()
+        val addressFragment = AddressFragment()
+        val mineFragment = MineFragment()
+        fragmentList.add(workFragment)
+        fragmentList.add(studyFragment)
+        fragmentList.add(platformFragment)
+        fragmentList.add(addressFragment)
+        fragmentList.add(mineFragment)
+        if (fragmentList.isNotEmpty()){
+            val transaction:FragmentTransaction = supportFragmentManager.beginTransaction()
+            for (item in fragmentList)
+                transaction.add(R.id.home_fragment,item)
+            transaction.commitAllowingStateLoss()
+        }
+        showFragment(0)
+    }
+
+    /**
+     * Fragment的显示和隐藏
+     */
+    private fun showFragment(index:Int){
+        val transaction:FragmentTransaction = supportFragmentManager.beginTransaction()
+        for (item in fragmentList)
+            transaction.hide(item)
+        transaction.show(fragmentList[index])
+        transaction.commitAllowingStateLoss()
+    }

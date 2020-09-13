@@ -1,0 +1,8 @@
+1.先拿到Fragment对象 homeFragment
+2.	if (homeFragment != null) {
+		//默认选中第一个
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.add(R.id.frameLayout, homeFragment);
+		transaction.commitAllowingStateLoss();
+	}
+3.其中R.id.frameLayout为需要塞入Fragment的ViewGroup

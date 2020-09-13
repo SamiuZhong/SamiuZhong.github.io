@@ -1,0 +1,174 @@
+1.可以创建一个顶级方法简化调用
+	fun takeMatisse(activity: Activity,count:Int,requestCode:Int){
+		Matisse.from(activity)
+				.choose(MimeType.ofImage())
+				.countable(true)
+				.maxSelectable(count)
+				.theme(R.style.Matisse_Dracula)
+				.imageEngine(GlideEngine())
+				.forResult(requestCode)
+	}
+
+2.调用
+    private fun requestPermission() {
+        RxPermissions(this).request(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        ).subscribe { aBoolean ->
+            run {
+                if (aBoolean)
+                    takeMatisse(this, MAX_PIC_COUNT, REQUEST_CODE)
+                else
+                    ToastUtils.showShort(R.string.no_permission)
+            }
+        }
+    }
+	
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            photoList = Matisse.obtainResult(data) as ArrayList<Uri>
+        }
+    }	
+	
+3.Matisse的所有创建方法	
+	Matisse
+		 .from(mActivity)
+		 //选择视频和图片
+		 .choose(MimeType.ofAll())
+		 //选择图片
+		 .choose(MimeType.ofImage())
+		 //选择视频
+		 .choose(MimeType.ofVideo())
+		 //自定义选择选择的类型
+		 .choose(MimeType.of(MimeType.JPEG,MimeType.AVI))
+		 //是否只显示选择的类型的缩略图，就不会把所有图片视频都放在一起，而是需要什么展示什么
+		 .showSingleMediaType(true)
+		 //这两行要连用 是否在选择图片中展示照相 和适配安卓7.0 FileProvider
+		 .capture(true)
+		 .captureStrategy(new CaptureStrategy(true,"PhotoPicker"))
+		 //有序选择图片 123456...
+		 .countable(true)
+		 //最大选择数量为9
+		 .maxSelectable(9)
+		 //选择方向
+		 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+		 //界面中缩略图的质量
+		 .thumbnailScale(0.8f)
+		 //蓝色主题
+		 .theme(R.style.Matisse_Zhihu)
+		 //黑色主题
+		 .theme(R.style.Matisse_Dracula)
+		 //Glide加载方式
+		 .imageEngine(new GlideEngine())
+		 //Picasso加载方式
+		 .imageEngine(new PicassoEngine())
+		 //请求码
+		 .forResult(REQUEST_CODE_CHOOSE);
+
+-------------------------------以上更新-------------------------------
+1.添加权限
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+2.添加依赖	
+	compile 'com.zhihu.android:matisse:0.4.3'
+	*前提依赖
+	implementation 'com.android.support:appcompat-v7:26.1.0'
+	implementation 'com.android.support:recyclerview-v7:26.1.0'
+	implementation 'com.github.bumptech.glide:glide:3.7.0'
+3.工具类
+	public class PhotoUtils {
+		/**
+		 * 选择相片
+		 *
+		 * @param activity
+		 * @param REQUEST_CODE_CHOOSE
+		 */
+		public static void OpenPhone(Activity activity, int REQUEST_CODE_CHOOSE, int max) {
+			Matisse.from(activity)
+					.choose(MimeType.of(MimeType.JPEG, MimeType.PNG)) // 选择 mime 的类型
+					.countable(true)
+					.maxSelectable(max) // 图片选择的最多数量
+					// .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+					.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+					.thumbnailScale(0.85f) // 缩略图的比例
+					.imageEngine(new PicassoEngine()) // 使用的图片加载引擎// 使用的图片加载引擎
+					.capture(true) //是否提供拍照功能
+					.captureStrategy(new CaptureStrategy(true, "com.klilala.lifeservice.fileprovider"))//存储到哪里
+					.forResult(REQUEST_CODE_CHOOSE); // 设置作为标记的请求码
+		}
+
+
+		/**
+		 * 现在全部的多媒体文件
+		 *
+		 * @param activity
+		 * @param REQUEST_CODE_CHOOSE
+		 */
+		public static void OpenPhoneAndMp4(Activity activity, int REQUEST_CODE_CHOOSE) {
+			Matisse.from(activity)
+					.choose(MimeType.allOf()) // 选择 mime 的类型
+					.countable(true)
+					.maxSelectable(1) // 图片选择的最多数量
+					// .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+					.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+					.thumbnailScale(0.85f) // 缩略图的比例
+					.imageEngine(new PicassoEngine()) // 使用的图片加载引擎// 使用的图片加载引擎
+					.capture(true) //是否提供拍照功能
+					.captureStrategy(new CaptureStrategy(true, "com.klilala.lifeservice.fileprovider"))//存储到哪里
+					.forResult(REQUEST_CODE_CHOOSE); // 设置作为标记的请求码
+		}
+	}
+4.使用
+	//设置一个请求码，随便设置
+    private static final int REQUEST_CODE_CHOOSE = 0xff45;
+	//打开选择器
+	PhotoUtils.OpenPhone(MyProfileActivity.this, REQUEST_CODE_CHOOSE, 1);
+	//返回结果
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+            List<Uri> uris = Matisse.obtainResult(data);
+            String realFilePath1 = UrlUtils.getRealFilePath1(this, uris.get(0));
+            Intent intent = new Intent(this, HeadEditActivity.class);
+            intent.putExtra("path", realFilePath1);
+            startActivity(intent);
+        }
+    }
+	
+	
+---------------------------------更新-------------------------------
+Matisse
+                .from(mActivity)
+                //选择视频和图片
+                .choose(MimeType.ofAll()) 
+                //选择图片
+                .choose(MimeType.ofImage()) 
+                //选择视频
+                .choose(MimeType.ofVideo()) 
+                //自定义选择选择的类型
+                .choose(MimeType.of(MimeType.JPEG,MimeType.AVI)) 
+                //是否只显示选择的类型的缩略图，就不会把所有图片视频都放在一起，而是需要什么展示什么
+                .showSingleMediaType(true)
+                //这两行要连用 是否在选择图片中展示照相 和适配安卓7.0 FileProvider
+                .capture(true)
+                .captureStrategy(new CaptureStrategy(true,"PhotoPicker"))
+                //有序选择图片 123456...
+                .countable(true)
+                //最大选择数量为9
+                .maxSelectable(9)
+                //选择方向
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                //界面中缩略图的质量
+                .thumbnailScale(0.8f)
+                //蓝色主题
+                .theme(R.style.Matisse_Zhihu)
+                //黑色主题
+                .theme(R.style.Matisse_Dracula)
+                //Glide加载方式
+                .imageEngine(new GlideEngine())
+                //Picasso加载方式
+                .imageEngine(new PicassoEngine())
+                //请求码
+                .forResult(REQUEST_CODE_CHOOSE);	

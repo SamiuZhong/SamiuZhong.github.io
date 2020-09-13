@@ -1,0 +1,6 @@
+1.EditText设定输入类型和行数
+在XML中设置参数
+android:maxLines="1"
+android:inputType="number|numberDecimal"	//表示只接收数字和小数点
+
+链接：https://blog.csdn.net/u012246458/article/details/73288487

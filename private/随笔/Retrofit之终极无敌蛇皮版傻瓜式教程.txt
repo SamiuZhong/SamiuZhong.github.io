@@ -1,0 +1,267 @@
+使用步骤
+1.创建 接收服务器返回数据 的类
+2.创建 用于描述网络请求 的接口
+3.创建 Retrofit 实例
+4.创建 网络请求接口 实例
+5.发送网络请求（一般是异步）
+
+Retrofit接口参数
+	@Path：所有在网址中的参数（URL的问号前面），如：http://192.168.1.1/api/Accounts/{accountId}
+	@Query：URL问号后面的参数，如：http://192.168.1.1/api/Comments?access_token={access_token}
+	@QueryMap：相当于多个@Query
+	@Field：用于POST请求，提交单个数据
+	@FieldMap：以map形式提交多个Field（Retrofit2.0之后添加）
+	@Body：相当于多个@Field，以对象的形式提交
+
+编写Demo测试
+1.接口介绍
+  地址：http://121.43.123.76/service/getUserShopList.action
+  请求方式：POST
+  参数：
+	token      	    7760E17E65CAAB1F282FE99764D95DB92F6D10E3BC280AB4AA008F718F9EEA2CC0D8BE33A0D98C9C20302F39B73D8418
+	index      	    0
+	num        	    1000
+	containDevice	0
+	moduleId		2
+  返回数据：	
+	{
+		"data": {
+			"total": 123,
+			"data": [
+				{...}
+				{...}
+				{...}
+			]
+		},
+		"result": "ok"
+	}
+2.添加依赖，添加网络权限
+	<uses-permission android:name="android.permission.INTERNET"/>
+	
+	dependencies {
+		implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+		implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+		implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+		implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+	}
+3.创建 接收服务器返回数据 的类	
+	public class ShopList {
+
+		private Data data;
+		private String result;
+
+		private class Data{
+			private int total;
+			private List<Object> data;
+
+			public int getTotal() {
+				return total;
+			}
+
+			public void setTotal(int total) {
+				this.total = total;
+			}
+
+			public List getData() {
+				return data;
+			}
+
+			public void setData(List data) {
+				this.data = data;
+			}
+		}
+
+		public Data getData() {
+			return data;
+		}
+
+		public void setData(Data data) {
+			this.data = data;
+		}
+
+		public String getResult() {
+			return result;
+		}
+
+		public void setResult(String result) {
+			this.result = result;
+		}
+	}
+4.创建 用于描述网络请求 的接口
+	/**
+	 * Retrofit网络请求接口
+	 *
+	 * @author SamiuZhong
+	 * @date 2019/6/6
+	 */
+	public interface GetRequestInterface {
+
+		/**
+		 * 获取ShopList方法常规版
+		 *
+		 * @param token 传入的参数
+		 * @param params 传入的多个参数（index,num,containDevice,moduleId）
+		 * @return 网络返回数据即ShopList
+		 */
+		@FormUrlEncoded
+		@POST("service/getUserShopList.action")
+		Call<ShopList> getShopList(
+				@Field("token")String token,
+				@FieldMap Map<String,Integer> params);
+
+	}
+5.在调用的地方（Activity等）完成接下来的步骤	
+	/**
+	 * @author SamiuZhong
+	 * @date 2019/6/6
+	 */
+	public class RetrofitActivity extends AppCompatActivity {
+
+		private static final String TAG = "Retrofit";
+		private static final String baseUrl = "http://121.43.123.76/";
+		private static final String token = "7760E17E65CAAB1F282FE99764D95DB92F6D10E3BC280AB4AA008F718F9EEA2CC0D8BE33A0D98C9C20302F39B73D8418";
+		private static Map<String,Integer> map;
+
+		@BindView(R.id.retrofit_run_btn)
+		Button button;
+		@BindView(R.id.retrofit_show_tv)
+		TextView textView;
+
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_retrofit);
+			ButterKnife.bind(this);
+
+			map = new HashMap<String, Integer>(4);
+			map.put("index",0);
+			map.put("num",1000);
+			map.put("containDevice",0);
+			map.put("moduleId",2);
+		}
+
+		/**
+		 * Retrofit的使用常规版
+		 */
+		private void getCall() {
+			//创建Retrofit实例
+			Retrofit retrofit = new Retrofit.Builder()
+					.baseUrl(baseUrl)
+					.addConverterFactory(GsonConverterFactory.create())
+					.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+					.build();
+
+			//创建 网络请求接口 的实例
+			GetRequestInterface request = retrofit.create(GetRequestInterface.class);
+			//对 发送请求 进行封装
+			Call<ShopList> call = request.getShopList(token,map);
+
+			//发送网络请求（异步）
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					call.enqueue(new Callback<ShopList>() {
+						@Override
+						public void onResponse(Call<ShopList> call, Response<ShopList> response) {
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									textView.setText(response.body().getResult());
+								}
+							});
+						}
+
+						@Override
+						public void onFailure(Call<ShopList> call, Throwable t) {
+							Log.d(TAG,t.toString());
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									textView.setText("欧欧，Retrofit出问题鸟~");
+								}
+							});
+						}
+					});
+				}
+			}).start();
+
+		}
+
+		@OnClick(R.id.retrofit_run_btn)
+		public void onViewClicked() {
+			getCall();
+		}
+	}
+Retrofit + RxJava双剑合璧无敌蛇皮使用方案	
+与传统方式的区别：
+	传统方式采用了Callback接口，RxJava方式则采用了Observable接口；
+	网络请求的封装形式 & 发送形式不同
+对以上Demo部分重写：
+1.重写 用于描述网络请求 的接口
+	public interface GetRequestInterface {
+
+		/**
+		 * 获取ShopList方法RxJava版
+		 *
+		 * @param token token 传入的参数
+		 * @param params 传入的多个参数（index,num,containDevice,moduleId）
+		 * @return 网络返回数据即ShopList
+		 */
+		@FormUrlEncoded
+		@POST("service/getUserShopList.action")
+		Observable<ShopList> getShopList2(
+				@Field("token")String token,
+				@FieldMap Map<String,Integer> params);
+
+	}
+2.重写getCall()方法	
+    /**
+     * Retrofit的使用RxJava版
+     */
+    private void getCall2(){
+        //创建Retrofit实例
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+
+        //创建 网络请求接口 的实例
+        GetRequestInterface request = retrofit.create(GetRequestInterface.class);
+        //对 发送请求 进行封装
+        Observable<ShopList> observable = request.getShopList2(token,map);
+
+        //发送网络请求（RxJava）
+        observable
+                //在IO线程进行网络请求
+                .subscribeOn(Schedulers.io())
+                //回到主线程 处理请求结果
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ShopList>() {
+
+                    //发送请求后调用该复写方法（无论请求成功与否）
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    //发送请求成功后调用该复写方法
+                    @Override
+                    public void onNext(ShopList shopList) {
+                        textView.setText(shopList.getResult());
+                    }
+
+                    //发送请求失败后调用该复写方法
+                    @Override
+                    public void onError(Throwable e) {
+                        textView.setText("欧欧，Retrofit出问题鸟~");
+                    }
+
+                    //发送请求成功后，先调用onNext（）再调用该复写方法
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+	

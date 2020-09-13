@@ -1,0 +1,6 @@
+PendingIntent主要几个静态方法，getActivity(),getBroadcast(),和getService ();
+声明：PendingIntent pendingIntent = PendingIntent.getBroadcast(Context,RequestCoode,Intent,Flags);
+	  第一个参数是Context，第二个参数一般为0，第三个参数为Intent对象，第四个参数一般为0；
+例：使用PendingIntent打开MainActivity
+	Intent intent = new Intent(this,MainActivity.class);
+	PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);

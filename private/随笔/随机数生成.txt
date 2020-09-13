@@ -1,0 +1,10 @@
+https://blog.csdn.net/lostpen/article/details/88420625
+
+生成[0, 5)的随机数
+Math.random() * 5
+
+生成[5, 11)的随机数
+5 + (Match.random() * (11 - 5))
+
+生成[5, 11]的随机数
+5 + Math.random() * ((11 - 5) + 1)

@@ -1,0 +1,49 @@
+调用：
+	val navigationController = findNavController(R.id.nav_host_fragment)
+	val inflater = navigationController.navInflater
+	val graph = inflater.inflate(R.navigation.profession_navigation)
+	if (index == 1 || index == 4)
+		graph.startDestination = R.id.profession_nav_1
+	else
+		graph.startDestination = R.id.profession_nav_2
+	navigationController.graph = graph
+	
+布局文件：	
+	<fragment
+		android:id="@+id/nav_host_fragment"
+		android:name="androidx.navigation.fragment.NavHostFragment"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="@dimen/space_20"
+		android:layout_marginTop="30dp"
+		android:layout_marginEnd="@dimen/space_20"
+		app:defaultNavHost="true"
+		app:layout_constraintBottom_toTopOf="@id/announce"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/subtitle"
+		app:navGraph="@navigation/profession_navigation" />
+
+Navigation文件：
+	<?xml version="1.0" encoding="utf-8"?>
+	<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/profession_navigation"
+		app:startDestination="@+id/profession_nav_1">
+
+		<fragment
+			android:id="@+id/profession_nav_1"
+			android:name="com.klilala.login.ui.fragment.ProfessionOneFragment"
+			tools:layout="@layout/fragment_profession_1"></fragment>
+
+		<fragment
+			android:id="@+id/profession_nav_2"
+			android:name="com.klilala.login.ui.fragment.ProfessionTwoFragment"
+			tools:layout="@layout/fragment_profession_2"></fragment>
+
+		<fragment
+			android:id="@+id/profession_nav_3"
+			android:name="com.klilala.login.ui.fragment.ProfessionThreeFragment"
+			tools:layout="@layout/fragment_profession_3"></fragment>
+	</navigation>		

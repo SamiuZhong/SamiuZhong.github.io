@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>细说回调 | 张尼玛的博客</title><meta name="description" content="回调到底是个啥？根据《Java核心技术 第八版》中对回调的定义，回调(callback)是一种常见的程序设计模式。在这种模式中，可以指出某个特定事件发生时应该采取的动作。 啥意思？举个例子，今天你上班上到一半的时候，老板突然跑过来说：“xxx，去把办公室地扫了，扫干净了给我说一下。”好了，然后你现在自愿去扫地。扫了半个小时终于整完了，这个时候你马上跑去办公室给老板报告：“x总，地都扫干净了！”OK"><meta name="keywords" content="细说回调"><meta name="author" content="机智的张尼玛"><meta name="copyright" content="机智的张尼玛"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/02/19/%E7%BB%86%E8%AF%B4%E5%9B%9E%E8%B0%83/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="细说回调"><meta property="og:url" content="http://yoursite.com/2020/02/19/%E7%BB%86%E8%AF%B4%E5%9B%9E%E8%B0%83/"><meta property="og:site_name" content="张尼玛的博客"><meta property="og:description" content="回调到底是个啥？根据《Java核心技术 第八版》中对回调的定义，回调(callback)是一种常见的程序设计模式。在这种模式中，可以指出某个特定事件发生时应该采取的动作。 啥意思？举个例子，今天你上班上到一半的时候，老板突然跑过来说：“xxx，去把办公室地扫了，扫干净了给我说一下。”好了，然后你现在自愿去扫地。扫了半个小时终于整完了，这个时候你马上跑去办公室给老板报告：“x总，地都扫干净了！”OK"><meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><meta property="article:published_time" content="2020-02-19T11:31:30.000Z"><meta property="article:modified_time" content="2020-09-13T09:13:35.266Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.1.1',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '天',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-13 17:13:35'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">11</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">9</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">5</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E8%B0%83%E5%88%B0%E5%BA%95%E6%98%AF%E4%B8%AA%E5%95%A5%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">回调到底是个啥？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%82%A3%E6%88%91%E6%80%8E%E4%B9%88%E5%86%99%E4%B8%80%E4%B8%AA%E5%9B%9E%E8%B0%83%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">那我怎么写一个回调？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%82%A3%E6%9C%89%E6%B2%A1%E6%9C%89%E6%9B%B4%E4%BC%98%E9%9B%85%E7%9A%84%E5%86%99%E6%B3%95%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">那有没有更优雅的写法？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">3.1.</span> <span class="toc-text">Lambda表达式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kotlin%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E5%9B%9E%E8%B0%83"><span class="toc-number">3.2.</span> <span class="toc-text">Kotlin高阶函数实现回调</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">张尼玛的博客</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">细说回调</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-02-19T11:31:30.000Z" title="发表于 2020-02-19 19:31:30">2020-02-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-13T09:13:35.266Z" title="更新于 2020-09-13 17:13:35">2020-09-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%9F%BA%E6%9C%AC%E4%BF%AE%E5%85%BB/">基本修养</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="回调到底是个啥？"><a href="#回调到底是个啥？" class="headerlink" title="回调到底是个啥？"></a>回调到底是个啥？</h2><p><strong>根据《Java核心技术 第八版》中对回调的定义，回调(callback)是一种常见的程序设计模式。在这种模式中，可以指出某个特定事件发生时应该采取的动作。</strong></p>
+<p>啥意思？举个例子，今天你上班上到一半的时候，老板突然跑过来说：“xxx，去把办公室地扫了，扫干净了给我说一下。”好了，然后你现在自愿去扫地。扫了半个小时终于整完了，这个时候你马上跑去办公室给老板报告：“x总，地都扫干净了！”OK，你跑去给领导报告的这个动作就叫做“回调”。</p>
+<p>再举个程序之中运用回调的例子？</p>
+<p>OK，对Android程序员来说，我想就算你不知道回调，你也一定知道View的点击事件，点击事件就完全符合标准的回调定义“指出某个特定事件发生时应该采取的动作”。那么我们一起来看看点击事件长什么样子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(new View.OnClickListener()&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void onClick(View v) &#123;</span><br><span class="line">        &#x2F;&#x2F;do something</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这是一个点击事件的常见写法，在onClick()方法里面实现view被点击时需要执行的逻辑即可。可是，这个onClickListener()是个啥？setOnclickListener()又是个啥？看官别急，且听我娓娓道来。</p>
+<h2 id="那我怎么写一个回调？"><a href="#那我怎么写一个回调？" class="headerlink" title="那我怎么写一个回调？"></a>那我怎么写一个回调？</h2><p>先甩代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Coder</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//声明回调对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> SweepFloorListener listener;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//定义回调接口</span></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">SweepFloorListener</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onFinish</span><span class="params">(String str)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//回调对象的实例化 </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSweepFloorListener</span><span class="params">(SweepFloorListener listener)</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.listener = listener;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//执行回调方法</span></span><br><span class="line">        listener.onFinish(<span class="string">&quot;扫完啦！&quot;</span>);    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Boss</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> Coder coder = <span class="keyword">new</span> Coder()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span></span>&#123;</span><br><span class="line">        coder.setSweepFloorListener(<span class="keyword">new</span> Coder.SweepFloorListener()&#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFinish</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">                <span class="comment">//扫完地了</span></span><br><span class="line">                doSomething(str)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>OK，这样我们就实现了一个简单的回调。</p>
+<p>仔细看，coder.setSweepFloorListener()是不是和我们上面的点击事件view.setOnclickListener()长得一模一样?一样就对了</p>
+<p>现在我们来逐一分析回调的组成。</p>
+<ol>
+<li>回调是由接口实现的，所以我们首先要写一个接口SweepFloorListener，接口里面要定义一些方法。啥方法？就是你想要在回调的时候执行的方法。比如说老板要你扫完地了告诉他，那你就要定义一个onFinish()方法表示扫完地了执行这个方法。</li>
+<li>声明一个回调的对象。</li>
+<li>要写一个set方法来实现对回调对象的实例化。那么为什么要有这个方法？我自己new对象不行吗？还真不行，因为今天可能是张老板叫你扫地，明天可能是李老板叫你，后天又可能是王老板，那你怎么知道扫完了该给谁汇报？所以我们才需要通过set方法传过来对象，这样我们才知道：“哦，今天扫完了该给李老板汇报”。</li>
+<li>执行回调方法。就是在你扫完地的时候执行listener.onFinish()方法</li>
+<li>接收回调。这一步是站在老板的角度：今天心情好，随机抓一个程序员扫地。当他扫完的了需要告诉我地都扫完了，这个时候就给他安一个回调，具体就是执行coder.setSweepFloorListener()方法，给这个方法传入一个回调接口，就是Coder.SetSweepFloorListener()参数，然后重写这个回调接口里面的onFinish()方法，当onFinish()方法执行的时候，就表示地已经扫完了，扫地的程序员已经在通知我了。</li>
+</ol>
+<h2 id="那有没有更优雅的写法？"><a href="#那有没有更优雅的写法？" class="headerlink" title="那有没有更优雅的写法？"></a>那有没有更优雅的写法？</h2><h3 id="Lambda表达式"><a href="#Lambda表达式" class="headerlink" title="Lambda表达式"></a>Lambda表达式</h3><p>我们可以使用Lambda表达式来使代码看起来更优雅，其实质是没有变的，如点击事件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(<span class="keyword">new</span> View.OnClickListener()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        finish();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>可以用Lambda表达式改写</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(v -&gt; finish());</span><br></pre></td></tr></table></figure>
+
+<p>这里的v表示onClick(View v)的参数v</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">coder.setSweepFloorListener(<span class="keyword">new</span> Coder.SweepFloorListener()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFinish</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">        doSomething(str);    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>可以改写为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">coder.setSweepFloorListener(str -&gt; doSomething(str));</span><br></pre></td></tr></table></figure>
+
+<p>这里的str表示onFinish(String str)的参数</p>
+<p>怎么样，看起来是不是优雅多了？</p>
+<p>那还有没有更优雅的？</p>
+<p>有</p>
+<h3 id="Kotlin高阶函数实现回调"><a href="#Kotlin高阶函数实现回调" class="headerlink" title="Kotlin高阶函数实现回调"></a>Kotlin高阶函数实现回调</h3><p>作为一个Android开发人员，怎么能不会Kotlin呢？Kotlin的高阶函数特性可以让我们更优雅的实现回调。</p>
+<p>对Coder和Boss类进行改写</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Coder</span></span>()&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> onFinish: (String) -&gt; <span class="built_in">Unit</span> </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setSweepFloorListener</span><span class="params">(onFinish:(<span class="type">String</span>) -&gt; <span class="type">Unit</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.onFinish = onFinish    </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">sweepFloor</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//执行回调方法</span></span><br><span class="line">        onFinish(<span class="string">&quot;扫完啦！&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Boss</span></span>()&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> coder = Coder()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        coder.setSweepFloorListener&#123; str -&gt; doSomething(str) &#125;    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就很优雅了，我们直接干掉了回调接口SweepFloorListener()。</p>
+<p>卧槽，还可以这么干？</p>
+<p>所谓高阶函数，就是指可以接收函数作为入参的函数，嗯……好像听起来跟Lambda表达式是一个东西。那么我们这里具体是怎么运用了高阶函数来实现的回调呢？</p>
+<ol>
+<li>我们首先定义了一个变量onFinish，这个变量本身就是一个函数，(String) -&gt; Unit 表示这个函数的入参为一个String，没有返回值</li>
+<li>然后写了一个setSweepFloorListener()方法来为这个变量进行实例化</li>
+<li>需要的地方直接调用onFinish(str)方法即可</li>
+<li>在另一个类里面进行回调coder.setSweepFloorListener{ str -&gt; doSomething(str) }</li>
+</ol>
+<p>OK，这样我们就使用Kotlin优雅地实现了回调。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><strong>1. 《Java核心技术 第八版》</strong></p>
+<p><strong>2. 《揭密Kotlin编程原理》</strong></p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">机智的张尼玛</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://yoursite.com/2020/02/19/%E7%BB%86%E8%AF%B4%E5%9B%9E%E8%B0%83/">http://yoursite.com/2020/02/19/%E7%BB%86%E8%AF%B4%E5%9B%9E%E8%B0%83/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://yoursite.com" target="_blank">张尼玛的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/Kotlin/">Kotlin</a><a class="post-meta__tags" href="/tags/%E5%9F%BA%E6%9C%AC%E4%BF%AE%E5%85%BB/">基本修养</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/2020/02/21/%E7%BB%86%E8%AF%B4Android%E4%B8%8B%E7%9A%84%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><img class="prev-cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">细说Android下的多线程</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/05/06/Java和Kotlin下的单例实现/" title="Java和Kotlin下的单例实现"><img class="cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-06</div><div class="title">Java和Kotlin下的单例实现</div></div></a></div><div><a href="/2020/03/14/Java基本数据类型和位运算/" title="Java基本数据类型和位运算"><img class="cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-14</div><div class="title">Java基本数据类型和位运算</div></div></a></div><div><a href="/2020/03/13/原型模式和深浅拷贝/" title="原型模式和深浅拷贝"><img class="cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-13</div><div class="title">原型模式和深浅拷贝</div></div></a></div><div><a href="/2020/02/27/细说Java反射机制/" title="细说Java反射机制"><img class="cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-27</div><div class="title">细说Java反射机制</div></div></a></div><div><a href="/2020/04/10/Kotlin延迟属性的线程安全探究/" title="Kotlin延迟加载的线程安全探究"><img class="cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-10</div><div class="title">Kotlin延迟加载的线程安全探究</div></div></a></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By 机智的张尼玛</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

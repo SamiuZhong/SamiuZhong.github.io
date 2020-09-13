@@ -1,0 +1,37 @@
+1.app下的build.gradle文件里面添加依赖
+	dependencies {
+		implementation 'com.google.code.gson:gson:2.8.5'
+	}
+2.新建一个类，变量为将要解析的JSON文件所包含的字段
+3.对于简单数据如{"name":"Tom","age":"20"}
+	Gson gson = new Gson();
+	Person person = gson.fromJson(jsonData,Person.class);
+	
+4.对于简单JSON数组：
+	List<Person> people = gson.fromJson(jsonData, new TypeToken<List<Person>>(){}.getType());
+
+5.对于嵌套的复杂数据，如
+	{"a":"100","b":[{"b1":"b_value1","b2":"b_value2"}, {"b1":"b_value1","b2":"b_value2"}],"c": {"c1":"c_value1","c2":"c_value2"}}
+	
+	public class JsonBean {
+        public String a;
+        public List<B> b;
+        public C c;
+ 
+        public static class B {
+            public String b1;
+            public String b2;
+        }
+    
+		public static class C {
+			public String c1;
+			public String c2;
+        }
+    }
+	
+  取数据的时候,这里3个对象JsonBean jsonbean,List<B> b,C c;然后用get方法获取数据；
+  对于列表List<B> b,先使b=jsonbean.getb,再使用b.get方法获取数据
+
+*注意：1.内部类必须是static的;
+	   2.类里面的属性名必须跟Json字段里面的Key是一模一样的；
+	   3.用[]括起来的部分是一个List，定义为 public List<B> b，而只用{}嵌套的就定义为 public C c，

@@ -1,0 +1,134 @@
+
+public void onClick(View v) {
+  Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+  startActivityForResult(it,100);
+}
+
+protected void onActivityResult(int requestCode,int resultCode,Intent data){
+  super.onActivityResult(requestCode, resultCode, data);
+  if(resultCode == Activity.RESULT_OK && requestCode==100){
+    Bundle extras = data.getExtras();
+    Bitmap bmp = (Bitmap) extras.get("data");
+    ImageView imv = findViewById(R.id.imageView);
+    imv.setImageBitmap(bmp);
+  }else
+    Toast.makeText(this,"没有拍到照片",Toast.LENGTH_SHORT).show();
+}
+
+-------以上是最简单的，ImagineView输出缩略图---------
+---------------下面存储原图-------------------
+首先在AndroidManifest.xml中获取存储权限：
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+//声明全局变量
+Uri imgUri;
+ImageView imv;
+
+//onGet方法实现按下拍照按钮的操作：
+public void onGet(){
+    //检查是否已获取写入权限
+    if(ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+            PackageManager.PERMISSION_GRANTED){
+        //尚未获得权限
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                200);
+    }else
+        //已经获取权限
+        savePhote();
+}
+
+//onRequestPermissionsResult()方法实现用户允许或拒绝权限的操作
+public void onRequestPermissionsResult(int requestCode,
+                                       String[] permissions,int[] grantResults){
+    if(requestCode == 200){
+        if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            //用户允许权限
+            savePhote();
+        else{
+            //用户拒绝权限
+            Toast.makeText(this,"程序需要写入权限才能运行哦",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+
+//savePhoto方法储存照片
+private void savePhote(){
+    imgUri = getContentResolver().insert(
+            //通过内容提供者新增一个图像文件
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            new ContentValues());
+    Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+    it.putExtra(MediaStore.EXTRA_OUTPUT,imgUri);
+    
+    startActivityForResult(it,100);
+}
+
+//拍照完成后执行的onActivityResult()方法
+@Override
+protected void onActivityResult(int requestCode,int resultCode,Intent data){
+    super.onActivityResult(requestCode, resultCode, data);
+    
+    if(resultCode == Activity.RESULT_OK && requestCode==100){
+        Bitmap bmp = null;
+        try{
+            bmp = BitmapFactory.decodeStream(
+                    //读取图像文件内容转换为Bitmap对象
+                    getContentResolver().openInputStream(imgUri),null,null);
+        }catch(IOException e){
+            Toast.makeText(this,"无法读取照片",Toast.LENGTH_LONG).show();
+        }
+        imv = findViewById(R.id.imageView);
+        imv.setImageBitmap(bmp);
+    }else
+        Toast.makeText(this,"没有拍到照片",Toast.LENGTH_LONG).show();
+}
+--------------添加从相册选取按钮--------------
+
+//onPick()方法实现按下相册按钮的操作
+public void onPick(View){
+  Intent it = new Intent(Intent.ACTION_GET_CONTENT);  //动作设为选取内容
+  it.setType("image/*");
+  startActivityForResult(it,101);
+}
+
+//修改onActivityResult()方法
+@Override
+protected void onActivityResult(int requestCode,int resultCode,Intent data){
+    super.onActivityResult(requestCode, resultCode, data);
+    if(resultCode == Activity.RESULT_OK){   //要求的Intent成功了
+        switch (requestCode){
+            case 100:   //拍照
+                Intent it = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        imgUri);    //设为系统共享媒体
+                sendBroadcast(it);
+                break;
+            case 101:   //选取照片
+                imgUri = data.getData();
+                break;
+            default:
+                break;
+        }
+        showImg();
+    }else{
+        Toast.makeText(this,requestCode==100? "没有拍到照片":"没有选取照片",
+                Toast.LENGTH_LONG).show();
+    }
+}
+
+//增加showImg()方法显示图像
+protected void showImg(){
+    Bitmap bmp = null;
+    try{
+        bmp = BitmapFactory.decodeStream(
+                //读取图像文件内容转换为Bitmap对象
+                getContentResolver().openInputStream(imgUri),null,null);
+    }catch(IOException e){
+        Toast.makeText(this,"无法读取照片",Toast.LENGTH_LONG).show();
+    }
+    imv = findViewById(R.id.imageView);
+    imv.setImageBitmap(bmp);
+}

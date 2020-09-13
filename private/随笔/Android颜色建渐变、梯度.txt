@@ -1,0 +1,221 @@
+https://blog.csdn.net/mq2553299/article/details/72629321
+
+前言
+日常Android开发中，有很大一部分需要使用到渐变色，有时候UI会给我们提供一套对应的图片资源，这样我们直接使用就可以了，当然我们也可以自己通过代码实现颜色渐变：
+
+一、XML实现颜色渐变
+比较简单的一种方式实现颜色渐变，我们通过定制一个对应的shape文件，配置其属性之后，直接作为android:background赋值给对应的View即可。
+
+1.创建XML文件
+在你的drawable文件夹下创建shape资源： 
+
+
+shape_gradient.xml文件代码如下：
+
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="90"
+        android:endColor="@color/colorPrimary"
+        android:startColor="@color/colorAccent" />
+</shape>
+
+解释一下各个层级的标签：
+
+[shape] 根标签，声明一个shape 
+[gradient] 声明该shape的属性-渐变色,除此外还有其他属性如corners、stroke、size等等 
+[android:angle]渐变色的角度，举例来说，0代表从左至右颜色渐变；每加90代表逆时针旋转90度，可以直观地看PreView面板
+[android:startColor&android:endColor] 很好理解，渐变开始的颜色和渐变结束时的颜色（从什么颜色变到什么颜色）
+
+2.将渐变色赋予对应的View
+直接放入MainActivity的layout文件中：
+
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_gradient" <!--将整个View赋予渐变色-->
+    tools:context="com.mei_husky.gradientdemo.MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
+
+3.运行查看结果
+如下图，红色边框范围内标记的就是渐变色的区域。
+
+
+
+二、代码实现颜色渐变
+上面的方式其实已经可以应付80%以上的颜色渐变了,但是我们有时想要实现更复杂一些的颜色渐变，比如：
+
+1.多重渐变（color1 -> color2 -> … ->colorN ） 
+2.自定义View中绘制 
+3.更多其他复杂需求
+
+这时我们可以通过LinearGradient（线性渐变）类来自定义实现我们想要的效果，以一个小Demo抛砖引玉：
+
+在这个demo中，我们的主界面颜色渐变为（粉 -> 灰 -> 蓝） 
+
+
+1.LinearGradient类简介
+使用方式非常简单：
+
+ /** Create a shader that draws a linear gradient along a line.
+      @param x0           The x-coordinate for the start of the gradient line
+      @param y0           The y-coordinate for the start of the gradient line
+      @param x1           The x-coordinate for the end of the gradient line
+      @param y1           The y-coordinate for the end of the gradient line
+      @param  colors      The colors to be distributed along the gradient line
+      @param  positions   May be null. The relative positions [0..1] of
+                          each corresponding color in the colors array. If this is null,
+                          the the colors are distributed evenly along the gradient line.
+      @param  tile        The Shader tiling mode
+  */
+   public LinearGradient(float x0, float y0, float x1, float y1, int colors[], float positions[],
+           TileMode tile) 
+
+ /**
+    @param x0           起始点X坐标
+    @param y0           起始点Y坐标
+    @param x1           终点X坐标
+    @param y1           终点Y坐标
+    @param  colors      所有颜色渐变集合
+    @param  positions   我们可以让它均匀的渐变，也可以让它按照你想要的比例进行渐变，可以为null，这样的话假设1为整个渐变的长度，我们设置的所有颜色（假设有4种颜色），都以同等的权重（渐变长度比例0.25：0.25：0.25：0.25）进行颜色渐变。
+    @param  tile        着色器的不同模式
+ */
+public LinearGradient(float x0, float y0, float x1, float y1, int colors[], float positions[],
+           TileMode tile) 
+
+可以看到.我们想要实现它，需要确定两个坐标，起始坐标 -> 终点坐标，以及要渐变所有颜色的集合，以及颜色中转的点坐标（position[]），最后还有tileMode.
+
+关于着色器的不同模式，如果有需求，可以参考这篇文章，很详细：
+
+关于着色器LinearGradient的使用介绍
+
+2.自定义View:
+public class MyView extends View {
+
+    public MyView(Context context) {
+        super(context);
+    }
+
+    public MyView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public MyView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        //获取View的宽高
+        int width = getWidth();
+        int height = getHeight();
+
+        int colorStart = getResources().getColor(R.color.colorPrimary);
+        int color1 = Color.GRAY;
+        int colorEnd = getResources().getColor(R.color.colorAccent);
+
+        Paint paint = new Paint();
+        LinearGradient backGradient = new LinearGradient(0, 0, 0, height, new int[]{colorStart, color1 ,colorEnd}, null, Shader.TileMode.CLAMP);
+        paint.setShader(backGradient);
+        canvas.drawRect(0, 0, width, height, paint);
+    }
+}
+
+然后将我们的自定义View放到MainActivity的布局文件中,就可以看到上图的效果啦！
+
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mei_husky.gradientdemo.MainActivity">
+
+    <com.mei_husky.gradientdemo.MyView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</android.support.constraint.ConstraintLayout>
+
+3、仔细分析一波
+代码应该不难理解，我们再来回顾一下LinearGradient的构造，看看是如何实现方向上的颜色渐变（本例中为由上至下）的
+
+LinearGradient(0, 0, 0, height, new int[]{colorStart, color1 ,colorEnd}, null, Shader.TileMode.CLAMP);
+1
+
+
+从图中我们是不是可以理解其实就是2个坐标的颜色渐变，通过x1,y1 -> x2,y2两个坐标实现颜色的渐变方向指定！
+
+那么如果我们想要实现45°对角的颜色渐变呢？很简单，是不是坐标从（0，0）到（width，height）就可以了呢？我们试一试：
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        //获取View的宽高
+        int width = getWidth();
+        int height = getHeight();
+
+        int colorStart = getResources().getColor(R.color.colorPrimary);
+        int color1 = Color.GRAY;
+        int colorEnd = getResources().getColor(R.color.colorAccent);
+
+        Paint paint = new Paint();
+        LinearGradient backGradient = new LinearGradient(0, 0, width, height, new int[]{colorStart, color1 ,colorEnd}, null, Shader.TileMode.CLAMP);
+//        LinearGradient backGradient = new LinearGradient(0, 0, 0, height, new int[]{colorStart, color1 ,colorEnd}, null, Shader.TileMode.CLAMP);
+        paint.setShader(backGradient);
+        canvas.drawRect(0, 0, width, height, paint);
+    }
+
+
+--------------------------------2019.11.12------------------------------------
+https://blog.csdn.net/way_ping_li/article/details/8469679
+简单类型：
+<?xml version="1.0" encoding="utf-8"?> 
+<shape xmlns:android="http://schemas.android.com/apk/res/android"> 
+    <gradient  
+        android:startColor="#3A3C39"  
+        android:endColor="#181818" 
+        android:angle="270" 
+     /> 
+    <corners android:radius="0dp" /> 
+</shape>
+
+复杂一点的：
+<shape xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:shape="rectangle">   
+    <gradient android:type="radial" android:gradientRadius="250"  
+        android:startColor="#E9E9E9" android:endColor="#D4D4D4" />   
+</shape>   
+  
+<shape xmlns:android="http://schemas.android.com/apk/res/android">   
+<gradient android:angle="0" android:startColor="#FFdaf3fc"  
+  android:centerColor="#FFd4e9a9" android:endColor="#FFdaf3fc"/>   
+</shape> 
+
+再复杂一点的：
+<?xml version="1.0" encoding="utf-8"?>   
+<shape xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:shape="rectangle">   
+    <gradient android:startColor="#509245" android:centerColor="#3e8532"  
+        android:endColor="#509245" android:type="linear" android:angle="90"  
+        android:centerX="0.5" android:centerY="0.5" />   
+    <padding android:left="7dp" android:top="7dp" android:right="7dp"  
+        android:bottom="7dp" />   
+    <corners android:radius="4dp" />   
+</shape>

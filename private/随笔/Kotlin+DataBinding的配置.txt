@@ -1,0 +1,85 @@
+https://blog.csdn.net/qq_40033365/article/details/80539143
+
+1.安装DataBinding
+
+Install DataBinding in Java:
+
+在java环境下安装DataBinding很简单，只需要在Moudle的build.gradle的android{}里添加dataBinding.enable = true即可如下图:
+
+
+
+install DataBinding in Kotlin:
+
+要想在Kotlin上使用DataBinding可能会踩很多的坑，不过总体安装步骤如下：
+
+1.安装Kotlin语言环境(不会的请左转百度)
+
+2.配置project的build.gradle 
+
+    buildscript{
+
+    ext.android_plugin_version = AndroidStudio版本号    
+
+    }
+
+    dependencies {
+
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:#kotlin_version"   
+
+    }
+
+
+
+ Moudle 的 build.gradle
+
+    apply plugin: 'kotlin-kapt' (这行要写在上面)
+
+    android{
+
+    dataBinding.enable = true
+    }
+
+    kapt{
+
+    enable = ture
+
+    }
+
+    dependencies{
+
+    kapt "com.android.databinding:compiler:$android_plugin_version"
+
+    }
+
+配置完毕后如下图所示
+
+Moudle的build.gradle
+
+
+
+Project下的build.gradle:
+
+
+
+
+
+
+
+2.容易踩到的坑
+
+
+
+问题：Data Binding annotation processor version needs to match the Android Gradle Plugin version. You can remove the kapt dependency com.android.databinding:compiler:2.1.0 and Android Gradle Plugin will inject the right version.
+
+解决办法：将Kotlin_plugin_version的版本升级，直接改参数就好，我使用的是3.1.2
+
+
+
+还有些问题就不说了，基本按照上面的方法配置的就不会有错，可能会提示如下：但是那个可以忽略，不影响开发。如果有错误，看一看配置是不是缺了什么。
+
+
+
+
+————————————————
+版权声明：本文为CSDN博主「Nixo」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_40033365/article/details/80539143

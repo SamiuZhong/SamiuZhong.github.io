@@ -1,0 +1,19 @@
+https://blog.csdn.net/qq_35298279/article/details/97137125
+
+rv_recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        super.onScrollStateChanged(recyclerView, newState);
+        // 当不滚动时处理
+        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            // 获取当前滚动到的条目位置
+            int firstIndex = mLinearLayoutManager.findFirstVisibleItemPosition();
+        }
+    }
+});
+
+
+
+	val layoutManager = recommend_today_recycler.layoutManager as LinearLayoutManager
+	val currentPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+	layoutManager.findViewByPosition(currentPosition)

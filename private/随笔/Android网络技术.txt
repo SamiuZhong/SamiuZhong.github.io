@@ -1,0 +1,96 @@
+1.发送POST请求传输信息并获取反馈
+	private void pushData(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        Thread.sleep(5000);
+                        Cursor cur = db.rawQuery("SELECT * FROM "+tbl_record+" WHERE identi=0",null);
+                        String result = null;
+                        if(cur.moveToFirst()){
+                            do {
+                                HttpURLConnection connection = null;
+                                BufferedReader reader = null;
+                                try {
+                                    URL url = new URL("http://sydemo.cotf.cn/api/transfer/createRecord");
+                                    connection = (HttpURLConnection)url.openConnection();
+                                    connection.setRequestMethod("POST");
+                                    connection.setReadTimeout(8000);
+                                    connection.setConnectTimeout(8000);
+
+                                    //POST请求设置消息头(可选)
+                                    connection.setDoOutput(true);
+                                    connection.setDoInput(true);
+                                    connection.setUseCaches(false);
+                                    connection.setInstanceFollowRedirects(true);
+                                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+                                    //发送参数
+                                    DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+                                    String cardNo,time,photo;
+                                    cardNo = cur.getString(1);
+                                    time = cur.getString(2);
+                                    photo = cur.getString(3).replace("+","%2B");
+                                    String data = "cardNo="+cardNo+"&time="+time+"&photo="+photo;
+                                    out.writeBytes(data);
+                                    Log.d("PJSON",data);
+
+                                    //获取反馈
+                                    InputStream in = connection.getInputStream();
+                                    reader = new BufferedReader(new InputStreamReader(in));
+                                    StringBuilder response = new StringBuilder();
+                                    String line;
+                                    while((line = reader.readLine()) != null){
+                                        response.append(line);
+                                    }
+                                    String responseData = response.toString();
+                                    result = parseJSONAfterPush(responseData);    //解析JSON格式
+
+                                    //上传反馈解析
+                                    if (result.equals("200")){
+                                        String sql = "UPDATE '"+tbl_record+"' SET identi = 1 " +
+                                                "WHERE cardNo = '"+cardNo+"' AND time = '"+time+"'";
+                                        db.execSQL(sql);    //修改缓存识别码
+                                    }
+
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if(reader != null){
+                                        try {
+                                            reader.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    if(connection != null){
+                                        connection.disconnect();
+                                    }
+                                }
+                            }while (cur.moveToNext());
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+	
+-----------------------2018.12.28更新---------------------
+*在POST传输过程中，因为特殊字符的编码问题，会把传输过去的"+"加号识别为" "空格，解决方案为把传输信息字符串中的"+"加号替换为相应的16进制编码"%2B"表示
+
+附：特殊字符的16进制编码
+1. +     URL中+号表示空格 %2B   
+2. 空格  URL中的空格可以用+号或者编码 %20   
+3. /     分隔目录和子目录 %2F    
+4. ?     分隔实际的 URL 和参数 %3F    
+5. %     指定特殊字符 %25    
+6. #     表示书签 %23    
+7. &     URL中指定的参数间的分隔符 %26    
+8. =     URL中指定参数的值 %3D  
+
+http://hao.jser.com/archive/19301/

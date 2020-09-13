@@ -1,0 +1,6 @@
+1.Manifest merger failed : Attribute application@appComponentFactory value ...
+  原因：Android x和Android support库不能共存
+  解决：全部转换为Android x
+		1.在Project视图中选择工程右键-->Refactor-->Migrate to Androidx
+		2.执行Do Refactor
+  https://www.jianshu.com/p/f7a7a8765294

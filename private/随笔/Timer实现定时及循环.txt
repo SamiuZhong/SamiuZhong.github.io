@@ -1,0 +1,22 @@
+private Timer timer;
+
+private void startRecognition() {
+    timer = new Timer();
+    TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            Log.d("faceLog","~~~~~~~~~~延时调用！~~~~~~~~~~~");
+            doSaveAndPost(imgId++);
+        }
+    };
+    timer.schedule(timerTask, 500, 1000);
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    if (timer != null) {
+        timer.cancel();
+        timer = null;
+    }
+}

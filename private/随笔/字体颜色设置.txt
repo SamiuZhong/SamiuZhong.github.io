@@ -1,0 +1,11 @@
+1.在颜色对照表中找出想要的颜色代码
+2.在values-->colors.xml中添加想要的颜色
+	<?xml version="1.0" encoding="utf-8"?>
+	<resources>
+		<color name="colorPrimary">#008577</color>
+		<color name="colorPrimaryDark">#00574B</color>
+		<color name="colorAccent">#D81B60</color>
+		<color name="blue">	#0072E3</color>
+	</resources>
+3.TextView的布局文件中写入颜色
+	android:textColor="@color/blue"

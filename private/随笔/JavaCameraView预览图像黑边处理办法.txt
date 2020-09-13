@@ -1,0 +1,32 @@
+问题：JavaCameraBiew控件，只在中间一个小区域有预览画面，四周为黑色填充，需要让预览图像填充满控件，实现无黑边
+解决：
+经过查看代码，在JavaCameraView类中，有initializeCamera这个方法，这个方法中有尺寸的设置
+protected boolean initializeCamera(int width, int height) {
+...
+        //获得到设备支持的尺寸
+        List<android.hardware.Camera.Size> sizes = params.getSupportedPreviewSizes();
+                if (sizes != null) {
+				
+    //【新增代码】打印支持的尺寸
+                for (int i = 0; i < sizes.size(); i++) {
+                        Log.e("WillWolf", "width-->" + sizes.get(i).width + " height-->" + sizes.get(i).height);
+                    }
+					
+                    /* Select the size that fits surface considering maximum size allowed */
+                    //这里通过父类的一个计算方式，得到一个opencv认为最合适的尺寸
+                    Size frameSize = calculateCameraFrameSize(sizes, new JavaCameraSizeAccessor(), width, height);
+
+                    ...
+
+                    Log.d(TAG, "Set preview size to " + Integer.valueOf((int)frameSize.width) + "x" + Integer.valueOf((int)frameSize.height));
+    //（这一行注释掉）  params.setPreviewSize((int)frameSize.width, (int)frameSize.height);
+	
+    //【新增代码】WillWolf 设置预览界面大小尺寸
+                    params.setPreviewSize(1280, 720);
+
+...
+    }
+	
+end
+----------------------------------------------
+https://blog.csdn.net/WillWolf_Wang/article/details/78249358

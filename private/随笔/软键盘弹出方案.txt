@@ -1,0 +1,30 @@
+https://www.diycode.cc/topics/383
+
+最基本的情况，如图所示：在页面底部有一个EditText，如果不做任何处理，那么在软键盘弹出的时候，就有可能会挡住EditText。
+对于这种情况的处理其实很简单，只需要在AndroidManifest文件中对activity设置：android:windowSoftInputMode的值adjustPan或者adjustResize即可，像这样：
+
+<activity
+    android:name=".MainActivity"
+    android:windowSoftInputMode="adjustPan"  >
+    ...
+</activity>
+一般来说，他们都可以解决问题，当然，adjustPan跟adjustResize的效果略有区别。
+
+adjustPan是把整个界面向上平移，使输入框露出，不会改变界面的布局；
+adjustResize则是重新计算弹出软键盘之后的界面大小，相当于是用更少的界面区域去显示内容，输入框一般自然也就在内了
+
+Java代码实现（Activity里面实现）
+getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+
+
+adjustPan	当显示软键盘时，调整window的空白区域来显示软键盘。软键盘还是有可能遮挡一些有内容区域，这时用户就只有退出软键盘才能看到这些被遮挡区域并进行交互。
+adjustNothing	当显示软键盘时，不调整window的布局
+adjustResize	当显示软键盘时，调整window内的控件大小以便显示软键盘。这样的话控件可能会变形。
+adjustUnspecified	不指定显示软件盘时，window的调整方式。系统去判断内容区域可滚动为adjustPan,不可滚动为adjustResize
+stateAlwaysHidden	总是隐藏软键盘。
+stateAlwaysVisible	总是显示软键盘
+stateHidden	用户导航（navigate）到你的窗口的时候,隐藏软键盘
+stateVisible	用户导航（navigate）到你的窗口的时候，显示软键盘
+stateUnchanged	当这个activity出现时，软键盘将一直保持在上一个activity里的状态，无论是隐藏还是显示
+stateUnspecified	未指定软键盘的状态，系统将自动选择一个合适的状态或依赖于主题中的设置，这是默认的设置

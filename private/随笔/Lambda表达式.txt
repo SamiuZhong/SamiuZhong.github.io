@@ -1,0 +1,5 @@
+1.build.gradle中引用
+	compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }

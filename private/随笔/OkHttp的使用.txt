@@ -1,0 +1,144 @@
+https://square.github.io/okhttp/
+
+0.在AndroidManifest文件中添加网络权限 
+	<uses-permission android:name="android.permission.INTERNET"/>
+
+1.app下的build.gradle文件里面添加依赖
+	dependencies {
+		implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+	}
+	
+2.get请求
+OkHttpClient client = new OkHttpClient();
+
+String get(String url) throws IOException {
+  Request request = new Request.Builder()
+      .url(url)
+      .build();
+
+  try (Response response = client.newCall(request).execute()) {
+    return response.body().string();
+  }
+}
+
+3.post请求
+public static final MediaType JSON
+    = MediaType.get("application/json; charset=utf-8");
+
+OkHttpClient client = new OkHttpClient();
+
+String post(String url, String json) throws IOException {
+  RequestBody body = RequestBody.create(JSON, json);
+  Request request = new Request.Builder()
+      .url(url)
+      .post(body)
+      .build();
+  try (Response response = client.newCall(request).execute()) {
+    return response.body().string();
+  }
+}
+
+4.post请求发送键值对参数时
+public static final MediaType JSON
+    = MediaType.get("application/json; charset=utf-8");
+
+OkHttpClient client = new OkHttpClient();
+
+String post(String url) throws IOException {
+
+  FormBody.Builder params = new FormBody.Builder();
+  params.add("deviceId","838c6186-e01f-3b8a-9663-9210727fcf6f");
+        
+  Request request = new Request.Builder()
+      .url(url)
+      .post(params.build())
+      .build();
+  try (Response response = client.newCall(request).execute()) {
+    return response.body().string();
+  }
+}
+
+
+--------------------2019.2.19更新--------------------
+设置头部信息header:
+public class HttpClient {
+
+    private static OkHttpClient client = new OkHttpClient();
+
+    public static void main(String[] args) throws IOException {
+
+        //post请求
+        FormBody formBody = new FormBody.Builder().add("photo","/mnt/internal_sd/wanJia/face.jpg")
+                .add("meta","zp").add("galleries","testUser1,testUser2").build();
+				
+		RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addPart(Headers.of("Content-Disposition", "form-data; name=\"image\""),
+                        RequestBody.create(MediaType.parse("image/png"),
+                                new File("/mnt/internal_sd/wanJia/face.jpg")))
+                .addFormDataPart("photo","@/mnt/internal_sd/wanJia/face.jpg")
+                .addFormDataPart("meta","sss")
+                .addFormDataPart("galleries","testUser1,testUser2")
+                .build();
+
+        Request request = new Request.Builder().url("http://127.0.0.1:8082/kabaouser/es/ok").
+                addHeader("Access-User-Token","e5cHLWScbto3VfvYTU1llVZgl/WniA4QZZ8epmn8k/o=").post(formBody).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            public void onFailure(Call call, IOException e) {
+                System.out.println(e.getMessage());
+            }
+
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.code() >= 200 && response.code() < 300) {
+                    System.out.println(response.body().string());
+                }
+            }
+        });
+
+        //get请求
+        Request request1 = new Request.Builder().url("http://www.baidu.com").build();
+        client.newCall(request1).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.code() >= 200 && response.code() < 300) {
+                    System.out.println(response.body().string());
+                }
+            }
+        });
+    }
+}
+
+--------------------2019.2.19更新2--------------------
+使用multipart/form-data方式上传图片文件
+private static OkHttpClient client = new OkHttpClient();
+private void okPOST(String host){
+        File file = new File("/mnt/internal_sd/wanJia/face.jpg");
+        Log.d("CameraLog","文件："+file.toString());
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("photo",file.getName(),fileBody)
+                .addFormDataPart("meta","sss")
+                .build();
+        Request request = new Request.Builder().url(host + "/v-face/v0/face").
+                addHeader("Content-type","multipart/form-data").
+                addHeader("Authorization","Token fHGQ-NGdp").
+                post(requestBody).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            public void onFailure(Call call, IOException e) {
+                Log.d("CameraLog", String.format("Post failed!%s%s", call.toString(), e.getMessage()));
+            }
+
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("CameraLog","-----------POST success!------------");
+                Log.d("CameraLog",response.body().string());
+            }
+        });
+    }

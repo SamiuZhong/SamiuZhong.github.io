@@ -1,0 +1,13 @@
+自定义drawable文件
+<shape android:shape="line" xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke
+        android:color="#979797"
+        android:dashWidth="6dp"
+        android:dashGap="4dp"
+        android:width="1dp"/>
+</shape>
+
+color：虚线的颜色
+dashWidth：虚线中的短线长度
+dashGap：虚线每个短线之间间隔
+width：表示虚线的“厚度”

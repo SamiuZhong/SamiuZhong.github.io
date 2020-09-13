@@ -1,0 +1,56 @@
+0.SDK下载地址  https://github.com/yixia/VitamioBundle
+
+一：配置
+1.下载sdk文件
+2.File --> New --> Import Model -->选择SDK文件下的 \VitamioBundle-master\vitamio
+3.修改vitamio包下的gradle文件中的和你的app包下的gradle一致
+4.在app包下的 dependencies 中添加 implementation project(':vitamio')
+
+二：使用 https://www.kancloud.cn/digest/rtmp-android/136313
+1.Layout布局
+	<?xml version="1.0" encoding="utf-8"?>
+	<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:context=".MainActivity">
+
+		<io.vov.vitamio.widget.VideoView
+			android:id="@+id/vitamio_videoView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+2.Activity中实现
+	public class MainActivity extends AppCompatActivity {
+
+		private static String path = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
+		private VideoView videoView;
+
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_main);
+
+			initVideoView();
+		}
+
+		private void initVideoView(){
+			if (!LibsChecker.checkVitamioLibs(this)){
+				return;
+			}
+			videoView = findViewById(R.id.vitamio_videoView);
+			videoView.setVideoPath(path);
+			videoView.setMediaController(new MediaController(this));
+			videoView.requestFocus();
+
+			videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					mp.setPlaybackSpeed(1.0f);
+				}
+			});
+		}
+	}

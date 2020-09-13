@@ -1,0 +1,113 @@
+https://source.android.com/setup/build/downloading	(Google官方教程)
+https://mirror.tuna.tsinghua.edu.cn/help/AOSP/		(清华源)
+https://lug.ustc.edu.cn/wiki/mirrors/help/aosp		(中科大源)
+
+安装：
+1.下载repo工具
+	//安装git
+	sudo apt-get install git
+	//上面一步可能会报错，是因为有另外一个程序正在运行，导致资源被锁不可用，输入以下命令解决
+	sudo rm /var/cache/apt/archives/lock
+	sudo rm /var/lib/dpkg/lock
+	
+	//创建bin文件夹
+	mkdir ~/bin
+	PATH=~/bin:$PATH
+	
+	//安装curl库
+	sudo apt-get install curl
+	
+	//下载repo并设置权限，这里直接使用的清华源
+	curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+	chmod a+x ~/bin/repo
+	//完了之后手动打开~/bin/repo文件，找到REPO_URL这一行,然后将其内容修改为下面一行
+	//REPO_URL = 'https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
+
+2.下载源码
+	//为源码创建一个目录
+	mkdir aosp
+	cd aosp
+	
+	//设置git身份
+	git config --global user.email "piratemorgen@gmail.com"
+	git config --global user.name "piratemorgen"
+	
+	//初始化仓库，后面带-b参数的就是指定版本，不带-b就是默认最新版，以下两行二选一
+	repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest
+	repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest -b android-9.0.0_r8
+	
+	//同步源码，这一步就要走几个小时了
+	repo sync
+	
+3.下载内核源码
+	//创建文件夹
+	mkdir kernel
+	cd kernel
+	
+	//使用清华的镜像
+	git clone https://aosp.tuna.tsinghua.edu.cn/kernel/goldfish.git
+
+	//查看分支
+	cd goldfish
+	git branch -a
+	
+	//这里检出goldfish 3.4分支
+	git checkout remotes/origin/android-goldfish-3.4
+	
+编译：
+1.准备工作
+	//安装jdk8
+	sudo apt-get update
+	sudo apt-get install openjdk-8-jdk
+	
+	//安装依赖，这里对应的是Ubuntu16.04版本所需要的依赖，其他版本不明
+	sudo apt-get install libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-dev g++-multilib 
+	sudo apt-get install -y git flex bison gperf build-essential libncurses5-dev:i386 
+	sudo apt-get install tofrodos python-markdown libxml2-utils xsltproc zlib1g-dev:i386 
+	sudo apt-get install dpkg-dev libsdl1.2-dev libesd0-dev
+	sudo apt-get install git-core gnupg flex bison gperf build-essential  
+	sudo apt-get install zip curl zlib1g-dev gcc-multilib g++-multilib 
+	sudo apt-get install libc6-dev-i386 
+	sudo apt-get install lib32ncurses5-dev x11proto-core-dev libx11-dev 
+	sudo apt-get install libgl1-mesa-dev libxml2-utils xsltproc unzip m4
+	sudo apt-get install lib32z-dev ccache
+	
+2.源码整编
+	//进入AOSP的根目录
+	cd aosp
+	
+	//初始化环境
+	source build/envsetup.sh
+	// 编译前删除build文件夹A
+	make clobber	
+	
+	//选择目标开始编译
+	lunch
+	aosp_arm64-eng
+	//选择编译的CPU核心数，我这里是4核(可选核心数的1-2倍)
+	make -j8
+	
+3.导入Android Studio	
+	//将执行文件设置为临时变量
+	source build/envsetup.sh
+	//生成idegen.jar文件
+	mmm development/tools/idegen/
+	
+	//执行脚本
+	sudo development/tools/idegen/idegen.sh
+	
+	//修改权限
+	sudo chmod 777 android.iml
+	sudo chmod 777 android.ipr
+	
+	
+一些问题：
+	Q：UnicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 0: ordinal not in range(128)
+	A：直接在终端输入：
+		python
+		import sys
+		reload(sys)
+		sys.setdefaultencoding("utf-8")
+		
+		然后再输入：sys.getdefaultencoding()
+		如果输出utf-8那就对了

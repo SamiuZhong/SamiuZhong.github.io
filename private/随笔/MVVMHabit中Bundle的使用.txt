@@ -1,0 +1,7 @@
+1.跳转时添加Bundle
+	Bundle bundle = new Bundle();
+	bundle.putString("result",response.getData().getResult());
+	startContainerActivity(CertificationFailFragment.class.getCanonicalName(),bundle);
+                                
+2.跳转时候取出Bundle数据
+	String result = getArguments().getString("result");								

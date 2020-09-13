@@ -1,0 +1,154 @@
+1.创建工具类
+	public class StatusBarUtil {
+
+		public static void transparentStatusBar(Activity activity) {
+			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+			//需要设置这个flag contentView才能延伸到状态栏
+			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+			//状态栏覆盖在contentView上面，设置透明使contentView的背景透出来
+			activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+			setAndroidNativeLightStatusBar(activity,true);
+		}
+
+		public static void setAndroidNativeLightStatusBar(Activity activity, boolean dark) {
+			View decor = activity.getWindow().getDecorView();
+			if (dark) {
+				decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+			} else {
+				decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+			}
+
+
+		}
+
+		/**
+		 * 添加状态栏占位视图
+		 */
+		public static void addStatusViewWithColor(Activity activity,int color) {
+			ViewGroup contentView = activity.findViewById(android.R.id.content);
+			View statusBarView = new View(activity);
+			ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+					getStatusBarHeight(activity));
+			statusBarView.setBackgroundColor(color);
+			contentView.addView(statusBarView, lp);
+		}
+
+		public static int getStatusBarHeight(Context context) {
+			int result = 0;
+			//获取状态栏高度的资源id
+			int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+			if (resourceId > 0) {
+				result = context.getResources().getDimensionPixelSize(resourceId);
+			}
+			return result;
+		}
+	}
+2.可以将设置状态栏的方可封装在BaseActivity的onCreate里面
+	StatusBarUtil.transparentStatusBar(this);	
+3.在具体的Activity还需要设置
+	@Override
+    public void initData() {
+        setStatusBar();
+    }	
+	
+	private void setStatusBar(){
+        int height = StatusBarUtil.getStatusBarHeight(mActivity);
+        binding.rootView.setPadding(0,height,0,0);
+    }
+	
+--------------------------2019.12.04---------------------------
+（谨慎使用）可封装一个Toolbar,使其MarginTop固定的距离，然后在布局的顶部include这个Toolbar即可，这样就不用每次在Activity里面设置了，即省略了上面的第三步
+
+--------------------------2019.12.05---------------------------
+	/**
+     * 沉浸
+     */
+    private void setStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+    }
+
+
+    /**
+     * 设置Android状态栏的字体颜色，状态栏为亮色的时候字体和图标是黑色，状态栏为暗色的时候字体和图标为白色
+     *
+     * @param dark 状态栏字体和图标是否为深色
+     */
+    protected void setStatusBarFontDark(boolean dark) {
+        // 小米MIUI
+        try {
+            Window window = getWindow();
+            Class clazz = getWindow().getClass();
+            Class layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
+            Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
+            int darkModeFlag = field.getInt(layoutParams);
+            Method extraFlagField = clazz.getMethod("setExtraFlags", int.class, int.class);
+            if (dark) {    //状态栏亮色且黑色字体
+                extraFlagField.invoke(window, darkModeFlag, darkModeFlag);
+            } else {       //清除黑色字体
+                extraFlagField.invoke(window, 0, darkModeFlag);
+            }
+        } catch (Exception e) {
+
+        }
+
+        // 魅族FlymeUI
+        try {
+            Window window = getWindow();
+            WindowManager.LayoutParams lp = window.getAttributes();
+            Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
+            Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField("meizuFlags");
+            darkFlag.setAccessible(true);
+            meizuFlags.setAccessible(true);
+            int bit = darkFlag.getInt(null);
+            int value = meizuFlags.getInt(lp);
+            if (dark) {
+                value |= bit;
+            } else {
+                value &= ~bit;
+            }
+            meizuFlags.setInt(lp, value);
+            window.setAttributes(lp);
+        } catch (Exception e) {
+
+        }
+        // android6.0+系统
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (dark) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+        }
+    }
+
+    /**
+     * 获取状态栏高度
+     *
+     * @param context
+     * @return
+     */
+    protected double getStatusBarHeight(Context context) {
+        double statusBarHeight = Math.ceil(25 * context.getResources().getDisplayMetrics().density);
+        return statusBarHeight;
+    }
+	
+------------------------------2019.12.26------------------------------
+具体的Activity里面，灵活运用以下代码为沉浸图片外的第一个基准View设置Margin即可实现，这样可减少一级层级的嵌套	
+	int height = StatusBarUtil.getStatusBarHeight(this);
+	ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) binding.title.getLayoutParams();
+	if (layoutParams == null){
+		layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+	}
+	layoutParams.topMargin = height;
+	binding.title.setLayoutParams(layoutParams);	

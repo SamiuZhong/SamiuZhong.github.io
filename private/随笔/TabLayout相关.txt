@@ -1,0 +1,21 @@
+https://juejin.im/entry/589ec5b01b69e60059c5b9fb
+
+TabLayout属性：
+tabGravity				fill，填满TabLayout；center,居中显示
+tabMode					fixed, 固定标签；scrollable，可滚动标签，个数较少的时候可以使用fixed,如果标签超出了屏幕范围，设置为scrollable比较好
+tabMaxWidth				Tab的最大宽度
+tabIndicatorColor		底部滑动的线条的颜色，默认是colorAccent
+tabIndicatorHeight		底部滑动线条的高度
+tabPadding				标签页的padding
+tabBackground			标签页的背景
+tabTextAppearance		文本设置
+tabSelectedTextColor	选中字体颜色
+
+TabItem属性：
+text	标签文字
+icon	图标
+layout	自定义布局
+
+===========================2019.12.11==============================
+https://juejin.im/post/5cf7a0f851882537b945c445
+在布局里加入 TabLayout，默认是下划线的样式，可以使用 tabIndicatorGravity 属性设置为：bottom（默认值，可以不用设置，指示器显示在底部）、 top（指示器显示在顶部）、center（指示器显示在中间）、stretch（指示器高度拉伸铺满 item）。

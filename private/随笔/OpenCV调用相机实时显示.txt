@@ -1,0 +1,241 @@
+1.用JavaCameraView显示图像，声明为：private CameraBridgeViewBase mCVCamera;
+2.用Mat对象缓存每帧输入的数据：private Mat mRgba; 
+--------------3.首先在AndroidManifest.xml中添加授权---------------
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+//动态授权（Android 6.0 above)
+  if(Build.VERSION.SDK_INT >= 23){
+      ActivityCompat.requestPermissions(this,new String[]{
+              Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+              1);
+  }
+--------------4.初始化OpenCV--------------
+   BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch(status){
+                case LoaderCallbackInterface.SUCCESS:
+                    Log.i(TAG,"OpenCV加载成功!");
+                    mCVCamera.enableView();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+----------------4.5类implements CvCameraViewLintener2--------
+----------------5.在onCReate中声名、设置组件----------------
+	mCVCamera = findViewById(R.id.camera_view2);
+        mCVCamera.setCvCameraViewListener(this);
+        button = findViewById(R.id.deal_btn);
+        button.setOnClickListener(this);
+-----------------6.CvCameraViewListener2三个方法和onDestroy方法------------
+    @Override
+    protected void onDestroy(){
+        if(mCVCamera != null){
+            mCVCamera.disableView();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+        mRgba = new Mat(height,width,CvType.CV_8UC4);
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+        return mRgba;
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+        mRgba.release();
+    }
+----------------------7.拍照-------------------
+if(mRgba != null){
+    if(!mRgba.empty()){
+        Mat inter = new Mat(mRgba.width(),mRgba.height(),CvType.CV_8UC4);
+        //将四通道的RGBA转为三通道的BGR，重要！！
+        Imgproc.cvtColor(mRgba,inter,Imgproc.COLOR_RGB2BGR);
+        File sdDir = null;
+        //判断是否存在机身内存
+        boolean sdCardExist = Environment.getExternalStorageState().
+                equals(Environment.MEDIA_MOUNTED);
+        if(sdCardExist){
+            //获得机身储存根目录
+            sdDir = Environment.getExternalStorageDirectory();
+        }
+        //将拍摄时间作为文件名
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String filename = sdf.format(new Date());
+        String filePath = sdDir + "/Picture/OpenCV/" + filename + ".png";
+        //将转化后的BGR矩阵内容写入到文件中
+        Imgcodecs.imwrite(filePath,inter);
+        Toast.makeText(this,"图片已保存",Toast.LENGTH_SHORT).show();
+    }
+}
+
+---------------------8.强制横屏方法---------------------
+    protected void onResume() {
+        if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            //横屏后才加载部件，否则会FC
+            if(!OpenCVLoader.initDebug()) {
+                Log.d(TAG, "OpenCV library not found!");
+            } else {
+                Log.d(TAG, "OpenCV library found inside package. Using it!");
+                mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+            }
+        }
+        super.onResume();
+    }
+	
+	
+-------------------2019.2.14更新---------------------
+0.Manifest中添加相机权限
+	<uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	注：Android6.0以上需动态获取权限，或手动在手机权限管理里面授权
+1.Activity类实现接口
+	implements CameraBridgeViewBase.CvCameraViewListener2
+2.代码如下
+	private Mat mRgba;                                      //缓存每一帧的数据
+    private JavaCameraView mCVCamera;                       //拍照预览控件
+    private String TAG = "OpenCV_Test";
+
+    //通过OpenCV管理Android服务，初始化OpenCV
+    BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch(status){
+                case LoaderCallbackInterface.SUCCESS:
+                    Log.i(TAG,"OpenCV加载成功!");
+                    mCVCamera.enableView();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_camera);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        initUI();
+    }
+
+    private void initUI(){
+        mCVCamera = findViewById(R.id.javaCameraView);
+        mCVCamera.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
+        mCVCamera.setCvCameraViewListener(this);
+    }
+
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+        mRgba = new Mat(height,width, CvType.CV_8UC4);
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+        mRgba.release();
+        mCVCamera.disableView();
+        mCVCamera = null;
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+        return mRgba;
+    }
+
+    @Override
+    protected void onResume(){
+        if(!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "OpenCV library not found!");
+        } else {
+            Log.d(TAG, "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(mCVCamera != null){
+            mCVCamera.disableView();
+        }
+    }
+	
+-------------------2019.2.14更新2---------------------
+对于OpenCV显示方向不正确的调整方案(旋转图像)
+1.声明全局变量
+	private int mAngle = 90;		//OpenCV调整摄像头旋转角度
+2.修改onCameraFrame方法
+	@Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        if (mAngle == 0) {
+            mRgba = inputFrame.rgba();
+            return mRgba;
+        } else {
+            mRgba = new Mat();
+            Mat dst = inputFrame.rgba();
+            Mat rotateMat = Imgproc.getRotationMatrix2D(new Point(dst.width() / 2.0, dst.height() / 2.0), mAngle, 1);
+            Imgproc.warpAffine(dst, mRgba, rotateMat, dst.size());
+            return mRgba;
+        }
+    }
+	
+-------------------2019.2.25更新---------------------
+OpenCV显示旋转图像方法更新
+1.声明全局变量
+	private int mAngle = 90;		//OpenCV调整摄像头旋转角度
+2.修改onCameraFrame方法
+	@Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Mat dst = inputFrame.rgba();
+            Log.d("Activity","  onCameraFrame == > "+mAngle);
+            switch (mAngle) {
+                case 0:
+                    break;
+                case 90:
+                    OpenCVUtils.rotateCamera(dst, 0);
+                    break;
+                case 180:
+                    OpenCVUtils.rotateCamera(dst, 1);
+                    break;
+                case 270:
+                    OpenCVUtils.rotateCamera(dst, 2);
+                    break;
+                default:
+                    break;
+            }
+            if (mFlip){
+                Core.flip(dst,dst,1);
+            }
+            mRgba = dst;
+            return mRgba;
+    }
+	
+	public static void rotateCamera(Mat dst, int degree) {
+        switch (degree) {
+            case 0:
+                Core.rotate(dst, dst, Core.ROTATE_90_CLOCKWISE);
+                break;
+            case 1:
+                Core.rotate(dst, dst, Core.ROTATE_180);
+                break;
+            case 2:
+                Core.rotate(dst, dst, Core.ROTATE_90_COUNTERCLOCKWISE);
+                break;
+        }
+    }

@@ -1,0 +1,6 @@
+	WindowManager manager = getWindowManager();
+    DisplayMetrics outMetrics = new DisplayMetrics();
+    manager.getDefaultDisplay().getMetrics(outMetrics);
+    int mScreenW = outMetrics.widthPixels;
+    int mScreenH = outMetrics.heightPixels;
+    Log.d("app","屏幕-宽：" + mScreenW + "屏幕-高：" + mScreenH);

@@ -1,0 +1,204 @@
+https://www.bbsmax.com/A/nAJvAgmzrk/
+
+ 1.定义一个dialog的布局（lay_share.xml）
+
+ <?xml version="1.0" encoding="utf-8"?>
+ 
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:background="@color/white"
+     android:orientation="vertical">
+ 
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center_vertical"
+         android:orientation="horizontal"
+         android:paddingBottom="@dimen/padding_15"
+         android:paddingTop="@dimen/padding_15">
+ 
+         <View
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:layout_weight="1" />
+ 
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:drawablePadding="@dimen/padding_5"
+             android:drawableTop="@mipmap/ic_weixin_share"
+             android:gravity="center"
+             android:text="微信"
+             android:textColor="@color/color_999999"
+             android:textSize="@dimen/text_14" />
+ 
+         <View
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:layout_weight="1" />
+ 
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:drawablePadding="@dimen/padding_5"
+             android:drawableTop="@mipmap/ic_circle_share"
+             android:gravity="center"
+             android:text="朋友圈"
+             android:textColor="@color/color_999999"
+             android:textSize="@dimen/text_14" />
+ 
+         <View
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:layout_weight="1" />
+ 
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:drawablePadding="@dimen/padding_5"
+             android:drawableTop="@mipmap/ic_weibo_share"
+             android:gravity="center"
+             android:text="微博"
+             android:textColor="@color/color_999999"
+             android:textSize="@dimen/text_14" />
+ 
+         <View
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:layout_weight="1" />
+     </LinearLayout>
+ 
+     <View
+         android:layout_width="match_parent"
+         android:layout_height="0.5dp"
+         android:layout_marginLeft="@dimen/padding_10"
+         android:layout_marginRight="@dimen/padding_10"
+         android:background="@color/color_c9c9c9" />
+ 
+     <TextView
+         android:id="@+id/tv_cancel"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center"
+         android:padding="@dimen/padding_15"
+         android:text="取消"
+         android:textColor="@color/color_666666"
+         android:textSize="@dimen/text_18" />
+ </LinearLayout>
+ 
+ 2.定义弹出框弹出动画（dialog_enter.xml）
+
+ <?xml version="1.0" encoding="utf-8"?>
+ <set xmlns:android="http://schemas.android.com/apk/res/android">
+     <translate
+         android:duration="300"
+         android:fromYDelta="100%p"
+         android:toYDelta="0" />
+ </set>
+ 
+ 3.定义弹出框隐藏动画（dialog_exit.xml）
+
+ <?xml version="1.0" encoding="utf-8"?>
+ <set xmlns:android="http://schemas.android.com/apk/res/android">
+     <translate
+         android:duration="300"
+         android:fromYDelta="0"
+         android:toYDelta="100%p" />
+ </set>
+ 
+ 4.定义动画style
+
+ <!--弹出框动画-->
+     <style name="share_animation" parent="android:Animation">
+         <item name="android:windowEnterAnimation">@anim/dialog_enter</item>
+         <item name="android:windowExitAnimation">@anim/dialog_exit</item>
+     </style>
+	 
+ 5.定义对话框样式
+
+ <!-- 对话框样式 -->
+     <style name="dialog_bottom_full" parent="android:style/Theme.Dialog">
+         <item name="android:windowBackground">@android:color/transparent</item>
+         <item name="android:windowNoTitle">true</item>
+         <item name="android:windowIsFloating">true</item>
+         <item name="android:windowContentOverlay">@null</item>
+         <item name="android:scrollHorizontally">true</item>
+     </style>	
+
+ 6.最后，在需要从底部弹出dialog的地方，直接调用showDialog()方法
+
+	/**
+	  * 显示分享弹出框
+	  */
+	 private void showDialog() {
+		 if (mShareDialog == null) {
+			 initShareDialog();
+		 }
+		 mShareDialog.show();
+	 }
+
+	 /**
+	  * 初始化分享弹出框
+	  */
+	 private void initShareDialog() {
+		 mShareDialog = new Dialog(this, R.style.dialog_bottom_full);
+		 mShareDialog.setCanceledOnTouchOutside(true);
+		 mShareDialog.setCancelable(true);
+		 Window window = mShareDialog.getWindow();
+		 window.setGravity(Gravity.BOTTOM);
+		 window.setWindowAnimations(R.style.share_animation);
+		 View view = View.inflate(this, R.layout.lay_share, null);
+		 view.findViewById(R.id.tv_cancel).setOnClickListener(new View.OnClickListener() {
+			 @Override
+			 public void onClick(View view) {
+				 if (mShareDialog != null && mShareDialog.isShowing()) {
+					 mShareDialog.dismiss();
+				 }
+			 }
+		 });
+		 window.setContentView(view);
+		 window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);//设置横向全屏
+	 }
+大功告成！
+
+收工！	
+
+---------------------------2019.11.8--------------------------------
+可以建一个底部弹出的Dialog基类 
+public abstract class BaseButtonDialog extends Dialog {
+    protected Context context;
+
+    public BaseButtonDialog(@NonNull Context context) {
+        super(context);
+        this.context = context;
+        init();
+    }
+
+    private void init() {
+        Window win = this.getWindow();
+        //   win.clearFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND);//去背景阴影
+        win.requestFeature(Window.FEATURE_NO_TITLE);
+        onCreate();
+        win.getDecorView().setPadding(0, 0, 0, 0);
+        WindowManager.LayoutParams lp = win.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.windowAnimations = R.style.BottomInAndOutStyle;
+        lp.gravity = Gravity.BOTTOM;
+        win.setAttributes(lp);
+        win.setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    protected abstract void onCreate();
+
+
+    protected void showFlags() {
+        Window win = this.getWindow();
+        win.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);//去背景阴影
+    }
+
+}
+
+然后创建想要的Dialog类继承自基类
+最后在Activity里面show出来即可

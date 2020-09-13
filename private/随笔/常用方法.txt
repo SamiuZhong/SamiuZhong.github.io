@@ -1,0 +1,4 @@
+1.字符串截取
+	String str;
+	str.substring(0,3)	//截取str字符串从0到3；
+	str.substring(2)	//截取str字符串从2到末尾；

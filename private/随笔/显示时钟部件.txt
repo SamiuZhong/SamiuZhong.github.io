@@ -1,0 +1,5 @@
+<TextClock
+    android:id="@+id/textClock"
+    android:layout_width="109dp"
+    android:layout_height="57dp"
+    android:format24Hour="HH:mm yyyy-MM-dd E"/>

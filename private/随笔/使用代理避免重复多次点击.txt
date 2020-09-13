@@ -1,0 +1,175 @@
+reference from: https://www.jianshu.com/p/d98e22c127ed
+
+问题
+在客户端中,一些按钮一般是需要避免重复点击的,比如:购买丶支付丶确定丶提交丶点赞丶收藏等等场景,这些场景短时间内的重复点击会引发一些问题.
+以前的处理方式
+可能是采用手动记录最后的点击时间,再通过计算时间间隔来判断是否重复点击
+    private long mLastClickTime = 0;
+    public static final int TIME_INTERVAL = 1000;
+    private Button mButton;
+
+    private void initView() {
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (System.currentTimeMillis() - mLastClickTime >= TIME_INTERVAL) {
+                    //to do
+                    mLastClickTime = System.currentTimeMillis();
+                } else {
+                    Toast.makeText(getActivity(), "请勿重复点击", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+或者封装一下采用抽象处理
+public abstract class IClickListener implements View.OnClickListener {
+    private long mLastClickTime = 0;
+    public static final int TIME_INTERVAL = 1000;
+
+    @Override
+    public final void onClick(View v) {
+        if (System.currentTimeMillis() - mLastClickTime >= TIME_INTERVAL) {
+            onIClick(v);
+            mLastClickTime = System.currentTimeMillis();
+        } else {
+            onAgain(v);
+        }
+    }
+
+    protected abstract void onIClick(View v);
+
+    protected void onAgain(View v) {
+
+    }
+}
+
+使用(无需提醒重复点击)
+        mButton.setOnClickListener(new IClickListener() {
+            @Override
+            protected void onIClick(View v) {
+                
+            }
+        });
+
+或者(需提醒重复点击)
+        mButton.setOnClickListener(new IClickListener() {
+            @Override
+            protected void onIClick(View v) {
+                
+            }
+
+            @Override
+            protected void onAgain(View v) {
+
+            }
+        });
+
+可以看到经过封装之后,使用起来还是很方便的,但是有几个缺点
+
+侵入性过大-OnClickListener全部替换为子类IClickListener
+不可逆-不能很方便的还原为OnClickListener,因为不是同个回调
+如果是第三方控件则无法处理重复点击
+只能写成内部类方式-由于单继承特性,我们只能内部类回调,代码不美观
+
+优雅的处理方式
+重复点击的问题其实是如何动态控制原有的点击事件是否产生,而不是在原有的点击事件上增强功能;结合设计模式可以知道,代理模式可以很好的处理这种问题,而不是继承.
+代理
+public class ClickProxy implements View.OnClickListener {
+
+    private View.OnClickListener origin;
+    private long lastclick = 0;
+    private long timems = 1000;
+
+    public ClickProxy(View.OnClickListener origin) {
+        this.origin = origin;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (System.currentTimeMillis() - lastclick >= timems) {
+            origin.onClick(v);
+            lastclick = System.currentTimeMillis();
+        }
+    }
+}
+
+原先的点击事件
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //to do
+            }
+        });
+
+代理使用
+        mButton.setOnClickListener(new ClickProxy(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //to do
+            }
+        }));
+
+可以看到,原有代码逻辑没有改动,只是添加了代理类,这样大大减小了侵入性
+当然还可以扩展一下,提供重复点击的回调和自定义间隔时间,增加一个构造函数
+public class ClickProxy implements View.OnClickListener {
+
+    private View.OnClickListener origin;
+    private long lastclick = 0;
+    private long timems = 1000; //ms
+    private IAgain mIAgain;
+
+    public ClickProxy(View.OnClickListener origin, long timems, IAgain again) {
+        this.origin = origin;
+        this.mIAgain = again;
+        this.timems = timems;
+    }
+
+    public ClickProxy(View.OnClickListener origin) {
+        this.origin = origin;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (System.currentTimeMillis() - lastclick >= timems) {
+            origin.onClick(v);
+            lastclick = System.currentTimeMillis();
+        } else {
+            if (mIAgain != null) mIAgain.onAgain();
+        }
+    }
+
+    public interface IAgain {
+        void onAgain();//重复点击
+    }
+}
+
+如何处理第三方View内部的点击事件
+可能我们使用一个自定义控件,他的内部已经消费了点击事件,但是需要避免重复点击,我们不可能去改内部的代码,也不能重新设置点击事件,那样会丢失内部的处理逻辑;这时可以采用反射的处理方式,再结合代理来实现无缝替换
+//提供一个静态方法
+public class ClickFilter {
+    public static void setFilter(View view) {
+        try {
+            Field field = View.class.getDeclaredField("mListenerInfo");
+            field.setAccessible(true);
+            Class listInfoType = field.getType();
+            Object listinfo = field.get(view);
+            Field onclickField = listInfoType.getField("mOnClickListener");
+            View.OnClickListener origin = (View.OnClickListener) onclickField.get(listinfo);
+            onclickField.set(listinfo, new ClickProxy(origin));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+使用:
+    private StateButton mStateButton;//自定义控件
+
+    private void initView() {
+        ClickFilter.setFilter(mStateButton);
+    }
+
+这种动态替换的方式同样适合普通场景,在设置点击事件后,都可以通过设置该过滤器来处理重复点击(包括butterknife等注解绑定的点击事件)
+最后
+Ok.以上就是讨论如何优雅处理重复点击的全部内容,大家有什么意见建议欢迎在下面留言哦

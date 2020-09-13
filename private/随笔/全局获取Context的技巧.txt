@@ -1,0 +1,22 @@
+1.创建一个MyApplication类继承自Application：
+public class MyApplication extends Application {
+
+    private static Context context;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+		context = getApplicationContext();
+    }
+
+    public static Context getContext(){
+        return context;
+    }
+}
+
+2.在AndroidManife.xml文件的<application>标签下进行指定，以实现程序启动的时候自动初始化MyApplication
+	<application
+        ......
+        android:name="xxx.Utils.MyApplication">	//注意，要写完整的包名
+		
+3.使用MyApplication.getContext()获取context

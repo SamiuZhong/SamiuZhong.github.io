@@ -1,0 +1,18 @@
+1.发送
+	RxBus.getDefault().post(object);
+2.创建一个订阅的方法
+	private Disposable disposable;
+
+	private void subscribeIdCardImg(){
+        disposable = RxBus.getDefault().toObservable(Object.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object object) throws Exception {
+                        ...
+                    }
+                });
+    }
+3.在订阅的地方调用这个方法	
+	
+	

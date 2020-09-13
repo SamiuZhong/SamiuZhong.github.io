@@ -1,0 +1,226 @@
+https://blog.csdn.net/u014453811/article/details/55045703
+
+/**
+ * 自定义控件，长文本展开收起TextView
+ */
+ 
+public class ExpandTextView extends TextView {
+ 
+    private String originText;// 原始内容文本
+    private int initWidth = 0;// TextView可展示宽度
+    private int mMaxLines = 3;// TextView最大行数
+    private SpannableString SPAN_CLOSE = null;// 收起的文案(颜色处理)
+    private SpannableString SPAN_EXPAND = null;// 展开的文案(颜色处理)
+    private String TEXT_EXPAND = "  查看更多>";
+    private String TEXT_CLOSE = "  <收起";
+ 
+    public ExpandTextView(Context context) {
+        super(context);
+        initCloseEnd();
+    }
+ 
+    public ExpandTextView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initCloseEnd();
+    }
+ 
+    public ExpandTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initCloseEnd();
+    }
+ 
+    /**
+     * 设置TextView可显示的最大行数
+     * @param maxLines 最大行数
+     */
+    @Override
+    public void setMaxLines(int maxLines) {
+        this.mMaxLines = maxLines;
+        super.setMaxLines(maxLines);
+    }
+ 
+    /**
+     * 初始化TextView的可展示宽度
+     * @param width
+     */
+    public void initWidth(int width){
+        initWidth = width;
+    }
+ 
+    /**
+     * 收起的文案(颜色处理)初始化
+     */
+    private void initCloseEnd(){
+        String content = TEXT_EXPAND;
+        SPAN_CLOSE = new SpannableString(content);
+        ButtonSpan span = new ButtonSpan(getContext(), new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                ExpandTextView.super.setMaxLines(Integer.MAX_VALUE);
+                setExpandText(originText);
+            }
+        }, R.color.color_fe9901);
+        SPAN_CLOSE.setSpan(span, 0, content.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+ 
+    /**
+     * 展开的文案(颜色处理)初始化
+     */
+    private void initExpandEnd(){
+        String content = TEXT_CLOSE;
+        SPAN_EXPAND = new SpannableString(content);
+        ButtonSpan span = new ButtonSpan(getContext(), new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                ExpandTextView.super.setMaxLines(mMaxLines);
+                setCloseText(originText);
+            }
+        }, R.color.color_fe9901);
+        SPAN_EXPAND.setSpan(span, 0, content.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+ 
+    public void setCloseText(CharSequence text) {
+ 
+        if(SPAN_CLOSE == null){
+            initCloseEnd();
+        }
+        boolean appendShowAll = false;// true 不需要展开收起功能， false 需要展开收起功能
+        originText = text.toString();
+ 
+        // SDK >= 16 可以直接从xml属性获取最大行数
+        int maxLines = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            maxLines = getMaxLines();
+        } else{
+            maxLines = mMaxLines;
+        }
+        String workingText = new StringBuilder(originText).toString();
+        if (maxLines != -1) {
+            Layout layout = createWorkingLayout(workingText);
+            if (layout.getLineCount() > maxLines) {
+                //获取一行显示字符个数，然后截取字符串数
+                workingText = originText.substring(0, layout.getLineEnd(maxLines - 1)).trim();// 收起状态原始文本截取展示的部分
+                String showText = originText.substring(0, layout.getLineEnd(maxLines - 1)).trim() + "..." + SPAN_CLOSE;
+                Layout layout2 = createWorkingLayout(showText);
+                // 对workingText进行-1截取，直到展示行数==最大行数，并且添加 SPAN_CLOSE 后刚好占满最后一行
+                while (layout2.getLineCount() > maxLines) {
+                    int lastSpace = workingText.length()-1;
+                    if (lastSpace == -1) {
+                        break;
+                    }
+                    workingText = workingText.substring(0, lastSpace);
+                    layout2 = createWorkingLayout(workingText + "..." + SPAN_CLOSE);
+                }
+                appendShowAll = true;
+                workingText = workingText + "...";
+            }
+        }
+ 
+        setText(workingText);
+        if (appendShowAll) {
+            // 必须使用append，不能在上面使用+连接，否则spannable会无效
+            append(SPAN_CLOSE);
+            setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+ 
+        public void setExpandText(String text) {
+            if(SPAN_EXPAND == null){
+                initExpandEnd();
+            }
+            Layout layout1 = createWorkingLayout(text);
+            Layout layout2 = createWorkingLayout(text + TEXT_CLOSE);
+            // 展示全部原始内容时 如果 TEXT_CLOSE 需要换行才能显示完整，则直接将TEXT_CLOSE展示在下一行
+            if(layout2.getLineCount() > layout1.getLineCount()){
+                setText(originText + "\n");
+            }else{
+                setText(originText);
+            }
+            append(SPAN_EXPAND);
+            setMovementMethod(LinkMovementMethod.getInstance());
+        }
+ 
+    //返回textview的显示区域的layout，该textview的layout并不会显示出来，只是用其宽度来比较要显示的文字是否过长
+    private Layout createWorkingLayout(String workingText) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            return new StaticLayout(workingText, getPaint(), initWidth - getPaddingLeft() - getPaddingRight(),
+                    Layout.Alignment.ALIGN_NORMAL, getLineSpacingMultiplier(), getLineSpacingExtra(), false);
+        } else{
+            return new StaticLayout(workingText, getPaint(), initWidth - getPaddingLeft() - getPaddingRight(),
+                    Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+        }
+    }
+}
+
+public class ButtonSpan extends ClickableSpan {
+ 
+    View.OnClickListener onClickListener;
+    private Context context;
+    private int colorId;
+ 
+    public ButtonSpan(Context context, View.OnClickListener onClickListener) {
+        this(context, onClickListener, R.color.color_693f3e);
+    }
+ 
+    public ButtonSpan(Context context, View.OnClickListener onClickListener, int colorId){
+        this.onClickListener = onClickListener;
+        this.context = context;
+        this.colorId = colorId;
+    }
+ 
+    @Override
+    public void updateDrawState(TextPaint ds) {
+        ds.setColor(context.getResources().getColor(colorId));
+        ds.setUnderlineText(false);
+    }
+ 
+    @Override
+    public void onClick(View widget) {
+        if (onClickListener != null) {
+            onClickListener.onClick(widget);
+        }
+    }
+}
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.lxw.expandtextview.MainActivity">
+ 
+    <com.lxw.expandtextview.ExpandTextView
+        android:id="@+id/txt_content"
+        android:textSize="20sp"
+        android:textColor="@color/color_693f3e"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+
+public class MainActivity extends AppCompatActivity {
+ 
+    private ExpandTextView mContentExpandTextView;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+ 
+        mContentExpandTextView = (ExpandTextView) findViewById(R.id.txt_content);
+        // 设置TextView可展示的宽度 ( 父控件宽度 - 左右margin - 左右padding）
+        int whidth = ScreenUtils.getScreenWidth(this) - ScreenUtils.dip2px(this, 16 * 2);
+        mContentExpandTextView.initWidth(whidth);
+        // 设置最大行数(如果SDK >= 16 也可以直接在xml里设置)
+        mContentExpandTextView.setMaxLines(3);
+        String content = "茫茫的长白大山，浩瀚的原始森林，大山脚下，原始森林环抱中散落着几十户人家的" +
+                "一个小山村，茅草房，对面炕，烟筒立在屋后边。在村东头有一个独立的房子，那就是青年点，" +
+                "窗前有一道小溪流过。学子在这里吃饭，由这里出发每天随社员去地里干活。干的活要么上山伐" +
+                "树，抬树，要么砍柳树毛子开荒种地。在山里，可听那吆呵声：“顺山倒了！”放树谨防回头棒！" +
+                "树上的枯枝打到别的树上再蹦回来，这回头棒打人最厉害。";
+        mContentExpandTextView.setCloseText(content);
+    }
+}

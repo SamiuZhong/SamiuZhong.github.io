@@ -1,0 +1,38 @@
+1.设置添加空格的方法
+	private void setContent(StringBuffer sb)
+    {
+        binding.loginEdt.setText(sb.toString());
+        //移动光标到最后面
+        binding.loginEdt.setSelection(sb.length());
+    }
+2.设置TextWatcher监听
+	binding.loginEdt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                StringBuffer sb = new StringBuffer(s);
+                if (s.toString().length() >= 4) {
+                    char[] chars = s.toString().toCharArray();
+                    if (chars[3] != ' ') {
+                        sb.insert(3,' ');
+                        setContent(sb);
+                    }
+                }
+                if (s.length() >= 9) {
+                    char[] chars = s.toString().toCharArray();
+                    if (chars[8] != ' ') {
+                        sb.insert(8,' ');
+                        setContent(sb);
+                    }
+                }
+            }
+        });

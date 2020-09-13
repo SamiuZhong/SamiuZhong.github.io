@@ -1,0 +1,314 @@
+https://www.jianshu.com/p/1f471b1d9aee
+
+自定义属性attrs.xml
+    <declare-styleable name="CustomLetterNavigationView">
+        <attr name="customTextColorDefault" format="color" />
+        <attr name="customTextColorDown" format="color" />
+        <attr name="customBackgroundColorDown" format="color" />
+        <attr name="customLetterDivHeight" format="dimension" />
+        <attr name="customTextSize" format="dimension" />
+        <attr name="customBackgroundAngle" format="integer" />
+    </declare-styleable>
+
+/**
+ * 自定义字母导航栏
+ * 
+ * 总的来说就四步
+ * 1、测量控件尺寸{@link #onMeasure(int, int)}
+ * 2、绘制显示内容（背景以及字符）{@link #onDraw(Canvas)}
+ * 3、处理滑动事件{@link #onTouchEvent(MotionEvent)}
+ * 4、暴露接口{@link #setOnNavigationScrollerListener(OnNavigationScrollerListener)}
+ *
+ * @attr customTextColorDefault  //导航栏默认文字颜色
+ * @attr customTextColorDown  //导航栏按下文字颜色
+ * @attr customBackgroundColorDown  //导航栏按下背景颜色
+ * @attr customLetterDivHeight  //导航栏内容高度间隔
+ * @attr customTextSize  //导航栏文字尺寸
+ * @attr customBackgroundAngle //导航栏背景角度
+ */
+public class CustomLetterNavigationView extends View {
+    private static final String TAG = "CustomLetterNavigation";
+    //导航内容
+    private String[] mNavigationContent;
+    //导航栏内容间隔
+    private float mContentDiv;
+    //导航栏文字大小
+    private float mContentTextSize;
+    //导航栏文字颜色
+    private int mContentTextColor;
+    //导航栏按下时背景颜色
+    private int mBackgroundColor;
+    //导航栏按下时圆角度数
+    private int mBackGroundAngle = 0;
+    //导航栏按下时文字颜色
+    private int mDownContentTextColor;
+    private TextPaint mTextPaint;
+    private Paint mPaintBackgrount;
+    private boolean mEventActionState = false;
+    private String mCurrentLetter = "";
+    private OnNavigationScrollerListener mOnNavigationScrollerListener;
+    private  final RectF mRectF = new RectF();
+    public CustomLetterNavigationView(Context context) {
+        this(context, null);
+    }
+
+    public CustomLetterNavigationView(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public CustomLetterNavigationView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initDefaultData();//初始化默认数据
+        initAttrs(context, attrs);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        /**
+         * <P>
+         *     这里我们分为两步
+         *
+         *     1、绘制背景
+         *        这里简单，直接调用Canvas的drawRoundRect()方法直接绘制
+         *     2、绘制显示文本
+         *        绘制文字首先要定位，定位每个字符的坐标
+         *        X轴简单，宽度的一半
+         *        Y轴坐标通过每个字符的高heightShould乘以已绘制字符的数目
+         * </P>
+         */
+        int mViewWidth = getWidth();
+        //绘制背景
+        mRectF.set(0, 0, mViewWidth, getHeight());
+        if (mEventActionState) {
+            mTextPaint.setColor(mDownContentTextColor);
+            mPaintBackgrount.setColor(mBackgroundColor);
+            canvas.drawRoundRect(mRectF, mBackGroundAngle, mBackGroundAngle, mPaintBackgrount);
+        } else {
+            mTextPaint.setColor(mContentTextColor);
+            mPaintBackgrount.setColor(Color.TRANSPARENT);
+            Drawable mBackground = getBackground();
+            if (mBackground instanceof ColorDrawable) {
+                mPaintBackgrount.setColor(((ColorDrawable) mBackground).getColor());
+            }
+            canvas.drawRoundRect(mRectF, mBackGroundAngle, mBackGroundAngle, mPaintBackgrount);
+        }
+        //绘制文本
+        float textX = mViewWidth / 2;
+        //X轴坐标
+        int contentLenght = getContentLength();
+        //Y轴坐标（这里在测量的时候多加入了两个间隔高度要减去，同时还有Padding值）
+        float heightShould = (getHeight() - mContentDiv * 2 - getPaddingTop() - getPaddingBottom()) / contentLenght;
+        for (int i = 0; i < contentLenght; i++) {
+            //计算Y轴的坐标
+            float startY = ((i + 1) * heightShould) + getPaddingTop();
+            //绘制文字
+            canvas.drawText(mNavigationContent[i], textX, startY, mTextPaint);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        /**
+         * 这里主要处理手指滑动事件
+         */
+        float mEventY = event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //手指按下的时候，修改Enent状态、重绘背景、触发回调
+                mEventActionState = true;
+                invalidate();
+                if (mOnNavigationScrollerListener != null) {
+                    mOnNavigationScrollerListener.onDown();
+                }
+                scrollCount(mEventY);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                scrollCount(mEventY);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                //手指离开的时候，修改Enent状态、重绘背景、触发回调
+                mEventActionState = false;
+                invalidate();
+                if (mOnNavigationScrollerListener != null) {
+                    mOnNavigationScrollerListener.onUp();
+                }
+                break;
+        }
+        return true;
+    }
+
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        /**
+         * <p>
+         *     这里做了简单的适应，其目的就是为了能够正常的显示我们的内容
+         *
+         *     不管设置的是真实尺寸或者是包裹内容，都会以内容的最小尺寸为
+         *     基础，如果设置的控件尺寸大于我们内容的最小尺寸，就使用控件
+         *     尺寸，反之使用内容的最小尺寸!
+         * </p>
+         */
+        int widhtMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        //获取控件的尺寸
+        int actualWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int actualHeight = MeasureSpec.getSize(heightMeasureSpec);
+        int contentLegth = getContentLength();
+        //计算一个文字的尺寸
+        Rect mRect = measureTextSize();
+        //内容的最小宽度
+        float contentWidth = mRect.width() + mContentDiv * 2;
+        //内容的最小高度
+        float contentHeight = mRect.height() * contentLegth + mContentDiv * (contentLegth + 3);
+        if (MeasureSpec.AT_MOST == widhtMode) {
+            //宽度包裹内容
+            actualWidth = (int) contentWidth + getPaddingLeft() + getPaddingRight();
+        } else if (MeasureSpec.EXACTLY == widhtMode) {
+            //宽度限制
+            if (actualWidth < contentWidth) {
+                actualWidth = (int) contentWidth + getPaddingLeft() + getPaddingRight();
+            }
+        }
+        if (MeasureSpec.AT_MOST == heightMode) {
+            //高度包裹内容
+            actualHeight = (int) contentHeight + getPaddingTop() + getPaddingBottom();
+        } else if (MeasureSpec.EXACTLY == widhtMode) {
+            //高度限制
+            if (actualHeight < contentHeight) {
+                actualHeight = (int) contentHeight + getPaddingTop() + getPaddingBottom();
+            }
+        }
+        setMeasuredDimension(actualWidth, actualHeight);
+    }
+
+
+    /**
+     * 初始化默认数据
+     */
+    private void initDefaultData() {
+        mNavigationContent = new String[]{"搜", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+        mContentDiv = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+        mContentTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, getResources().getDisplayMetrics());
+        mContentTextColor = Color.parseColor("#333333");
+        mDownContentTextColor = Color.WHITE;
+        mBackgroundColor = Color.parseColor("#d7d7d7");
+        mBackGroundAngle = 0;
+        //绘制文字画笔
+        mTextPaint = new TextPaint();
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setTextSize(mContentTextSize);
+        mTextPaint.setColor(mContentTextColor);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        //绘制背景画笔
+        mPaintBackgrount = new Paint();
+        mPaintBackgrount.setAntiAlias(true);
+        mPaintBackgrount.setStyle(Paint.Style.FILL);
+    }
+
+    /**
+     * 初始化自定义属性
+     *
+     * @param context
+     * @param attrs
+     */
+    private void initAttrs(Context context, AttributeSet attrs) {
+        TypedArray mTypedArray = context.obtainStyledAttributes(attrs, R.styleable.CustomLetterNavigationView);
+        mContentTextColor = mTypedArray.getColor(R.styleable.CustomLetterNavigationView_customTextColorDefault, mContentTextColor);
+        mBackgroundColor = mTypedArray.getColor(R.styleable.CustomLetterNavigationView_customBackgroundColorDown, mBackgroundColor);
+        mDownContentTextColor = mTypedArray.getColor(R.styleable.CustomLetterNavigationView_customTextColorDown, mDownContentTextColor);
+        mContentTextSize = mTypedArray.getDimension(R.styleable.CustomLetterNavigationView_customTextSize, mContentTextSize);
+        mContentDiv = mTypedArray.getFloat(R.styleable.CustomLetterNavigationView_customLetterDivHeight, mContentDiv);
+        mBackGroundAngle = mTypedArray.getInt(R.styleable.CustomLetterNavigationView_customBackgroundAngle, mBackGroundAngle);
+        mTypedArray.recycle();
+    }
+
+
+    /**
+     * 获取内容长度
+     *
+     * @return 内容长度
+     */
+    private int getContentLength() {
+        if (mNavigationContent != null) {
+            return mNavigationContent.length;
+        }
+        return 0;
+    }
+
+    /**
+     * 滑动计算
+     *
+     * @param mEventY Y轴滑动距离
+     */
+    private void scrollCount(float mEventY) {
+        //滑动的时候利用滑动距离和每一个字符高度进行取整，获取到Index
+        Rect mRect = measureTextSize();
+        int index = (int) ((mEventY - getPaddingTop() - getPaddingBottom() - mContentDiv * 2) / (mRect.height() + mContentDiv));
+        //防止越界
+        if (index >= 0 && index < getContentLength()) {
+            String newLetter = mNavigationContent[index];
+            //防止重复触发回调
+            if (!mCurrentLetter.equals(newLetter)) {
+                mCurrentLetter = newLetter;
+                if (mOnNavigationScrollerListener != null) {
+                    mOnNavigationScrollerListener.onScroll(mCurrentLetter, index);
+                }
+            }
+        }
+    }
+
+    /**
+     * 测量文字的尺寸
+     *
+     * @return 一个汉字的矩阵
+     */
+    public Rect measureTextSize() {
+        Rect mRect = new Rect();
+        if (mTextPaint != null) {
+            mTextPaint.getTextBounds("田", 0, 1, mRect);
+        }
+        return mRect;
+    }
+
+
+    /**
+     * 设置导航栏滑动监听
+     *
+     * @param onNavigationScrollerListener
+     */
+    public void setOnNavigationScrollerListener(OnNavigationScrollerListener onNavigationScrollerListener) {
+        this.mOnNavigationScrollerListener = onNavigationScrollerListener;
+    }
+
+    /**
+     * 设置导航栏显示内容
+     *
+     * @param content 需要显示的内容
+     */
+    public void setNavigationContent(String content) {
+        if (!TextUtils.isEmpty(content)) {
+            mNavigationContent = null;
+            mNavigationContent = new String[content.length()];
+            for (int i = 0; i < content.length(); i++) {
+                mNavigationContent[i] = String.valueOf(content.charAt(i));
+            }
+        }
+        //需要重新测量
+        requestLayout();
+    }
+
+    public interface OnNavigationScrollerListener {
+        //按下
+        void onDown();
+
+        //滑动
+        void onScroll(String letter, int position);
+
+        //离开
+        void onUp();
+
+    }
+}

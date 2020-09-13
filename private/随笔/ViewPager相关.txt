@@ -1,0 +1,59 @@
+1.在布局文件中加入ViewPager部件
+	<android.support.v4.view.ViewPager
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+		
+2.新建Adapter类
+public class ViewPagerAdapter extends PagerAdapter {
+
+    private List<View> viewList;
+
+    public ViewPagerAdapter(List<View> viewList){
+        this.viewList = viewList;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object)   {
+        container.removeView(viewList.get(position));       //删除页卡
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {  //这个方法用来实例化页卡
+        container.addView(viewList.get(position), 0);   //添加页卡
+        return viewList.get(position);
+    }
+
+    @Override
+    public int getCount() {
+        return viewList.size();
+    }
+
+    @Override
+    public boolean isViewFromObject(View view,Object object) {
+        return view == object;
+    }
+    
+}
+		
+3.在相应的Activity中加载要显示的页卡
+	private List<Fruit> fruitList = new ArrayList<>();
+    private LayoutInflater layoutInflater;
+    private ViewPagerAdapter viewPagerAdapter;
+    private ViewPager viewPager;
+    private View view1,view2,view3;
+    private List<View> viewList;
+	
+	layoutInflater = getLayoutInflater().from(this);
+    view1 = layoutInflater.inflate(R.layout.fragment_one,null);
+    view2 = layoutInflater.inflate(R.layout.fragment_two,null);
+    view3 = layoutInflater.inflate(R.layout.fragment_three,null);
+
+    viewList = new ArrayList<View>();   //将要分页显示的View装入数组中
+    viewList.add(view1);
+    viewList.add(view2);
+    viewList.add(view3);
+	
+	viewPager = findViewById(R.id.viewPager);
+	viewPagerAdapter = new ViewPagerAdapter(viewList);
+    viewPager.setAdapter(viewPagerAdapter);

@@ -1,0 +1,124 @@
+1.需要哪些东西
+	1.本体Activity，以及对应的ViewModel和Layout文件
+	2.Adapter
+	3.Item的ViewModel和Layout
+
+2.Activity需要做什么事情
+	//使用 TabLayout 和 ViewPager 相关联
+	binding.tab.setupWithViewPager(binding.viewPager);
+	binding.viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tab));
+	viewModel.addPage();
+	viewModel.addTitle();
+
+3.Layout文件怎么写
+	<data>
+        <variable
+            name="viewModel"
+            type="com.klilala.mine.view_model.CollectionViewModel" />
+        <variable
+            name="adapter"
+            type="com.klilala.mine.ui.adapter.CollectionAdapter" />
+    </data>
+
+	com.google.android.material.tabs.TabLayout
+		android:id="@+id/tab"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/dp_27"
+		android:layout_marginBottom="@dimen/dp_17"
+		app:tabGravity="fill"
+		app:tabIndicatorColor="@color/white"
+		app:tabIndicatorHeight="@dimen/dp_3"
+		app:tabMode="scrollable"
+		app:tabTextColor="@color/white" />
+
+	<androidx.viewpager.widget.ViewPager
+		android:id="@+id/view_pager"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/dp_0"
+		android:layout_weight="1"
+		app:adapter="@{adapter}"
+		app:itemBinding="@{viewModel.itemBinding}"
+		app:items="@{viewModel.observableList}"
+		app:onPageSelectedCommand="@{viewModel.onPageSelectedCommand}"
+		app:pageTitles="@{viewModel.pageTitles}" />
+		
+4.ViewModel需要做什么	
+    private List<String> titleList = new ArrayList<>();
+	
+	public ObservableList<ItemCollectionPagerViewModel> observableList = new ObservableArrayList<>();
+    public ItemBinding<ItemCollectionPagerViewModel> itemBinding = ItemBinding.of(BR.viewModel, R.layout.item_collection_pager_layout);
+    public final BindingViewPagerAdapter.PageTitles<ItemCollectionPagerViewModel> pageTitles = (position, item) -> titleList.get(position);
+    public BindingCommand<Integer> onPageSelectedCommand = new BindingCommand<>(integer -> ToastUtils.showShort("ViewPager切换：" + integer));
+
+	/**
+     * ViewPager添加Item
+     */
+    public void addPage(){
+        observableList.clear();
+        for(int i=0;i<5;i++){
+            ItemCollectionPagerViewModel itemViewModel = new ItemCollectionPagerViewModel(this);
+            observableList.add(itemViewModel);
+        }
+    }
+
+    /**
+     * ViewPager添加title
+     */
+    public void addTitle(){
+        titleList.clear();
+        titleList.add(getApplication().getResources().getString(R.string.all));
+        titleList.add(getApplication().getResources().getString(R.string.health_knowledge));
+        titleList.add(getApplication().getResources().getString(R.string.science_book));
+        titleList.add(getApplication().getResources().getString(R.string.scientist_interpret));
+        titleList.add(getApplication().getResources().getString(R.string.other));
+    }
+	
+5.Adapter怎么写，注意这里的Adapter实在Layout文件里面进行绑定的	
+		public class CollectionAdapter extends BindingViewPagerAdapter {
+
+			@Override
+			public void onBindBinding(@NonNull ViewDataBinding binding, int variableId, int layoutRes, int position, Object item) {
+				super.onBindBinding(binding, variableId, layoutRes, position, item);
+				if (item instanceof ItemCollectionPagerViewModel){
+					ItemCollectionPagerLayoutBinding binding1 = (ItemCollectionPagerLayoutBinding) binding;
+				}
+			}
+		}
+	*新发现：Adapter只需要重写出onBindBinding这个方法即可，方法里面可以不做任何事，于是我们可以把Adapter抽取出来供全局使用：
+		public class BaseViewPagerAdapter extends BindingViewPagerAdapter {
+
+			@Override
+			public void onBindBinding(@NonNull ViewDataBinding binding, int variableId, int layoutRes, int position, Object item) {
+				super.onBindBinding(binding, variableId, layoutRes, position, item);
+			}
+		}
+
+6.Item的ViewModel和Layout正常写即可，注意Item的ViewModel需要继承自ItemViewModel基类
+
+7.补充，ItemViewModel基类的封装
+	public class ItemViewModel<VM extends BaseViewModel> {
+		protected VM viewModel;
+
+		public ItemViewModel(@NonNull VM viewModel) {
+			this.viewModel = viewModel;
+		}
+	}	
+	
+8.如果要实现给Tab动态添加自定义的View，则
+	1.Layout和ViewModel就不需要绑定pageTitles了
+	2.Activity注释掉的代码也不需要走了	
+	3.还要加上tabLayout对ViewPager的监听
+	//        binding.tab.setupWithViewPager(binding.viewPager);
+		binding.viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tab));
+        binding.tab.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(binding.viewPager));
+		viewModel.addPage();
+	//        viewModel.addTitle();
+	
+	for (int i = 0; i < 5; i++) {
+		binding.tab.addTab(binding.tab.newTab());
+		TabLayout.Tab tab = binding.tab.getTabAt(i);
+		tab.setCustomView(R.layout.view_text);
+		View view = tab.getCustomView();
+		TextView textView = view.findViewById(R.id.tab_text);
+		textView.setText("Hello");
+	}

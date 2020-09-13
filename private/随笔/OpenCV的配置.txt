@@ -1,0 +1,11 @@
+1.File --> new --> import Model,选择解压后SDK下的JAVA文件,3个选项都不勾选；
+2.把每一个build文件里面的
+  compileSdkVersion 
+  minSdkVersion 
+  minSdkVersion 
+  设置为一致；
+3.删除AndroidManifest.xml文件下的minSdkVersion，minSdkVersion相关声明；
+4.File --->Project Structure，在Modules下的app，点击Dependencies,点击右上角的绿色加号，选择Module dependency，将openCVLibrary添加进去，点击确定；
+5.在OpenCV的解压包中，将sdk-->native-->libs文件夹复制，粘贴在Project视图下app-->src-->main目录下，并将其重命名为jniLibs。
+
+end

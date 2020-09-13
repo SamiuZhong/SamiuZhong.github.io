@@ -1,0 +1,32 @@
+/**
+ * Place：Chengdu,China
+ * Project：KlilalaLifeService
+ * Version：V1.0.0
+ * CreatedBy: Samiu 2019/11/28
+ * Copyright©2019 Past Present Future. All Rights Reserved
+ *
+ * 网络请求@Body参数的封装类
+ */
+public class RequestBodyUtil {
+
+    public static RequestBody getRequestBody(Object object) {
+        Gson gson = new Gson();
+        String s = gson.toJson(object);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), s);
+        return requestBody;
+    }
+
+    public static RequestBody getRequestBody(String[] key, String[] value){
+        JSONObject root = new JSONObject();
+        for (int a = 0; a < key.length; a++) {
+            try {
+                root.put(key[a], value[a]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        String s = root.toString();
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), s);
+        return requestBody;
+    }
+}

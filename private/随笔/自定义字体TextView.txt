@@ -1,0 +1,85 @@
+1.在 attrs.xml 文件中声明自定义的属性
+    <declare-styleable name="KlilalaTextView">
+        <attr name="myFont" format="string"/>
+    </declare-styleable>
+
+2.在 string.xml 中声明上面属性对应的多个值
+    <string name="font_regular">regular</string>
+    <string name="font_medium">medium</string>
+    <string name="font_light">light</string>
+    <string name="font_heavy">heavy</string>
+    <string name="font_bold">bold</string>
+	
+3.创建类文件继承自TextView（TextView下面的红色Waring不用管他）	
+/**
+ * @Description: 自定义TextView,提供字体的选择功能
+ * @Author: Samiu
+ * @Date: 2019/11/14
+ */
+public class KlilalaTextView extends TextView {
+
+    private Context context;
+
+    public KlilalaTextView(Context context) {
+        super(context);
+        this.context = context;
+    }
+
+    public KlilalaTextView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        this.context = context;
+        init(attrs);
+    }
+
+    public KlilalaTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.context = context;
+        init(attrs);
+    }
+
+    private void init(AttributeSet attrs){
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.KlilalaTextView);
+        String fontName = typedArray.getString(R.styleable.KlilalaTextView_myFont);
+        setTypeface(selectTypeFace(context,fontName));
+        typedArray.recycle();   //及时回收资源
+    }
+
+    private Typeface selectTypeFace(Context context, String fontName) {
+        Typeface mTypeface;
+        if (!TextUtils.isEmpty(fontName)) {
+            switch (fontName) {
+                case "medium":
+                    mTypeface = ResourcesCompat.getFont(context,R.font.font_medium);
+                    return mTypeface;
+                case "light":
+                    mTypeface = ResourcesCompat.getFont(context,R.font.font_light);
+                    return mTypeface;
+                case "heavy":
+                    mTypeface = ResourcesCompat.getFont(context,R.font.font_heavy);
+                    return mTypeface;
+                case "bold":
+                    mTypeface = ResourcesCompat.getFont(context,R.font.font_bold);
+                    return mTypeface;
+                default:
+                    mTypeface = ResourcesCompat.getFont(context,R.font.font_regular);
+                    return mTypeface;
+            }
+        } else {
+            mTypeface = ResourcesCompat.getFont(context,R.font.font_regular);
+            return mTypeface;
+        }
+    }
+}
+
+
+--------------------2019.12.25-------------------
+可在attrs.xml文件中直接声明具体的样式，这样就可以省略掉上面的第2部了
+	<declare-styleable name="KlilalaTextView">
+        <attr name="myFont">
+            <enum name="medium" value="0"/>
+            <enum name="light" value="1"/>
+            <enum name="heavy" value="2"/>
+            <enum name="en" value="3"/>
+            <enum name="din" value="4"/>
+        </attr>
+    </declare-styleable>

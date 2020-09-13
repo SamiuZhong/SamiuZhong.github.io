@@ -1,0 +1,11 @@
+    /**
+     * 打开或创建数据库
+     */
+    public DBError initDatabase(Context context){
+        if (context != null) {
+            db = context.openOrCreateDatabase(db_name,Context.MODE_PRIVATE,null);
+            return new DBError(0,context.getResources().getString(R.string.db_status_open));
+        }else {
+            return new DBError(100,context.getResources().getString(R.string.db_status_close));
+        }
+    }

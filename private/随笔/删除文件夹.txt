@@ -1,0 +1,20 @@
+	private void deleteDirectory(File folder) {
+		if (folder.exists()) {
+			File[] files = folder.listFiles();
+			if (files == null) {
+				return;
+			}
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					deleteDirectory(files[i]);
+				} else {
+					files[i].delete();
+				}
+			}
+		}
+		folder.delete();
+	}
+调用：
+	final String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "wanJia/innerFile" + File.separator;
+        File folder = new File(dir);
+        deleteDirectory(folder);

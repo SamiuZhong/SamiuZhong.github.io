@@ -1,0 +1,7 @@
+目前Ovopark项目采用了MVP模式，下面是在经过一段时间的理解后得出的一点经验
+1.项目多层级的封装了Activity的父类及祖宗类，在每一个层级都定义一定的方法，使Activity的开发更为简便和规范；
+2.对于V层，每一个Activity都会创建一个与之相对应的View接口，并且让Activity实现这个接口,View接口也有多层级的父类与祖宗类；
+3.对于P层，每一个Activity也都会创建一个与之相对应的Presenter，也有多层级的父类与祖宗类；
+4.所以，一个正常的Activity应该长这样：
+	MainActivity extends BaseMvpActivity<IMainView, MainPresenter> implement IMainView{}
+5.其中Presenter做什么事情？MVP模式最重要的作用就是解耦，使得程序条理更清晰，更加容易被人读懂，也更加方便拓展功能。V层一般放视图的实现，不处理或处理少量业务逻辑；P层主要放多线程的耗时任务，如网络请求等；M层主要处理数据和模型；

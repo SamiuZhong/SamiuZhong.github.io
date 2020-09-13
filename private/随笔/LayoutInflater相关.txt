@@ -1,0 +1,29 @@
+LayoutInflater(布局加载器)
+
+常见使用场景：
+1.在Activity中
+	LayoutInflater inflater = getLayoutInflater();
+	View view = inflater.inflate(R.layout.activity_main,null);
+2.在Fragment中
+	View view = inflater.inflate(R.id.fragment_home,container,false);
+	return view;
+3.在Adapter中
+	@Override
+	public View getView(int posotion,View convertView,ViewGroup parent){
+		View view = LayoutInflater.from(convertView.getContext()).inflate(R.layout.activity_main,parent,false);
+		return view;
+	}
+4.在某些特殊情况下，需要使用LayoutInflater，我们是这样获得它的
+	LayoutInflater inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+以上即为常见的使用方式，这些场景都需要将一个XML布局文件转化为View，所以说LayoutInflater的主要功能就是布局加载
+
+LayoutInflater的介绍：
+1.LayoutInflater的主要作用是将XML文件实例化为相应的View对象
+2.LayoutInflater在开发中，获取的方式不是直接new出来，而是使用以下两个方法：
+	//在Activity中
+	LayoutInflater inflate = getLayoutInflater();
+	//其他情况
+	LayoutInflater inflate = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+3.如果想使用新的LayoutInflater来加载View，需要使用cloneInContext()，而在新的LayoutInflater需要调用setFactory()设置视图处理器
+4.由于性能的原因，XML文件的预处理是在Build过程中进行的
+5.LayoutInflater不能加载未编译的XML文件，而且LayoutInflater只能加载，通过XmlPullParser解析的R文件资源

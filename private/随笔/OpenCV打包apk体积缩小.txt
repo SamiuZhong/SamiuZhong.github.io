@@ -1,0 +1,7 @@
+在app的build.gradle文件的defaultConfig括号里面添加如下代码
+	ndk{
+//        	  abiFilters  'armeabi-v7a'
+//            abiFilters  'armeabi-v7a',"x86"
+        abiFilters  'armeabi-v7a', 'arm64-v8a'
+
+    }

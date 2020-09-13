@@ -1,0 +1,17 @@
+创建xml文件
+https://www.jianshu.com/p/2f6fdc492a68
+
+<?xml version="1.0" encoding="utf-8"?>
+	<selector  xmlns:android="http://schemas.android.com/apk/res/android">   
+		 <item android:drawable="@mipmap/answer_a_unpress"/>   
+		 <item android:state_focused="true"
+			   android:drawable="@mipmap/answer_a_press"/>
+</selector>
+selector 相关属性
+1.android:state_focused 是否获得焦点 例如点击一个EditText输入内容时，该控件即为获得焦点
+2.android:state_pressed 是否按下 例如一个button被点击
+3.android:state_checkable 组件能否被check RadioButton可以被check
+4.android:state_checked 是否被check
+5.android:state_enabled 是否能够接收点击事件
+6.android:state_selected 是否被选中
+7.android:state_window_focused 应用程序是否在前台

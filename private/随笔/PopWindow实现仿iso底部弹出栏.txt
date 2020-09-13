@@ -1,0 +1,198 @@
+1.PopupWindow本体
+/**
+ * Place：Chengdu,China
+ * Project：KlilalaLifeService
+ * Version：V1.0.0
+ * CreatedBy: Samiu 2020/2/7
+ * Description: 底部弹出PopupWindow
+ * Copyright©2020 Past Present Future. All Rights Reserved
+ */
+class BottomPopupWindow(var context: Context, var options: Array<String>) {
+
+    //PopupWindow对象
+    private var popupWindow: PopupWindow? = null
+    //点击事件的回调
+    private lateinit var listener: OnPopWindowItemClickListener
+
+    /**
+     * 添加选项的View
+     */
+    private fun addView(view: View) {
+        val contentLayout = view.findViewById<LinearLayout>(R.id.pop_content_layout)
+        val cancelView = view.findViewById<TextView>(R.id.pop_cancel)
+        cancelView.onClick { popupWindow?.dismiss() }
+        if (options.isNotEmpty()) {
+            for (i in options.indices) {
+                //添加item
+                val item: View = LayoutInflater.from(context).inflate(R.layout.item_popup_window, null)
+                val textView = item.findViewById<KlilalaTextView>(R.id.content_text)
+                textView.text = options[i]
+                textView.onClick {
+                    listener.onItemClick(i)
+                }
+                contentLayout.addView(item)
+                //添加分割线
+                if (i != options.size - 1) {
+                    val line: View = LayoutInflater.from(context).inflate(R.layout.layout_line_e1ebe9, null)
+                    contentLayout.addView(line)
+                }
+            }
+        }
+    }
+
+    /**
+     * 弹出PopupWindow
+     */
+    fun showPopWindow() {
+        val popView = LayoutInflater.from(context).inflate(R.layout.layout_bottom_popup_window, null)
+        //添加选项
+        addView(popView)
+        popupWindow = PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            animationStyle = R.style.BottomInAndOutStyle
+            setBackgroundDrawable(BitmapDrawable())
+            isFocusable = true
+            isOutsideTouchable = true
+            setOnDismissListener { setWindowAlpha(false) }
+			inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
+            softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+        }
+        show(popView)
+    }
+
+    /**
+     * 动态设置Activity背景透明度
+     */
+    private fun setWindowAlpha(isOpen: Boolean) {
+        val window: Window = (context as Activity).window
+        val layoutParams = window.attributes
+        window.setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        val animator = if (isOpen)
+            ValueAnimator.ofFloat(1.0f, 0.5f)
+        else
+            ValueAnimator.ofFloat(0.5f, 1.0f)
+        animator.duration = 400
+        animator.addUpdateListener { animation ->
+            run {
+                val alpha: Float = animation.animatedValue as Float
+                layoutParams.alpha = alpha
+                window.attributes = layoutParams
+            }
+        }
+        animator.start()
+    }
+
+    private fun show(view: View) {
+        if (!popupWindow!!.isShowing)
+            popupWindow?.showAtLocation(view, Gravity.BOTTOM, 0, 0)
+        setWindowAlpha(true)
+    }
+
+    fun dismiss() {
+        popupWindow?.dismiss()
+    }
+
+    fun setItemClickListener(listener: OnPopWindowItemClickListener) {
+        this.listener = listener
+    }
+
+    interface OnPopWindowItemClickListener {
+        fun onItemClick(position: Int)
+    }
+}
+
+2.PopupWindow布局文件layout_bottom_popup_window.xml
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/space_20">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/pop_content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_20_fff"
+            android:orientation="vertical"/>
+
+        <TextView
+            android:id="@+id/pop_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/shape_20_fff"
+            android:gravity="center"
+            android:text="@string/cancel"
+            android:textColor="@color/color_text_blue"
+            android:textSize="@dimen/text_size_16" />
+    </LinearLayout>
+</FrameLayout>
+
+3.Item布局文件item_popup_window.xml
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.klilala.widget.KlilalaTextView
+        android:id="@+id/content_text"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        app:myFont="medium"
+        android:textSize="@dimen/text_size_16"
+        tools:text="身份证"/>
+</FrameLayout>
+
+4.属性动画
+	1.styles.xml里面添加
+		<!--  Dialog从底部飞入飞出的动画  -->
+		<style name="BottomInAndOutStyle">
+			<item name="android:windowEnterAnimation">@anim/in_bottom</item>
+			<item name="android:windowExitAnimation">@anim/out_bottom</item>
+		</style>
+	2.入屏动画in_bottom.xml
+		<?xml version="1.0" encoding="utf-8"?>
+		<set xmlns:android="http://schemas.android.com/apk/res/android">
+			<translate
+				android:duration="300"
+				android:fromYDelta="100%p"
+				android:toYDelta="0" />
+		</set>	
+	3.出屏动画out_bottom.xml	
+		<?xml version="1.0" encoding="utf-8"?>
+		<set xmlns:android="http://schemas.android.com/apk/res/android">
+			<translate
+				android:duration="300"
+				android:fromYDelta="0"
+				android:toYDelta="100%p" />
+		</set>
+
+5.调用	
+	private lateinit var typePopWindow: BottomPopupWindow
+	
+	val typeOptions = Array(4) { "" }
+	typeOptions[0] = getString(R.string.id_card)
+	typeOptions[1] = getString(R.string.passport)
+	typeOptions[2] = getString(R.string.driver_license)
+	typeOptions[3] = getString(R.string.social_security_number)
+	typePopWindow = BottomPopupWindow(context!!, typeOptions)
+	layout_3.onClick { typePopWindow.showPopWindow() }
+	typePopWindow.setItemClickListener(object : BottomPopupWindow.OnPopWindowItemClickListener {
+		override fun onItemClick(position: Int) {
+			when (position) {
+				0 -> certificate_type.text = getString(R.string.id_card)
+				1 -> certificate_type.text = getString(R.string.passport)
+				2 -> certificate_type.text = getString(R.string.driver_license)
+				3 -> certificate_type.text = getString(R.string.social_security_number)
+			}
+			typePopWindow.dismiss()
+		}
+	})	

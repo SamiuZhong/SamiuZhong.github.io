@@ -1,0 +1,36 @@
+XML 不是 HTML 的替代；
+XML 旨在传输信息，HTML 旨在显示信息
+
+XML树结构
+<root>
+  <child>
+    <subchild>.....</subchild>
+  </child>
+</root>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>
+
+性质：
+XML 文档必须有根元素；
+XML 声明；
+所有的 XML 元素都必须有一个关闭标签；
+XML 标签对大小写敏感；
+XML 必须正确嵌套；
+XML 属性值必须加引号；
+XML 中的注释：<!-- This is a comment -->；
+在 XML 中，空格会被保留；
+XML 以 LF 存储换行；
+
+XML实体引用：
+&lt;	<	less than
+&gt;	>	greater than
+&amp;	&	ampersand
+&apos;	'	apostrophe
+&quot;	"	quotation mark
+
